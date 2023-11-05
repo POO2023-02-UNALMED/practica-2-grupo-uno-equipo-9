@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../PooDavid/Programacion_Orientada_a_Objetos/Proyecto Mis Finanzas Python/.idea/Proyecto Mis Finanzas Python.iml" filepath="$PROJECT_DIR$/../PooDavid/Programacion_Orientada_a_Objetos/Proyecto Mis Finanzas Python/.idea/Proyecto Mis Finanzas Python.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/practica-2-grupo-uno-equipo-9.iml" filepath="$PROJECT_DIR$/.idea/practica-2-grupo-uno-equipo-9.iml" />
     </modules>
   </component>
