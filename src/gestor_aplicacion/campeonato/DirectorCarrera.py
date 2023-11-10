@@ -5,6 +5,7 @@ from src.gestor_aplicacion.paddock.Persona import Persona
 
 
 class DirectorCarrera(Persona):
+
     listaDirectores = []
 
     def __init__(self, nombre, plata, licencia, carrera=None, pais=None):
@@ -70,3 +71,12 @@ class DirectorCarrera(Persona):
     def redondear(self):
         self.plata = round(self.plata, 2)
 
+    @classmethod
+    def setListaDirectores(cls, lista_Directores):
+        cls.listaDirectores = lista_Directores
+
+    @staticmethod
+    def getListaDirectores():
+        return DirectorCarrera.listaDirectores
+
+    

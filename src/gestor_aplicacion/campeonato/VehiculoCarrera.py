@@ -112,4 +112,12 @@ class VehiculoCarrera(Chasis, Decimales):
 
     def actualizarVelocidadT(self):
         self.velocidadTuneao = self.motor.velocidadAnadida + self.aleron.velocidadAnadida + self.neumaticos.velocidadAnadida + self.velocidad
+    
+    @staticmethod
+    def setVehiculos(lista_vehiculos):
+        VehiculoCarrera.listaVehiculos = lista_vehiculos
+
+    @staticmethod
+    def getVehiculos():
+        return VehiculoCarrera.listaVehiculos
 

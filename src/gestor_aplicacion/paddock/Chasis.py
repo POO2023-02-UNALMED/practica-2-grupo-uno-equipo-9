@@ -1,6 +1,7 @@
 import random
 
 from src.gestor_aplicacion.Decimales import Decimales
+from src.gestor_aplicacion.campeonato import VehiculoCarrera
 
 
 class Chasis(Decimales):

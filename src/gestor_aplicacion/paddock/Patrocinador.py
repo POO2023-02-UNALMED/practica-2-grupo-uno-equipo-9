@@ -158,3 +158,11 @@ class Patrocinador(Persona):
             patrocinadoresPiloto.append(default_patrocinador)
         patrocinador = choice(patrocinadoresPiloto)
         return patrocinador
+
+    @staticmethod
+    def setPatrocinadores(lista_patrocinadores):
+        Patrocinador.listaPatrocinadores = lista_patrocinadores
+
+    @staticmethod
+    def getPatrocinadores():
+        return Patrocinador.listaPatrocinadores

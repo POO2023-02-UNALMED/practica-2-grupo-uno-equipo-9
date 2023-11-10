@@ -128,3 +128,11 @@ class Piloto(Persona, Decimales):
     def registrar_tiempo(self, tiempo):
         self.tiemposCarreras.append(tiempo)
 
+    @staticmethod
+    def setPilotos(lista_pilotos):
+        Piloto.listaPilotos = lista_pilotos
+
+    @staticmethod
+    def getPilotos():
+        return Piloto.listaPilotos
+

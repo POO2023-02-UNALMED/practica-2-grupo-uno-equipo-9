@@ -149,3 +149,10 @@ class Equipo:
     def set_crew_members(self, crew_members):
         self.crew_members = crew_members
 
+    @staticmethod
+    def setEquipos(lista_equipos):
+        Equipo.equipos = lista_equipos
+
+    @staticmethod
+    def getEquipos():
+        return Equipo.equipos
