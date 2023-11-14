@@ -2,6 +2,7 @@ from random import randint
 from enum import Enum
 from decimal import Decimal, getcontext
 from collections import defaultdict
+from src.gestor_aplicacion.ubicaciones.Continente import Continente
 
 class Campeonato:
     campeonatos = []
@@ -13,7 +14,11 @@ class Campeonato:
         self._listaCarreras = listaCarreras
         self._listaEquipos = listaEquipos
         self._listaPilotos = listaPilotos
-        self._id = id
+        if not(id):
+            self._id = id
+        else:
+            self._id = Campeonato.idActual()
+            Campeonato.idActual+=1
         self._nombre = nombre
         self._continente = continente
         self._cantCarreras = cantCarreras
@@ -28,6 +33,11 @@ class Campeonato:
 
         self.redondear()
 
+    @staticmethod
+    def create_campeonato_base(nombre,cantCarreras,continente):
+        campeonato_base = Campeonato(None,None,None,None,nombre,continente,cantCarreras,0,False,None)
+        return campeonato_base
+
     @classmethod
     def idActual(cls):
         return cls.idActual
@@ -36,7 +46,7 @@ class Campeonato:
     def campeonatosContinente(continente):
         campeonatosContinente = []
         for campeonato in Campeonato.campeonatos:
-            if campeonato.getContinente() == continente:
+            if campeonato.getContinente() == continente.value:
                 campeonatosContinente.append(campeonato)
         return campeonatosContinente
 

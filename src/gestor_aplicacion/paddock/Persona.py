@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from src.gestor_aplicacion.Decimales import Decimales
 
 
-class Persona(ABC, Decimales):
+class Persona(Decimales, ABC):
     """
     Autores: David Toro Arboleda, Santiago Lopez Ayala, Juan Andres Jimenez Velez, Mariana Valencia Cubillos, Samuel Mira Alvarez
     Descripcion de la clase: Esta clase ha sido diseñada con la finalidad de ser heredada por diferentes entidades utilizadas en el programa, como son los patrocinadores, pilotos y directores de carrera.
@@ -17,7 +17,6 @@ class Persona(ABC, Decimales):
         self.pais = pais
         Persona.idActual += 1
         self.plata = plata
-        self.redondear()
 
     @abstractmethod
     def recibir_plata(self, plata):

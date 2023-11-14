@@ -1,7 +1,6 @@
-from random import random, shuffle, choice
+from random import random, shuffle, choice, randint
 
 from src.gestor_aplicacion.paddock.Persona import Persona
-from src.gestor_aplicacion.ubicaciones.Ciudad import Ciudad
 
 
 class Patrocinador(Persona):
@@ -12,15 +11,29 @@ class Patrocinador(Persona):
 
     listaPatrocinadores = []  # Class attribute
 
-    def __init__(self, nombre, plata=0, dineroOfrecer=0, probAceptar=0, patrocinando=False, rosca=True,
+    def __init__(self, nombre, plata=0, dineroOfrecer=0, probAceptar=0, patrocinando=None, rosca=None,
                  ciudadesPreferidas=None):
+        if plata==0:
+            plata = randint(10,100)*100000
+            self.dineroOfrecer = plata * randint(3,7) * (1/10)
+            self.probAceptar = 1
+        else:
+            self.dineroOfrecer = dineroOfrecer
+            self.probAceptar = probAceptar
         super().__init__(nombre, plata)
-        self.dineroOfrecer = dineroOfrecer
-        self.probAceptar = probAceptar
-        self.patrocinando = patrocinando
-        self.rosca = rosca
+        if not(patrocinando):
+            self.patrocinando = False
+        else:
+            self.patrocinando = True
+        if not(rosca):
+            self.rosca = False
+        else:
+            self.rosca = True
+
         self.ciudadesPreferidas = ciudadesPreferidas if ciudadesPreferidas is not None else []
         Patrocinador.listaPatrocinadores.append(self)
+
+        self.redondear()
 
     @classmethod
     def patrocinadoresDisponibles(cls):
@@ -46,10 +59,10 @@ class Patrocinador(Persona):
         """
         import random
         numRandom = random.uniform(0, 1)
-        if numRandom < self.probAceptar:
+        if numRandom <= self.probAceptar:
             piloto.getEquipo().agregarPatrocinador(self)
             self.setPatrocinando(True)
-            piloto.recibirPlata(self.dineroOfrecer)
+            piloto.recibir_plata(self.dineroOfrecer)
             self.setPlata(self.getPlata() - self.dineroOfrecer)
             piloto.setPatrocinador(self)
             return True
@@ -63,7 +76,7 @@ class Patrocinador(Persona):
         self.setPlata(dinero)
         self.setDineroOfrecido(dinero)
         if self.getPlata() <= 0:
-            self.sinPlata()
+            self.sin_plata()
             self.setDineroOfrecido(self.getPlata())
 
     def setDineroOfrecido(self, dinero):
@@ -75,13 +88,14 @@ class Patrocinador(Persona):
         Parametros de entrada: sin argumentos
         Parametros de salida: void
         """
-        ciudades = Ciudad.getListaCiudades()
+        from src.gestor_aplicacion.ubicaciones.Ciudad import Ciudad
+        ciudades = Ciudad.get_lista_ciudades()
         shuffle(ciudades)
         self.ciudadesPreferidas.extend(ciudades[:5])
         self.setPlata(self.getPlata() * 5000)
 
     def redondear(self):
-        self.dineroOfrecer = round(self.dineroOfrecer, 2)
+        self.dineroOfrecer = round(self.getDineroOfrecer(), 2)
         self.probAceptar = round(self.probAceptar, 2)
         self.dineroOfrecer = round(self.dineroOfrecer, 2)
         super().redondear()
@@ -114,7 +128,7 @@ class Patrocinador(Persona):
     @classmethod
     def randomPatrocinador(cls):
         nombre = f"Random Patrocinador {random()}"
-        dineroDisponible = random() * 9000.0 + 20000.0
+        dineroDisponible = randint(10,15) * 20000
         patrocinador = cls(nombre, dineroDisponible)
         lowerBound = 0.2
         upperBound = 0.8
@@ -159,6 +173,12 @@ class Patrocinador(Persona):
         patrocinador = choice(patrocinadoresPiloto)
         return patrocinador
 
+    def sin_plata(self):
+        self.setDinero(randint(1,10)*100000)
+
+    def recibir_plata(self, plata):
+        self.setDinero(self.get_plata()+plata)
+
     @staticmethod
     def setPatrocinadores(lista_patrocinadores):
         Patrocinador.listaPatrocinadores = lista_patrocinadores
@@ -166,3 +186,12 @@ class Patrocinador(Persona):
     @staticmethod
     def getPatrocinadores():
         return Patrocinador.listaPatrocinadores
+
+    def setPlata(self,plata):
+        self.plata = plata
+
+    def getPlata(self):
+        return self.plata
+
+    def setPatrocinando(self,bool):
+        self.patrocinando = bool

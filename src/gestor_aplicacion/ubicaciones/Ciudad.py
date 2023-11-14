@@ -2,17 +2,11 @@ import random
 from enum import Enum
 
 from src.gestor_aplicacion.paddock.Patrocinador import Patrocinador
+from src.gestor_aplicacion.ubicaciones.Continente import Continente
 
 
 class Ciudad:
     listaCiudades = []
-
-    class Continente(Enum):
-        Africa = 1
-        America = 2
-        Asia = 3
-        Europa = 4
-        Oceania = 5
 
     def __init__(self, nombre, continente):
         self.nombre = nombre
@@ -31,15 +25,15 @@ class Ciudad:
     @staticmethod
     def convertir_continente(id):
         if id == 1:
-            return Ciudad.Continente.Africa
+            return Continente.Africa
         elif id == 2:
-            return Ciudad.Continente.America
+            return Continente.America
         elif id == 3:
-            return Ciudad.Continente.Asia
+            return Continente.Asia
         elif id == 4:
-            return Ciudad.Continente.Europa
+            return Continente.Europa
         elif id == 5:
-            return Ciudad.Continente.Oceania
+            return Continente.Oceania
 
     @staticmethod
     def ciudades_continente(continente):

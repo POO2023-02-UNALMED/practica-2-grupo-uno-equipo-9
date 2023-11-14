@@ -2,17 +2,18 @@ import random
 
 from src.gestor_aplicacion.Decimales import Decimales
 from src.gestor_aplicacion.paddock.Chasis import Chasis
+from src.gestor_aplicacion.paddock.Pieza import Pieza
 
 
 class VehiculoCarrera(Chasis, Decimales):
     listaVehiculos = []
+    idActual = 1
 
     def __init__(self, marca, modelo, velocidad, maniobrabilidad, precio, piloto, motor, neumaticos, aleron):
         super().__init__(marca, modelo, velocidad, maniobrabilidad, precio)
         self.piloto = piloto
-        self.idActual = 1
-        self.id = self.idActual
-        self.idActual += 1
+        self.id = VehiculoCarrera.idActual
+        VehiculoCarrera.idActual += 1
         self.tiempo = 0
         self.distanciaRecorrida = 0
         self.terminado = False
@@ -27,6 +28,7 @@ class VehiculoCarrera(Chasis, Decimales):
         self.gasolina = 100
         self.piezasComprar = []
         self.redondear()
+        VehiculoCarrera.listaVehiculos.append(self)
 
     def redondear(self):
         pass  # Implement this method if needed
@@ -120,4 +122,36 @@ class VehiculoCarrera(Chasis, Decimales):
     @staticmethod
     def getVehiculos():
         return VehiculoCarrera.listaVehiculos
+
+    @classmethod
+    def vehiculos_piloto(cls, piloto):
+        vehiculos_del_piloto = []
+        for vehiculo in cls.listaVehiculos:
+            if vehiculo.piloto == piloto:
+                vehiculos_del_piloto.append(vehiculo)
+        if len(vehiculos_del_piloto) == 0:
+            return None
+        else:
+            return vehiculos_del_piloto
+
+    @classmethod
+    def cantidad_vehiculos_default(cls):
+        cant = 0
+        for carro in cls.listaVehiculos:
+            if (carro.marca == "Default"):
+                cant+=1
+        return cant
+    @classmethod
+    def crear_vehiculo_pilotos_no_elegidos(cls,piloto):
+        modelo = str(cls.cantidad_vehiculos_default() + 1 )
+        velocidad = random.randint(1,59) + 200
+        precio = random.randint(1,5) * 3000
+        maniobrabilidad = random.randint(2,4) / 10
+        aleron = Pieza.piezaNoElegida("A")
+        llantas = Pieza.piezaNoElegida("N")
+        motor = Pieza.piezaNoElegida("M")
+        return cls("Default",modelo,velocidad,maniobrabilidad,precio,piloto,motor,llantas,aleron)
+
+
+
 

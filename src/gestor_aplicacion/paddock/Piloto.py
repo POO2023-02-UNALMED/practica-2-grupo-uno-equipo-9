@@ -25,6 +25,7 @@ class Piloto(Persona, Decimales):
         self.patrocinador = patrocinador
         self.victorias = []
         self.tiemposCarreras = []
+        self.redondear()
 
     @classmethod
     def create_random_piloto(cls, nombre):
@@ -33,6 +34,7 @@ class Piloto(Persona, Decimales):
         piloto = cls(nombre, None, 0, 0, habilidad, False, False, False, valorContrato, 0, None)
         cls.listaPilotos.append(piloto)
         return piloto
+
 
     @classmethod
     def piloto_aleatorio(cls):
@@ -109,6 +111,9 @@ class Piloto(Persona, Decimales):
     def recibir_plata(self, plata):
         self.contrato.plata += plata
 
+    def sin_plata(self):
+        self.contrato.plata += Piloto.random.randint(2,5) * 10000
+
     def no_es_elegido(self):
         self.elegido = False
         if not VehiculoCarrera.vehiculos_piloto(self):
@@ -128,6 +133,12 @@ class Piloto(Persona, Decimales):
     def registrar_tiempo(self, tiempo):
         self.tiemposCarreras.append(tiempo)
 
+    def set_elegido(self,bool):
+        self.elegido=bool
+
+    def set_desbloqueado(self,bool):
+        self.desbloqueado=bool
+
     @staticmethod
     def setPilotos(lista_pilotos):
         Piloto.listaPilotos = lista_pilotos
@@ -135,4 +146,18 @@ class Piloto(Persona, Decimales):
     @staticmethod
     def getPilotos():
         return Piloto.listaPilotos
+
+    def getValorContrato(self):
+        return self.valorContrato
+
+    def getPresupuestoVehiculo(self):
+        return self.presupuestoVehiculo
+
+    def getEquipo(self):
+        return self.contrato
+
+    def setPatrocinador(self,patrocinador):
+        self.patrocinador = patrocinador
+
+
 

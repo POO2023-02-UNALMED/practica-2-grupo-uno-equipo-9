@@ -3,6 +3,7 @@ from typing import List
 from enum import Enum
 from typing import List
 import math
+from src.gestor_aplicacion.ubicaciones.Ciudad import Ciudad
 
 class Equipo:
     equipos = []  # Class attribute
@@ -44,9 +45,39 @@ class Equipo:
         return lista_organizada
 
     @classmethod
+    def sedes_equipos(cls):
+        for equipo in cls.equipos:
+            for ciudad in Ciudad.listaCiudades:
+                if (random.choice([True,False])):
+                    equipo.sedes.append(ciudad)
+
+    @classmethod
+    def equipos_continente(cls,continente):
+        equipos_in_continente = []
+        for equipo in cls.equipos:
+            for sede in equipo.sedes:
+                if (sede.continente == continente.value):
+                    equipos_in_continente.append(equipo)
+                    break
+        return equipos_in_continente
+
+
+    @classmethod
     def equipos_disponibles(cls, equipos):
         equipos_disponibles = [equipo for equipo in equipos if not equipo.ocupado]
         return equipos_disponibles
+
+    @classmethod
+    def elegir_contrincantes(cls,equipo_elegido,campeonato,equipos):
+        equipos_participantes = []
+        equipos_participantes.append(equipo_elegido)
+        equipos.remove(equipo_elegido)
+        for i in range(0,4,1):
+            equip_random = random.choice(equipos)
+            equipos_participantes.append(equip_random)
+            equipos.remove(equip_random)
+        campeonato.setListaEquipos(equipos_participantes)
+        return equipos_participantes
 
     def recalcular_puntos(self, campeonato):
         nuevos_puntos = 0
@@ -156,3 +187,6 @@ class Equipo:
     @staticmethod
     def getEquipos():
         return Equipo.equipos
+
+    def agregarPatrocinador(self,patrocinador):
+        self.patrocinadores_equipo.append(patrocinador)

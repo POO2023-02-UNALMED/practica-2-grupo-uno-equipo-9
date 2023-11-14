@@ -15,6 +15,7 @@ class DirectorCarrera(Persona):
         self.corrupcion = 0
         self.posicionesCorruptas = []
         DirectorCarrera.listaDirectores.append(self)
+        self.redondear()
 
     @property
     def licencia(self):
