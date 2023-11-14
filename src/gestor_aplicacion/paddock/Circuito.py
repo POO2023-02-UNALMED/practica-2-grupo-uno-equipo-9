@@ -106,13 +106,3 @@ class Circuito(Decimales):
 
     def set_id(self, id):
         self.id = id
-
-    def __eq__(self, other):
-        if self is other:
-            return True
-        if not isinstance(other, Circuito):
-            return False
-        return self.id == other.id
-
-    def __hash__(self):
-        return hash(self.id)
