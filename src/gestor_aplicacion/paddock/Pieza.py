@@ -29,6 +29,11 @@ class Pieza(Decimales):
         else:
             Pieza.piezas.append(self)
 
+    @staticmethod
+    def create_pieza(nombre, tipo, marca):
+        nueva_pieza= Pieza(False, 0, 0, marca, nombre, 0, tipo, False)
+        return nueva_pieza
+
     @classmethod
     def piezaNoElegida(cls, tipo):
         random_speed = random.uniform(0, 20)

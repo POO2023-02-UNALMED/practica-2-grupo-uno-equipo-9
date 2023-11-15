@@ -18,6 +18,11 @@ class Circuito(Decimales):
         self.disponibilidad = list(range(1, 13))
         Circuito.circuitos.append(self)
 
+    @staticmethod
+    def create_circuito(nombre):
+        nuevo_circuito = Circuito(nombre, None, None)
+        return nuevo_circuito
+
     def _generate_random_continentes(self):
         continentes = []
         while len(continentes) < 3:

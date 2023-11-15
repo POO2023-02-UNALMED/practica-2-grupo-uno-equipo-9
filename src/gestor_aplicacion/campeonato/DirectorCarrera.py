@@ -17,6 +17,12 @@ class DirectorCarrera(Persona):
         DirectorCarrera.listaDirectores.append(self)
         self.redondear()
 
+    @staticmethod
+    def create_director_carrera(nombre):
+        nuevo_director = DirectorCarrera(nombre,0,False, None, None)
+        return nuevo_director
+
+
     @property
     def licencia(self):
         return self._licencia

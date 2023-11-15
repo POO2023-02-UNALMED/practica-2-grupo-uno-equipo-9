@@ -18,6 +18,11 @@ class Chasis(Decimales):
         self.precio = precio
         Chasis.listaChasis.append(self)
 
+    @staticmethod
+    def create_chasis(marca, modelo):
+        nuevo_chasis= Chasis(marca, modelo, 0, 0, 0)
+        return nuevo_chasis
+
     @classmethod
     def chasis_disponible(cls, piloto):
         precio_maximo = piloto.presupuesto_vehiculo * 0.6
