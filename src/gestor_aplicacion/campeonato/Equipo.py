@@ -28,6 +28,12 @@ class Equipo:
 
         Equipo.equipos.append(self)
 
+    @staticmethod
+    def create_equipo(nombre):
+        plata = random.randint(30 , 60) * 20000
+        nuevo_equipo = Equipo(nombre,plata,0,None)
+        return nuevo_equipo
+
     @classmethod
     def organizar_equipos_puntos(cls, campeonato):
         lista_organizada = list(campeonato.lista_equipos)

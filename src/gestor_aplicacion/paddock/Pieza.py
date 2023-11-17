@@ -31,7 +31,10 @@ class Pieza(Decimales):
 
     @staticmethod
     def create_pieza(nombre, tipo, marca):
-        nueva_pieza= Pieza(False, 0, 0, marca, nombre, 0, tipo, False)
+        maniobrabilidad = 0.1 + (0.4 - 0.1) * random.random()
+        precio = random.random() * 1000
+        velocidad = random.random() * 20
+        nueva_pieza= Pieza(False, velocidad, maniobrabilidad, marca, nombre, precio, tipo, False)
         return nueva_pieza
 
     @classmethod

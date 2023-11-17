@@ -19,7 +19,8 @@ class DirectorCarrera(Persona):
 
     @staticmethod
     def create_director_carrera(nombre):
-        nuevo_director = DirectorCarrera(nombre,10000,True, None, None)
+        plata = random.uniform(10000, 50000)
+        nuevo_director = DirectorCarrera(nombre, plata, True, None, None)
         return nuevo_director
 
 

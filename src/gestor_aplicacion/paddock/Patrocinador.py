@@ -128,7 +128,7 @@ class Patrocinador(Persona):
     @classmethod
     def randomPatrocinador(cls):
         nombre = f"Random Patrocinador {random()}"
-        dineroDisponible = randint(10,15) * 20000
+        dineroDisponible = randint(10 , 15) * 20000
         patrocinador = cls(nombre, dineroDisponible)
         lowerBound = 0.2
         upperBound = 0.8

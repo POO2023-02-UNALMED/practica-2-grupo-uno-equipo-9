@@ -35,7 +35,8 @@ class Campeonato:
 
     @staticmethod
     def create_campeonato_base(nombre,cantCarreras,continente):
-        campeonato_base = Campeonato(None,None,None,None,nombre,continente,cantCarreras,0,False,None)
+        premio = randint(70, 100) * 10000
+        campeonato_base = Campeonato(None,None,None,None,nombre,continente,cantCarreras,premio,False,None)
         return campeonato_base
 
     @classmethod

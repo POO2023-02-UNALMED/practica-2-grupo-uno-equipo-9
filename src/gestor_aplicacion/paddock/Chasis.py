@@ -20,7 +20,10 @@ class Chasis(Decimales):
 
     @staticmethod
     def create_chasis(marca, modelo):
-        nuevo_chasis= Chasis(marca, modelo, 0, 0, 0)
+        maniobrabilidad =  0.1 + (0.4 - 0.1) * random.random()
+        precio = (random.random() * 40001 + 1000) * 3
+        velocidad = random.randint(200, 249)
+        nuevo_chasis= Chasis(marca, modelo, velocidad, maniobrabilidad, precio)
         return nuevo_chasis
 
     @classmethod
