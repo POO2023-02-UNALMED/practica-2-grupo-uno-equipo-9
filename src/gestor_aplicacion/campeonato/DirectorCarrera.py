@@ -19,7 +19,7 @@ class DirectorCarrera(Persona):
 
     @staticmethod
     def create_director_carrera(nombre):
-        nuevo_director = DirectorCarrera(nombre,0,False, None, None)
+        nuevo_director = DirectorCarrera(nombre,10000,True, None, None)
         return nuevo_director
 
 

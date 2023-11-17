@@ -35,7 +35,7 @@ class Circuito(Decimales):
     def circuitos_ubicacion(cls, campeonato):
         circuitos_ubicacion = []
         for circuito in cls.circuitos:
-            if set(circuito.continentes).intersection(campeonato.continente):
+            if campeonato.getContinente() in circuito.get_continentes():
                 circuitos_ubicacion.append(circuito)
         return circuitos_ubicacion
 

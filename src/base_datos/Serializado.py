@@ -226,7 +226,7 @@ class Serializado():
         sydney2 = Ciudad("Sydney", "Oceania")
         perth2 = Ciudad("Perth", "Oceania") 
 
-        # Equipos
+        # Equipos faaltan
         Equipo("Mercedes-AMG Petronas Formula One Team")
         Equipo("Red Bull Racing")
         Equipo("Scuderia Ferrari")
@@ -955,6 +955,7 @@ class Serializado():
         Pieza.create_pieza("TurboGlide StormTech", "N", "Haas")
         Pieza.create_pieza("MegaTraction HaasBlade", "N", "Haas")
         Pieza.create_pieza("SpeedBlitz HaasStormX", "N", "Haas")
+
         
         # Asignando las cosas 
         Piloto.asignar_equipo()
