@@ -2,6 +2,7 @@ import random
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
+from tkinter import ttk
 
 import sv_ttk as sk
 
@@ -146,7 +147,7 @@ class MenuApp:
             jj = 1
 
             for campeonatico in campeonatos_para_elegir:
-                listbox2.insert(jj, str(jj) + " | " + campeonatico.getNombre())
+                tablaCampeonatos.insert(parent='', index=tk.END, values=(jj,campeonatico.getNombre()))
                 jj += 1
 
             # Pasar al siguiente frame
@@ -166,7 +167,7 @@ class MenuApp:
             # Colocar los equipos disponibles
             jj = 1
             for equipo in equipos_disponibles:
-                listbox3.insert(jj, str(jj) + " | " + equipo.get_nombre())
+                tablaEquipos.insert(parent='', index=tk.END, values=(jj,equipo.get_nombre()))
                 jj += 1
 
             # Pasar al siguiente frame
@@ -183,7 +184,7 @@ class MenuApp:
             participantes = Equipo.elegir_contrincantes(equipo_elegido, campeonato_elegido, equipos_disponibles)
             jj = 1
             for equipo in participantes:
-                listbox4.insert(jj, str(jj) + " | " + equipo.get_nombre())
+                tablaParticipantes.insert(parent='', index=tk.END, values=(jj,equipo.get_nombre()))
                 jj += 1
 
             # Pasar al siguiente frame
@@ -200,7 +201,7 @@ class MenuApp:
             pilotos_equipo = Piloto.pilotos_equipo(equipo_elegido, pilotos_disponibles)
             jj = 1
             for piloto in pilotos_equipo:
-                listbox5.insert(jj, str(jj) + " | " + piloto.get_nombre())
+                tablaPilotos.insert(parent='', index=tk.END, values=(jj,piloto.get_nombre()))
                 jj += 1
 
             # Pasar al siguiente frame
@@ -254,7 +255,7 @@ class MenuApp:
             patrocinadores_piloto_1 = Patrocinador.patrocinadorPiloto(piloto_1, patrocinadores_disponibles)
             jj = 1
             for patrocinador in patrocinadores_piloto_1:
-                listbox6_1.insert(jj, str(jj) + " | " + patrocinador.get_nombre())
+                tablaPatrocinadores1.insert(parent='', index=tk.END, values=(jj,patrocinador.get_nombre()))
                 jj += 1
 
             # Pasar al siguiente frame
@@ -273,7 +274,7 @@ class MenuApp:
             patrocinadores_piloto_2 = Patrocinador.patrocinadorPiloto(piloto_2, patrocinadores_disponibles)
             jj = 1
             for patrocinador in patrocinadores_piloto_2:
-                listbox6_2.insert(jj, str(jj) + " | " + patrocinador.get_nombre())
+                tablaPatrocinadores2.insert(parent='', index=tk.END, values=(jj,patrocinador.get_nombre()))
                 jj += 1
             # Quitar label y boton
             entry6_1.destroy()
@@ -295,9 +296,14 @@ class MenuApp:
             listbox7_1.insert(0, "Nombre del campeonato: " + campeonato_elegido.getNombre())
             listbox7_1.insert(1, "Continente: " + continente.value)
             listbox7_1.insert(2, "Cantidad de carreras:" + str(campeonato_elegido.getCantidadMaxCarreras()))
+
+            tablaCampeonatoResultante.insert(parent='', index=tk.END, values=("Nombre del campeonato:",campeonato_elegido.getNombre()))
+            tablaCampeonatoResultante.insert(parent='', index=tk.END,values=("Continente: " , continente.value))
+            tablaCampeonatoResultante.insert(parent='', index=tk.END,values=("Cantidad de carreras:",str(campeonato_elegido.getCantidadMaxCarreras())))
+
             jj = 1
             for piloto in pilotos_participar:
-                listbox7_2.insert(jj, str(jj) + ". " + piloto.get_nombre())
+                tablaPilotosParticipantes.insert(parent='', index=tk.END, values=(jj,piloto.get_nombre()))
                 jj += 1
 
             # Pasar al siguiente frame
@@ -325,12 +331,24 @@ class MenuApp:
         frame1.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         frame1.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
         # Componentes del frame
+
+
         listbox1 = tk.Listbox(frame1)
-        ii = 1
+        # crear Tabla
+        tablaContinentes = ttk.Treeview(frame1, columns=('OPCION', 'NOMBRE'), show='headings')
+        # configurar los cabezales
+        tablaContinentes.heading('OPCION', text='OPCION')
+        tablaContinentes.heading('NOMBRE', text='NOMBRE')
+        tablaContinentes.column('OPCION', anchor='c')
+        tablaContinentes.column('NOMBRE', anchor='c')
+
+        # agregar inofrmacion
+        jj = 1
         for continentico in Continente:
-            listbox1.insert(ii, str(ii) + " | " + continentico.value)
-            ii += 1
-        listbox1.grid(column=0, row=3, rowspan=3, padx=20, pady=20)
+            tablaContinentes.insert(parent='', index=tk.END, values=(jj, continentico.value))
+            jj += 1
+        # ubicar tabla
+        tablaContinentes.grid(column=0, row=3, rowspan=3, padx=20, pady=20)
         entry1 = tk.Entry(frame1)
         entry1.grid(column=0, row=6, padx=20, pady=20)
         entry1.configure(justify="center")
@@ -348,7 +366,16 @@ class MenuApp:
         frame2.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         listbox2 = tk.Listbox(frame2)
-        listbox2.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
+
+        # crear Tabla
+        tablaCampeonatos = ttk.Treeview(frame2, columns=('OPCION', 'NOMBRE'), show='headings')
+        # configurar los cabezales
+        tablaCampeonatos.heading('OPCION', text='OPCION')
+        tablaCampeonatos.heading('NOMBRE', text='NOMBRE')
+        tablaCampeonatos.column('OPCION', width=20, anchor='c')
+
+        tablaCampeonatos.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
+
         entry2 = tk.Entry(frame2)
         entry2.grid(column=0, row=6, padx=20, pady=20)
         entry2.configure(justify="center")
@@ -366,7 +393,16 @@ class MenuApp:
         frame3.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         listbox3 = tk.Listbox(frame3)
-        listbox3.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
+
+        # crear Tabla
+        tablaEquipos = ttk.Treeview(frame3, columns=('OPCION', 'NOMBRE'), show='headings')
+        # configurar los cabezales
+        tablaEquipos.heading('OPCION', text='OPCION')
+        tablaEquipos.heading('NOMBRE', text='NOMBRE')
+        tablaEquipos.column('OPCION', width=20, anchor='c')
+
+        tablaEquipos.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
+
         entry3 = tk.Entry(frame3)
         entry3.grid(column=0, row=6, padx=20, pady=20)
         entry3.configure(justify="center")
@@ -386,7 +422,15 @@ class MenuApp:
         frame4.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Comp4onentes del frame
         listbox4 = tk.Listbox(frame4)
-        listbox4.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
+
+        # crear Tabla
+        tablaParticipantes = ttk.Treeview(frame4, columns=('OPCION', 'NOMBRE'), show='headings')
+        # configurar los cabezales
+        tablaParticipantes.heading('OPCION', text='OPCION')
+        tablaParticipantes.heading('NOMBRE', text='NOMBRE')
+        tablaParticipantes.column('OPCION', width=20, anchor='c')
+
+        tablaParticipantes.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
         button4 = tk.Button(frame4, text="Confirmar Equipos", command=lambda: confirmar_equipos())
         button4.grid(column=0, row=7, padx=20, pady=20)
         button4.configure(justify="center")
@@ -397,7 +441,15 @@ class MenuApp:
         frame5.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         listbox5 = tk.Listbox(frame5)
-        listbox5.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
+
+        # crear Tabla
+        tablaPilotos = ttk.Treeview(frame5, columns=('OPCION', 'NOMBRE'), show='headings')
+        # configurar los cabezales
+        tablaPilotos.heading('OPCION', text='OPCION')
+        tablaPilotos.heading('NOMBRE', text='NOMBRE')
+        tablaPilotos.column('OPCION', width=20, anchor='c')
+
+        tablaPilotos.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
         # Colocar otro label y boton
         entry5_2 = tk.Entry(frame5)
         entry5_2.grid(column=0, row=6, padx=20, pady=20)
@@ -430,9 +482,29 @@ class MenuApp:
         frame6.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         listbox6_2 = tk.Listbox(frame6)
-        listbox6_2.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
+
+        # crear Tabla
+        tablaPatrocinadores2 = ttk.Treeview(frame6, columns=('OPCION', 'NOMBRE'), show='headings')
+        # configurar los cabezales
+        tablaPatrocinadores2.heading('OPCION', text='OPCION')
+        tablaPatrocinadores2.heading('NOMBRE', text='NOMBRE')
+        tablaPatrocinadores2.column('OPCION', width=20, anchor='c')
+
+
+        tablaPatrocinadores2.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
+
+
         listbox6_1 = tk.Listbox(frame6)
-        listbox6_1.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
+
+        tablaPatrocinadores1 = ttk.Treeview(frame6, columns=('OPCION', 'NOMBRE'), show='headings')
+        # configurar los cabezales
+        tablaPatrocinadores1.heading('OPCION', text='OPCION')
+        tablaPatrocinadores1.heading('NOMBRE', text='NOMBRE')
+        tablaPatrocinadores1.column('OPCION', width=20, anchor='c')
+
+
+        tablaPatrocinadores1.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
+
         # Colocar otro label y boton
         entry6_2 = tk.Entry(frame6)
         entry6_2.grid(column=0, row=6, padx=20, pady=20)
@@ -455,11 +527,27 @@ class MenuApp:
         label7_1 = tk.Label(frame7, text="Los detalles de tu campeonato")
         label7_1.grid(column=0, row=3, padx=20, pady=20, sticky="nsew")
         listbox7_1 = tk.Listbox(frame7)
-        listbox7_1.grid(column=0, row=4, rowspan=3, padx=20, pady=20, sticky="nsew")
+
+        #crear Tabla
+        tablaCampeonatoResultante = ttk.Treeview(frame7, columns= ('1','2'), show="")
+
+
+
+
+        tablaCampeonatoResultante.grid(column=0, row=4, rowspan=3, padx=20, pady=20, sticky="nsew")
         label7_2 = tk.Label(frame7, text="Los pilotos participantes")
         label7_2.grid(column=0, row=7, padx=20, pady=20, sticky="nsew")
         listbox7_2 = tk.Listbox(frame7)
-        listbox7_2.grid(column=0, row=8, rowspan=3, padx=20, pady=20, sticky="nsew")
+
+        # crear Tabla
+        tablaPilotosParticipantes = ttk.Treeview(frame7, columns=('OPCION', 'NOMBRE'), show='headings')
+        # configurar los cabezales
+        tablaPilotosParticipantes.heading('OPCION', text='POSICION')
+        tablaPilotosParticipantes.heading('NOMBRE', text='NOMBRE')
+        tablaPilotosParticipantes.column('OPCION', width=30, anchor='c')
+
+        tablaPilotosParticipantes.grid(column=0, row=8, rowspan=3, padx=20, pady=20, sticky="nsew")
+
         button7 = tk.Button(frame7, text="Volver a Crear un Campeonato", command=lambda: muerte_y_destruccion())
         button7.grid(column=0, row=11, padx=20, pady=20)
         button7.configure(justify="center")
