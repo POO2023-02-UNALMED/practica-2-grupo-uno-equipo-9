@@ -8,6 +8,7 @@ import sv_ttk as sk
 
 # Imports de las clases
 from src.base_datos.Serializado import Serializado
+from src.gestor_aplicacion.campeonato.Carrera import Carrera
 from src.gestor_aplicacion.campeonato.DirectorCarrera import DirectorCarrera
 from src.gestor_aplicacion.campeonato.Campeonato import Campeonato
 from src.gestor_aplicacion.campeonato.Equipo import Equipo
@@ -25,9 +26,15 @@ class FieldFrame(tk.Frame):
         self.nombre_proceso = nombre_proceso
         self.descripcion = descripcion
 
-        # Create labels for the title and description
-        title_label = tk.Label(self, text=nombre_proceso, font=("Helvetica", 16), anchor="center")
+
+
         description_label = tk.Label(self, text=descripcion, anchor="center")
+
+        inner_frame = tk.Frame(self, padx=5, pady=5, bg=color)
+        inner_frame.grid(row=0, column=0, columnspan=2, pady=5)
+
+        # Create labels for the title and description
+        title_label = tk.Label(inner_frame, text=nombre_proceso, font=("Helvetica", 16), anchor="center")
 
         # Use grid to make labels span the same width as the window
         title_label.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
@@ -45,15 +52,15 @@ class FieldFrame(tk.Frame):
         self.logo_img = ImageTk.PhotoImage(resized_image)
 
         # Create a label for the logo and place it in the right top corner
-        logo_label = tk.Label(self, image=self.logo_img)
+        logo_label = tk.Label(inner_frame, image=self.logo_img)
         logo_label.grid(row=0, column=1, rowspan=2, padx=5, pady=5, sticky="ne")
 
-        # Adjust column weights to allocate space for the new column
-        self.grid_rowconfigure("all", weight=1)
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=0)  # Adjust the weight for the new column
-        # adjust the height of the new column to small
-        self.grid_columnconfigure(2, weight=1)
+        # # Adjust column weights to allocate space for the new column
+        # self.grid_rowconfigure("all", weight=1)
+        # self.grid_columnconfigure(0, weight=1)
+        # self.grid_columnconfigure(1, weight=0)  # Adjust the weight for the new column
+        # # adjust the height of the new column to small
+        # self.grid_columnconfigure(2, weight=1)
 
 
 class MenuApp:
@@ -135,14 +142,16 @@ class MenuApp:
         # Para frame 1
         def elegir_continente():
             global continente, campeonatos_para_elegir
-            continente = Ciudad.convertir_continente(int(entry1.get()))
+            lista_continentes = [c for c in Continente]
+            continente = lista_continentes[int(entry1.get()) - 1]
+            # continente = Ciudad.convertir_continente(int(entry1.get()))
             #tk.messagebox.showinfo("Eleccion realizada", "Has escogido el continente " + continente.value)
 
             campeonatos_disponibles = Campeonato.campeonatosDisponibles()
             campeonatos_continente = Campeonato.campeonatosContinente(continente)
             campeonatos_para_elegir = []
             for campeonato in campeonatos_disponibles:
-                if campeonato in campeonatos_continente:
+                if campeonato.getContinente() == continente:
                     campeonatos_para_elegir.append(campeonato)
             jj = 1
 
@@ -293,13 +302,14 @@ class MenuApp:
             # Campeonato is now unlocked
             campeonato_elegido.setDesbloqueado(True)
 
-            listbox7_1.insert(0, "Nombre del campeonato: " + campeonato_elegido.getNombre())
-            listbox7_1.insert(1, "Continente: " + continente.value)
-            listbox7_1.insert(2, "Cantidad de carreras:" + str(campeonato_elegido.getCantidadMaxCarreras()))
+            # listbox7_1.insert(0, "Nombre del campeonato: " + campeonato_elegido.getNombre())
+            # listbox7_1.insert(1, "Continente: " + continente.value)
+            # listbox7_1.insert(2, "Cantidad de carreras:" + str(campeonato_elegido.getCantidadMaxCarreras()))
 
             tablaCampeonatoResultante.insert(parent='', index=tk.END, values=("Nombre del campeonato:",campeonato_elegido.getNombre()))
             tablaCampeonatoResultante.insert(parent='', index=tk.END,values=("Continente: " , continente.value))
             tablaCampeonatoResultante.insert(parent='', index=tk.END,values=("Cantidad de carreras:",str(campeonato_elegido.getCantidadMaxCarreras())))
+            tablaCampeonatoResultante.configure(height=1)
 
             jj = 1
             for piloto in pilotos_participar:
@@ -341,7 +351,7 @@ class MenuApp:
         tablaContinentes.heading('NOMBRE', text='NOMBRE')
         tablaContinentes.column('OPCION', anchor='c')
         tablaContinentes.column('NOMBRE', anchor='c')
-
+        lista_continentes = [c for c in Continente]
         # agregar inofrmacion
         jj = 1
         for continentico in Continente:
@@ -556,6 +566,9 @@ class MenuApp:
 
     # Funcionalidad 2: Planificar Calendario de Carreras
     def planificar_calendario(self, frame_name):
+        global carreras_listo, meses_disponibles, mes_seleccionado, campeonato
+        carreras_listo = 0
+        meses_disponibles = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
         # Metodos importantes para la funcionalidad
         # Para frame 1
         def elegir_campeonato():
@@ -596,49 +609,37 @@ class MenuApp:
             circuitos_vender = Circuito.circuitos_vender(director_elegido, circuitos_ubicacion)
             print(circuitos_vender) # Para debuggear
             print(ciudades_disponibles) # Para debuggear
-            ciudades_nombres = [ciudad.get_nombre() for ciudad in ciudades_disponibles]
-            print(ciudades_nombres) # Para debuggear
-            ciudad_seleccionada = tk.StringVar(frame3)
-            ciudad_seleccionada.set(ciudades_nombres[0])
-
-            dropdown_ciudad = tk.OptionMenu(frame3, ciudad_seleccionada, *ciudades_nombres)
-            dropdown_ciudad.bind("<Configure>", elegir_ciudad)
-            dropdown_ciudad.grid(column=0, row=4, rowspan=3, padx=20, pady=20, sticky="nsew")
-            dropdown_ciudad.configure(justify="center")
-
+            combobox_meses['values'] = meses_disponibles
+            mes_seleccionado.set(meses_disponibles[0])
             # Pasar al siguiente frame
             frame2.grid_remove()
             frame2.grid_forget()
-            dropdown_ciudad.grid_remove()
             frame3.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
             frame3.tkraise()
 
         # Para frame 3
         def elegir_mes(event):
             global mes_seleccionado, meses_disponibles, mes_elegido
-            mes_elegido = int(mes_seleccionado.get())
+            mes_elegido = combobox_meses.get()
 
         def elegir_dificultad(event):
             global dificultad_seleccionada, dificultad_elegida, dificultades
-            dif = dificultad_seleccionada.get()
+            dif = combobox_dificultad.get()
             dificultades_dict = {"Principiante": 1, "Avanzado": 2, "Experto": 3}
             dificultad_elegida = dificultades_dict.get(dif)
 
-        def elegir_ciudad(event):
-            global ciudad_seleccionada, ciudad_elegida
-            ciudad_nombre = ciudad_seleccionada.get()
-            ciudad_elegida = [ciudad for ciudad in ciudades_disponibles if ciudad.get_nombre() == ciudad_nombre][0]
 
-        def elegir_mes_dificutad_ciudad():
-            global mes_seleccionado, meses_disponibles, mes_elegido, dificultad_seleccionada, dificultad_elegida, dificultades, ciudad_seleccionada, ciudad_elegida, circuitos_para_elegir
-            meses_disponibles.remove(mes_elegido)
+        def elegir_mes_dificutad():
+            global circuitos_para_elegir, mes_elegido, circuitos_vender, ciudades_nombres, ciudades_disponibles
             #tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
-            circuitos_para_elegir = Circuito.circuitos_disponibles(mes_elegido, circuitos_vender)
+            circuitos_para_elegir = Circuito.circuitos_disponibles(int(mes_elegido), circuitos_vender)
             jj = 1
             for circuito in circuitos_para_elegir:
                 listbox4.insert(jj, str(jj) + " | " + circuito.get_nombre())
                 jj += 1
 
+            ciudades_nombres = [ciudad.get_nombre() for ciudad in ciudades_disponibles]
+            combobox_ciudad['values'] = ciudades_nombres
             # Pasar al siguiente frame
             frame3.grid_remove()
             frame3.grid_forget()
@@ -646,68 +647,47 @@ class MenuApp:
             frame4.tkraise()
 
         # Para frame 4
+
+        def elegir_ciudad(event):
+            global ciudad_seleccionada, ciudad_elegida, ciudades_disponibles
+            ciudad_seleccionada = combobox_ciudad.get()
+            ciudad_elegida = [ciudad for ciudad in ciudades_disponibles if ciudad.get_nombre() == ciudad_seleccionada][0]
+
         def elegir_circuito():
-            global campeonato_elegido, equipo_elegido, participantes, pilotos_equipo
+            global circuito_elegido, circuitos_para_elegir, carrera_creada, ciudad_elegida, dificultad_elegida, dificultad_elegida, circuito_elegido, mes_elegido, director_elegido, campeonato, carreras_listo, meses_disponibles
+            circuito_elegido = circuitos_para_elegir[int(entry4.get()) - 1]
             #tk.messagebox.showinfo("Eleccion realizada", "Has confirmado la seleccion de equipos")
-            pilotos_disponibles = Piloto.pilotos_disponibles()
-            pilotos_equipo = Piloto.pilotos_equipo(equipo_elegido, pilotos_disponibles)
+            carrera_creada = Carrera(ciudad_elegida, dificultad_elegida, dificultad_elegida, circuito_elegido, int(mes_elegido), director_elegido)
+            carreras_listo += 1
+            campeonato.agregarCarrera(carrera_creada)
+            meses_disponibles.remove(mes_elegido)
+
+            if carreras_listo == campeonato.getCantidadMaxCarreras():
+                # Pasar al siguiente frame
+                frame4.grid_remove()
+                frame4.grid_forget()
+                frame5.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame5.tkraise()
+            else: # volver al frame 2
+                frame4.grid_remove()
+                frame4.grid_forget()
+                frame2.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame2.tkraise()
+
+
+
+        # Para frame 5
+        def elegir_premios():
+            global premio_campeonato, premio_carreras, campeonato
+            premio_campeonato = float(entry5_1.get())
+            premio_carreras = float(entry5_2.get())
+
+            campeonato.logisticaPremios(premio_campeonato, premio_carreras)
+            campeonato.organizarCarreras()
+
             jj = 1
-            for piloto in pilotos_equipo:
-                listbox5.insert(jj, str(jj) + " | " + piloto.get_nombre())
-                jj += 1
-
-            # Pasar al siguiente frame
-            frame4.grid_remove()
-            frame4.grid_forget()
-            frame5.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame5.tkraise()
-
-        # Para frame 5.1
-        def elegir_primer_piloto():
-            global campeonato_elegido, equipo_elegido, participantes, pilotos_equipo, piloto_1, pilotos_participar
-            piloto_1 = pilotos_equipo[int(entry5_1.get()) - 1]
-            piloto_1.set_elegido(True)
-            piloto_1.set_desbloqueado(True)
-            pilotos_participar = []
-            pilotos_participar.append(piloto_1)
-            listbox5.delete(int(entry5_1.get()) - 1)
-            # Quitar label y boton
-            entry5_1.destroy()
-            button5_1.destroy()
-            # Colocar nuevo boton
-            button5_2.configure(text="Elegir Segundo Piloto")
-
-        # Para frame 5.2
-        def elegir_segundo_piloto():
-            global campeonato_elegido, equipo_elegido, participantes, pilotos_equipo, piloto_1, piloto_2, pilotos_participar, patrocinadores_disponibles, patrocinadores_piloto_1
-            piloto_2 = pilotos_equipo[int(entry5_2.get()) - 1]
-            pilotos_participar.append(piloto_2)
-            #tk.messagebox.showinfo("Eleccion realizada", "Has elegido a ambos pilotos de tu equipo")
-            piloto_2.no_es_elegido()
-            # Elegir pilotos contrincantes
-            pilotos_disponibles = Piloto.pilotos_disponibles()
-            for equipo in participantes:
-                if not (equipo == equipo_elegido):
-                    pilotos_equipo = Piloto.pilotos_equipo(equipo, pilotos_disponibles)
-                    piloto_contrincante_1 = random.choice(pilotos_equipo)
-                    pilotos_participar.append(piloto_contrincante_1)
-                    pilotos_equipo.remove(piloto_contrincante_1)
-                    piloto_contrincante_2 = random.choice(pilotos_equipo)
-                    pilotos_participar.append(piloto_contrincante_2)
-            # Patrocinadores y Vehiculos Contrincantes
-            patrocinadores_disponibles = Patrocinador.patrocinadoresDisponibles()
-            for pilotico in pilotos_participar:
-                pilotico.contratar()
-                if not (pilotico.elegido) and not (pilotico.contrato == equipo_elegido):
-                    pilotico.no_es_elegido()
-                    Patrocinador.patrocinadorPilotoContrincante(pilotico, patrocinadores_disponibles)
-            campeonato_elegido.setListaPilotos(pilotos_participar)
-
-            # Patrocinadores del primer piloto
-            patrocinadores_piloto_1 = Patrocinador.patrocinadorPiloto(piloto_1, patrocinadores_disponibles)
-            jj = 1
-            for patrocinador in patrocinadores_piloto_1:
-                listbox6_1.insert(jj, str(jj) + " | " + patrocinador.get_nombre())
+            for carrera in campeonato.getListaCarreras():
+                listbox6.insert(jj, str(jj) + " | " + carrera.get_nombre() + " | " + carrera.getFecha() + " | " + carrera.getPremioEfectivo())
                 jj += 1
 
             # Pasar al siguiente frame
@@ -716,58 +696,15 @@ class MenuApp:
             frame6.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
             frame6.tkraise()
 
-        # Para frame 6.1
-        def elegir_primer_patrocinador():
-            global campeonato_elegido, equipo_elegido, participantes, piloto_1, piloto_2, patrocinadores_disponibles, patrocinadores_piloto_1, patrocinadores_piloto_2, patrocinador_1
-            patrocinador_1 = patrocinadores_piloto_1[int(entry6_1.get()) - 1]
-            patrocinador_1.pensarNegocio(piloto_1)
-
-            # Patrocinadores segundo piloto
-            patrocinadores_piloto_2 = Patrocinador.patrocinadorPiloto(piloto_2, patrocinadores_disponibles)
-            jj = 1
-            for patrocinador in patrocinadores_piloto_2:
-                listbox6_2.insert(jj, str(jj) + " | " + patrocinador.get_nombre())
-                jj += 1
-            # Quitar label y boton
-            entry6_1.destroy()
-            button6_1.destroy()
-            listbox6_1.destroy()
-            # Colocar nuevo boton
-            button6_2.configure(text="Elegir Segundo Patrocinador")
-
-        # Para frame 6.2
-        def elegir_segundo_patrocinador():
-            global continente, campeonato_elegido, equipo_elegido, participantes, pilotos_participar, piloto_1, piloto_2, patrocinadores_disponibles, patrocinadores_piloto_1, patrocinadores_piloto_2, patrocinador_1, patrocinador_2
-            patrocinador_2 = patrocinadores_piloto_2[int(entry6_2.get()) - 1]
-            patrocinador_2.pensarNegocio(piloto_2)
-            #tk.messagebox.showinfo("Eleccion realizada", "Has elegido a ambos patrocinadores de tu equipo")
-
-            # Campeonato is now unlocked
-            campeonato_elegido.setDesbloqueado(True)
-
-            listbox7_1.insert(0, "Nombre del campeonato: " + campeonato_elegido.getNombre())
-            listbox7_1.insert(1, "Continente: " + continente.value)
-            listbox7_1.insert(2, "Cantidad de carreras:" + str(campeonato_elegido.getCantidadMaxCarreras()))
-            jj = 1
-            for piloto in pilotos_participar:
-                listbox7_2.insert(jj, str(jj) + ". " + piloto.get_nombre())
-                jj += 1
-
-            # Pasar al siguiente frame
-            frame6.grid_remove()
-            frame6.grid_forget()
-            frame7.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame7.tkraise()
-
+        # Para frame 6
         def muerte_y_destruccion():
-            self.preparar_campeonato(frame_name)
+            self.planificar_calendario(frame_name)
             frame1.destroy()
             frame2.destroy()
             frame3.destroy()
             frame4.destroy()
             frame5.destroy()
             frame6.destroy()
-            frame7.destroy()
 
         # Cambiar al frame de la funcionalidad
         self.change_frame(frame_name)
@@ -802,9 +739,8 @@ class MenuApp:
         directores_para_elegir = []
         # cantidad de carreras
         cantidad_carreras = 0
-        carreras_listo = 0
+
         # meses disponibles
-        meses_disponibles = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
         dificultades = ["Principiante", "Avanzado", "Experto"]
 
         # Frame 2: Escoger Director de Carrera
@@ -833,35 +769,30 @@ class MenuApp:
         circuitos_para_elegir = []
 
 
-        # Frame 3: Escoger Mes, Dificultad y Ciudad
+        # Frame 3: Escoger Mes, Dificultad
         frame3 = FieldFrame(self.frames[frame_name], None, "Escoger Mes, Dificultad y Ciudad",
                             "Estos son los meses, dificultades y ciudades disponibles para correr.\nEscoge uno de cada uno!")
         frame3.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         mes_seleccionado = tk.StringVar(frame3)
         mes_seleccionado.set(meses_disponibles[0])
-        mes_elegido = None
-        dropdown_meses = tk.OptionMenu(frame3, mes_seleccionado, *meses_disponibles)
-        dropdown_meses.bind("<Configure>", elegir_mes)
+        # Create Combobox for month selection
+        combobox_meses = ttk.Combobox(frame3, values=meses_disponibles)
+        combobox_meses.grid(column=0, row=3, padx=20, pady=20)
+        combobox_meses.bind("<<ComboboxSelected>>", elegir_mes)
+        combobox_meses.configure(justify="center")
 
-        dropdown_meses.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
-        dropdown_meses.configure(justify="center")
-        dificultad_elegida = 1
+        # Create Combobox for difficulty selection
         dificultad_seleccionada = tk.StringVar(frame3)
         dificultad_seleccionada.set(dificultades[0])
-        dropdown_dificultad = tk.OptionMenu(frame3, dificultad_seleccionada, *dificultades)
-        dropdown_dificultad.grid(column=0, row=4, rowspan=3, padx=20, pady=20, sticky="nsew")
-        dropdown_dificultad.bind("<Configure>", elegir_dificultad)
-        dropdown_dificultad.configure(justify="center")
-        ciudad_elegida = None
-        ciudades_nombres = [ciudad.get_nombre() for ciudad in ciudades_disponibles]
+        combobox_dificultad = ttk.Combobox(frame3, textvariable=dificultad_seleccionada, values=dificultades)
+        combobox_dificultad.grid(column=0, row=4, padx=20, pady=20)
+        combobox_dificultad.bind("<<ComboboxSelected>>", elegir_dificultad)
+        combobox_dificultad.configure(justify="center")
 
-        listbox3 = tk.Listbox(frame3)
-        listbox3.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
-        entry3 = tk.Entry(frame3)
-        entry3.grid(column=0, row=6, padx=20, pady=20)
-        entry3.configure(justify="center")
-        button3 = tk.Button(frame3, text="Elegir", command=lambda: elegir_mes_dificutad_ciudad())
+        ciudad_elegida = None
+
+        button3 = tk.Button(frame3, text="Elegir", command=lambda: elegir_mes_dificutad())
         button3.grid(column=0, row=7, padx=20, pady=20)
         button3.configure(justify="center")
         # Dificultad elegida
@@ -870,98 +801,76 @@ class MenuApp:
         mes_elegido = None
         # Ciudad elegida
         ciudad_elegida = None
-        # El equipo que elige el usuario
-        equipo_elegido = None
-        # Equipos totales
-        participantes = []
-        # Pilotos del equipo
-        pilotos_equipo = []
-        # circuitos para elegir
-        circuitos_para_elegir = []
 
-        # Frame 4: Escoger Circuito
+        # Frame 4: Escoger Circuito y Ciudad
         frame4 = FieldFrame(self.frames[frame_name], None, "Circuitos Disponibles",
                             "Estos son los circuitos disponibles el mes que seleccioanste que puede pagar el director de carrera \ny que estan en el continente")
         frame4.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Comp4onentes del frame
+
+        ciudad_seleccionada = tk.StringVar(frame4)
+        ciudad_seleccionada.set(dificultades[0])
+        combobox_ciudad = ttk.Combobox(frame4, values=dificultades)
+        combobox_ciudad.grid(column=0, row=2, padx=20, pady=20)
+        combobox_ciudad.bind("<<ComboboxSelected>>", elegir_ciudad)
+        combobox_ciudad.configure(justify="center")
+
         listbox4 = tk.Listbox(frame4)
-        listbox4.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
+        listbox4.grid(column=0, row=3, rowspan=2, padx=20, pady=20, sticky="nsew")
+
+        entry4 = tk.Entry(frame4)
+        entry4.grid(column=0, row=6, padx=20, pady=20)
+        entry4.configure(justify="center")
+
         button4 = tk.Button(frame4, text="Elegir Circuito", command=lambda: elegir_circuito())
         button4.grid(column=0, row=7, padx=20, pady=20)
         button4.configure(justify="center")
 
-        # Frame 5: Escoger Equipo
-        frame5 = FieldFrame(self.frames[frame_name], None, "Escoger Pilotos para Correr",
-                            "Estos son los pilotos pertenecientes al equipo que elegiste.\nEscoge los dos que mas te llamen la atencion")
+        # Ciudad elegida
+        ciudad_elegida = None
+        # circuito elegido
+        circuito_elegido = None
+
+
+        # Frame 5: Premios
+        frame5 = FieldFrame(self.frames[frame_name], None, "Elige los premios ",
+                            "Elige el valor del premio del ganador del campeonato y elige el premio en efectivo destinado para premiar todas las carreras")
         frame5.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
-        listbox5 = tk.Listbox(frame5)
-        listbox5.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
-        # Colocar otro label y boton
+        label5_1 = tk.Label(frame5, text="Premio para el ganador del campeonato")
+        label5_1.grid(column=0, row=3, padx=20, pady=20, sticky="nsew")
+        entry5_1 = tk.Entry(frame5)
+        entry5_1.grid(column=0, row=4, padx=20, pady=20)
+        entry5_1.configure(justify="center")
+
+        label5_2 = tk.Label(frame5, text="Premio en efectivo todas las carreras")
+        label5_2.grid(column=0, row=5, padx=20, pady=20, sticky="nsew")
         entry5_2 = tk.Entry(frame5)
         entry5_2.grid(column=0, row=6, padx=20, pady=20)
         entry5_2.configure(justify="center")
-        button5_2 = tk.Button(frame5, command=lambda: elegir_segundo_piloto())
-        button5_2.grid(column=0, row=7, padx=20, pady=20)
-        button5_2.configure(justify="center")
-        entry5_1 = tk.Entry(frame5)
-        entry5_1.grid(column=0, row=6, padx=20, pady=20)
-        entry5_1.configure(justify="center")
-        button5_1 = tk.Button(frame5, text="Elegir Primer Piloto", command=lambda: elegir_primer_piloto())
+
+        button5_1 = tk.Button(frame5, text="Elegir", command=lambda: elegir_premios())
         button5_1.grid(column=0, row=7, padx=20, pady=20)
         button5_1.configure(justify="center")
-        # Primer y Segundo piloto del equipo
-        piloto_1 = None
-        piloto_2 = None
-        # Pilotos Participantes
-        pilotos_participar = []
-        # Patrocinadores disponibles
-        patrconadores_disponibles = []
-        patrocinadores_piloto_1 = []
-        patrocinadores_piloto_2 = []
-        # Ambos patrocinadores del equipo
-        patrocinadores_piloto_1 = []
-        patrocinadores_piloto_2 = []
 
-        # Frame 6: Escoger Patrocinadores
-        frame6 = FieldFrame(self.frames[frame_name], None, "Escoger Patrocinadores del Equipo",
-                            "Estos son los patrocinadores dispuestos a hacer negocios.\nEscoge dos para patrocinar a tus pilotos!")
+        # Primer y Segundo piloto del equipo
+        premio_campeonato = 0
+        premio_carreras = 0
+
+
+        # Frame 6: Mostrar Campeonato Preparado
+        frame6 = FieldFrame(self.frames[frame_name], None, "Campeonato Preparado",
+                            "Con todo lo que has organizado,\nfinalmente este es el campeonato que has creado")
         frame6.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
-        listbox6_2 = tk.Listbox(frame6)
-        listbox6_2.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
-        listbox6_1 = tk.Listbox(frame6)
-        listbox6_1.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
-        # Colocar otro label y boton
-        entry6_2 = tk.Entry(frame6)
-        entry6_2.grid(column=0, row=6, padx=20, pady=20)
-        entry6_2.configure(justify="center")
-        button6_2 = tk.Button(frame6, command=lambda: elegir_segundo_patrocinador())
-        button6_2.grid(column=0, row=7, padx=20, pady=20)
-        button6_2.configure(justify="center")
-        entry6_1 = tk.Entry(frame6)
-        entry6_1.grid(column=0, row=6, padx=20, pady=20)
-        entry6_1.configure(justify="center")
-        button6_1 = tk.Button(frame6, text="Elegir Primer Patrocinador", command=lambda: elegir_primer_patrocinador())
-        button6_1.grid(column=0, row=7, padx=20, pady=20)
-        button6_1.configure(justify="center")
+        label6 = tk.Label(frame6, text="Este es el calendario de carreras del campeonato")
+        label6.grid(column=0, row=3, padx=20, pady=20, sticky="nsew")
 
-        # Frame 7: Mostrar el Campeonato Creado
-        frame7 = FieldFrame(self.frames[frame_name], None, "Campeonato Resultante",
-                            "Con todo lo que has organizado,\nfinalmente este es el campeonato que has creado")
-        frame7.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
-        # Componentes del frame
-        label7_1 = tk.Label(frame7, text="Los detalles de tu campeonato")
-        label7_1.grid(column=0, row=3, padx=20, pady=20, sticky="nsew")
-        listbox7_1 = tk.Listbox(frame7)
-        listbox7_1.grid(column=0, row=4, rowspan=3, padx=20, pady=20, sticky="nsew")
-        label7_2 = tk.Label(frame7, text="Los pilotos participantes")
-        label7_2.grid(column=0, row=7, padx=20, pady=20, sticky="nsew")
-        listbox7_2 = tk.Listbox(frame7)
-        listbox7_2.grid(column=0, row=8, rowspan=3, padx=20, pady=20, sticky="nsew")
-        button7 = tk.Button(frame7, text="Volver a Crear un Campeonato", command=lambda: muerte_y_destruccion())
-        button7.grid(column=0, row=11, padx=20, pady=20)
-        button7.configure(justify="center")
+        listbox6 = tk.Listbox(frame6)
+        listbox6.grid(column=0, row=8, rowspan=3, padx=20, pady=20, sticky="nsew")
+        button6 = tk.Button(frame6, text="Volver a Preparar un Campeonato", command=lambda: muerte_y_destruccion())
+        button6.grid(column=0, row=11, padx=20, pady=20)
+        button6.configure(justify="center")
 
 if __name__ == "__main__":
     root = tk.Tk()

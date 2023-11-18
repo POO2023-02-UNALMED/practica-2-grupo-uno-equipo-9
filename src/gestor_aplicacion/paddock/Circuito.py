@@ -18,10 +18,19 @@ class Circuito(Decimales):
         self.disponibilidad = list(range(1, 13))
         Circuito.circuitos.append(self)
 
-    @staticmethod
-    def create_circuito(nombre):
-        nuevo_circuito = Circuito(nombre, None, None)
-        return nuevo_circuito
+    @classmethod
+    def create_circuito(cls, nombre):
+        precio = float(random.randint(100, 50000) / 3)
+
+        continentes = []
+        while len(continentes) < 3:
+            continente = random.choice(list(Continente))
+            if continente not in continentes:
+                continentes.append(continente)
+
+
+
+        return cls(nombre, precio, continentes)
 
     def _generate_random_continentes(self):
         continentes = []
@@ -45,6 +54,13 @@ class Circuito(Decimales):
         for circuito in circuitos_disponibles:
             if dir.plata >= circuito.Precio:
                 circuitos_vender.append(circuito)
+
+        while len(circuitos_vender) < 3:
+           dir.set_plata(dir.plata + 500000)
+           for circuito in circuitos_disponibles:
+               if dir.plata >= circuito.Precio:
+                     circuitos_vender.append(circuito)
+
         return circuitos_vender
 
     @classmethod

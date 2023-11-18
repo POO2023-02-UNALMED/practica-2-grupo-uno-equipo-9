@@ -1,14 +1,16 @@
-from random import randint
+from random import randint, choice
 from enum import Enum
 from decimal import Decimal, getcontext
 from collections import defaultdict
+
+from src.gestor_aplicacion.paddock.Patrocinador import Patrocinador
 from src.gestor_aplicacion.ubicaciones.Continente import Continente
 
 class Campeonato:
     campeonatos = []
     idActual = 1
     ano = 2023
-    minCarreras = 2
+    MINCARRERAS = 2
 
     def __init__(self, listaCarreras, listaEquipos, listaPilotos, id, nombre, continente, cantCarreras, premio, desbloqueado, patrocinadorCampeonato=None):
         self._listaCarreras = listaCarreras
@@ -26,17 +28,20 @@ class Campeonato:
         self._desbloqueado = desbloqueado
         self._jugado = False
         self._patrocinadorCampeonato = patrocinadorCampeonato
-        if patrocinadorCampeonato:
-            patrocinadorCampeonato.setPatrocinadorCampeonato()
+
         Campeonato.campeonatos.append(self)
         self._mesesCarreras = list(range(1, 13))
-
+        self.setListaCarreras([])
         self.redondear()
 
     @staticmethod
     def create_campeonato_base(nombre,cantCarreras,continente):
         premio = randint(70, 100) * 10000
-        campeonato_base = Campeonato(None,None,None,None,nombre,continente,cantCarreras,premio,False,None)
+        cantCarreras = 2
+        patrocinadorCampeonato = choice(Patrocinador.listaPatrocinadores)
+        patrocinadorCampeonato.setPatrocinadorCampeonato()
+        #cantCarreras = randint(0, 2) + Campeonato.MINCARRERAS
+        campeonato_base = Campeonato(None,None,None,None,nombre,continente,cantCarreras,premio,False,patrocinadorCampeonato)
         return campeonato_base
 
     @classmethod
@@ -133,8 +138,7 @@ class Campeonato:
         return f"{self._nombre} {Campeonato.ano} ({self._continente.name})"
 
     def agregarCarrera(self, carrerita):
-        if self.getNumCarreras() < self._cantCarreras:
-            self._listaCarreras.append(carrerita)
+        self._listaCarreras.append(carrerita)
 
     def carrerasPreferidas(self):
         carrerasPreferidas = []
@@ -144,12 +148,14 @@ class Campeonato:
         return carrerasPreferidas
 
     def organizarCarreras(self):
-        self._listaCarreras.sort(key=lambda carrera: (carrera.getFecha(), carrera.getMes()))
+        carreras = self.getListaCarreras()
+        carreras.sort(key=lambda carrera: carrera.getMes())
+        self.setListaCarreras(carreras)
 
     def actualizarMesCarreras(self, mes):
         self._mesesCarreras.remove(mes)
 
-    def logisticaPremios(self, premio, presupuesto, carrerasPreferidas):
+    def logisticaPremios(self, premio, presupuesto): # carrerasPreferidas):
         patrocinador = self._patrocinadorCampeonato
         if patrocinador:
             if patrocinador.getPlata() / 2 > premio:
@@ -162,13 +168,13 @@ class Campeonato:
         pesoTotal = 0
         for carrera in self._listaCarreras:
             pesoTotal += carrera.getDificultad()
-            if carrera in carrerasPreferidas:
-                pesoTotal += carrera.getDificultad()
+            # if carrera in carrerasPreferidas:
+            #     pesoTotal += carrera.getDificultad()
 
         for carrera in self._listaCarreras:
             premioEfectivo = carrera.getDificultad() / pesoTotal * presupuesto
-            if carrera in carrerasPreferidas:
-                premioEfectivo *= 2
+            # if carrera in carrerasPreferidas:
+            #     premioEfectivo *= 2
             carrera.setPremioEfectivo(premioEfectivo)
 
         if patrocinador:
@@ -216,9 +222,6 @@ class Campeonato:
     def setCantidadMaxCarreras(self, cantidadCarreras):
         self._cantCarreras = cantidadCarreras
 
-    def getNumCarreras(self):
-        return len(self._listaCarreras)
-
     def getPremio(self):
         return self._premio
 
@@ -258,6 +261,9 @@ class Campeonato:
 
     def setCantCarreras(self, cantCarreras):
         self._cantCarreras = cantCarreras
+
+    def getNumCarreras(self):
+        return self._cantCarreras
 
     def getPatrocinadorCampeonato(self):
         return self._patrocinadorCampeonato

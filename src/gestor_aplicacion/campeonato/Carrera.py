@@ -9,24 +9,26 @@ class Carrera:
     listaCarreras = []
     idActual = 1
 
-    def __init__(self, nombre, mes, distancia, premio, ciudad, director, dificultad):
+    def __init__(self, ciudad, dificultad, campeonato, circuito, mes, directorCarrera):
         self.id = Carrera.idActual
         Carrera.idActual += 1
-        self.nombreCircuito = nombre
-        self.mes = mes
-        self.distancia = distancia
-        self.premioEfectivo = premio
+        random.seed()  # Initialize the random seed
+        pool_nombres = ["Grand Prix de ", "Trofeo de "]
         self.ciudad = ciudad
-        self.directorCarrera = director
-        director.setCarrera(self)
+        self.mes = mes
         self.dificultad = int(dificultad)
-        self.clima = Decimal(random.uniform(0.0, 0.2)).quantize(Decimal('0.00'))
-
-        self.posiciones = []
-        self.terminados = []
-        self.equiposBeneficiados = []
-        self.campeonato = None
-        self.circuito = None
+        self.campeonato = campeonato
+        self.circuito = circuito
+        self.director_carrera = directorCarrera
+        self.nombre_circuito = pool_nombres[random.randint(0, 1)] + self.ciudad.nombre
+        self.distancia = (random.randint(5, 15) * 1000)
+        self.premio_efectivo = (random.randint(1, 3) * 1000)
+        random_number = random.randint(1, 28)
+        self.fecha = f"{random_number}/{self.mes}/2023"
+        self.setPosiciones([])
+        self.setEquiposBeneficiados([])
+        self.setTerminados([])
+        Carrera.listaCarreras.append(self)
 
     def redondear(self):
         self.distancia = self.distancia.quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
@@ -169,5 +171,19 @@ class Carrera:
 
     def setEquiposBeneficiados(self, equiposBeneficiados):
         self.equiposBeneficiados = equiposBeneficiados
+
+    def getTerminados(self):
+        return self.terminados
+
+    def setTerminados(self, terminados):
+        self.terminados = terminados
+
+    def getOpciones(self):
+        return self.opciones
+
+    def setOpciones(self, opciones):
+        self.opciones = opciones
+
+
 
 

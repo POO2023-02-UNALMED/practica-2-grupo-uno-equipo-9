@@ -15,22 +15,17 @@ class Ciudad:
         self.host = random.choice(Patrocinador.listaPatrocinadores)
         self.precioEstadia = random.uniform(100, 600)
 
-    def __str__(self):
-        return self.nombre
-
-    @property
     def get_nombre(self):
         return self.nombre
 
-    @get_nombre.setter
     def set_nombre(self, nombre):
         self._nombre = nombre
 
-    @property
+
     def get_continente(self):
         return self._continente
 
-    @get_continente.setter
+
     def set_continente(self, continente):
         self._continente = continente
 

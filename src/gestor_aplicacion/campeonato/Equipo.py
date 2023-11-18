@@ -62,7 +62,7 @@ class Equipo:
         equipos_in_continente = []
         for equipo in cls.equipos:
             for sede in equipo.sedes:
-                if (sede.continente == continente.value):
+                if sede.continente == continente:
                     equipos_in_continente.append(equipo)
                     break
         return equipos_in_continente

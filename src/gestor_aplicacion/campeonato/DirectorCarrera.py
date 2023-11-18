@@ -1,6 +1,7 @@
 import random
 from typing import List
 
+from src.gestor_aplicacion.campeonato.Carrera import Carrera
 from src.gestor_aplicacion.paddock.Persona import Persona
 
 
