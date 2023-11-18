@@ -1,6 +1,7 @@
 import random
 import tkinter as tk
 from tkinter import messagebox
+from PIL import Image, ImageTk
 
 import sv_ttk as sk
 
@@ -18,9 +19,8 @@ from src.gestor_aplicacion.ubicaciones.Continente import Continente
 
 class FieldFrame(tk.Frame):
 
-    def __init__(self, parent, color, nombre_proceso="", descripcion=""):
+    def __init__(self, parent, color, nombre_proceso="", descripcion="", logo_path="random"):
         super().__init__(parent)
-        # self.config(bg=None, width=1200, height=600)
         self.nombre_proceso = nombre_proceso
         self.descripcion = descripcion
 
@@ -33,8 +33,26 @@ class FieldFrame(tk.Frame):
         title_label.configure(justify="center")
         description_label.grid(row=1, column=0, padx=20, sticky="nsew")
         description_label.configure(justify="center")
+
+        if logo_path == "random":
+            img_paths = ["img/car.png", "img/polo.png", "img/chaqueta-de-carreras.png", "img/f1.png"]
+            logo_path = random.choice(img_paths)
+
+        self.img = (Image.open(logo_path))
+        resized_image = self.img.resize((40, 40))
+        # Load the logo image
+        self.logo_img = ImageTk.PhotoImage(resized_image)
+
+        # Create a label for the logo and place it in the right top corner
+        logo_label = tk.Label(self, image=self.logo_img)
+        logo_label.grid(row=0, column=1, rowspan=2, padx=5, pady=5, sticky="ne")
+
+        # Adjust column weights to allocate space for the new column
         self.grid_rowconfigure("all", weight=1)
-        self.grid_columnconfigure("all", weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=0)  # Adjust the weight for the new column
+        # adjust the height of the new column to small
+        self.grid_columnconfigure(2, weight=1)
 
 
 class MenuApp:
@@ -668,7 +686,7 @@ class MenuApp:
 
         # Frame 1: Escoger Campeonato desbloqueados
         frame1 = FieldFrame(self.frames[frame_name], None, "Elegir un campeonato desbloqueado",
-                            "Elige un campeonato disponible para planificar su calendario")
+                            "Elige un campeonato disponible para planificar su calendario", "img/car.png")
         frame1.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         frame1.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
         # Componentes del frame
