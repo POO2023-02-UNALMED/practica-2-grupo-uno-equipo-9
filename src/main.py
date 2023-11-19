@@ -30,16 +30,18 @@ class FieldFrame(tk.Frame):
 
         description_label = tk.Label(self, text=descripcion, anchor="center")
 
-        inner_frame = tk.Frame(self, padx=5, pady=5, bg=color)
-        inner_frame.grid(row=0, column=0, columnspan=2, pady=5)
+        #inner_frame = tk.Frame(self, padx=5, pady=5, bg=color)
+        #inner_frame.grid(row=0, column=0, columnspan=2, pady=5)
 
         # Create labels for the title and description
-        title_label = tk.Label(inner_frame, text=nombre_proceso, font=("Helvetica", 16), anchor="center")
+        title_label = tk.Label(self, text=nombre_proceso, font=("Helvetica", 16), anchor="center")
+        self.configure(padx=20, pady=20)
+        self.grid(row=0, column=0, sticky="nsew")
 
         # Use grid to make labels span the same width as the window
-        title_label.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+        title_label.grid(row=0, column=0, padx=60, pady=60, sticky="nsew")
         title_label.configure(justify="center")
-        description_label.grid(row=1, column=0, padx=20, sticky="nsew")
+        description_label.grid(row=1, column=0, padx=60, sticky="nsew")
         description_label.configure(justify="center")
 
         if logo_path == "random":
@@ -47,13 +49,18 @@ class FieldFrame(tk.Frame):
             logo_path = random.choice(img_paths)
 
         self.img = (Image.open(logo_path))
-        resized_image = self.img.resize((40, 40))
+        resized_image = self.img.resize((30, 30))
         # Load the logo image
-        self.logo_img = ImageTk.PhotoImage(resized_image)
+        self.logo_img1 = ImageTk.PhotoImage(resized_image)
+        self.logo_img2 = ImageTk.PhotoImage(resized_image)
 
         # Create a label for the logo and place it in the right top corner
-        logo_label = tk.Label(inner_frame, image=self.logo_img)
-        logo_label.grid(row=0, column=1, rowspan=2, padx=5, pady=5, sticky="ne")
+        logo_label1 = tk.Label(self, image=self.logo_img1)
+        logo_label1.grid(row=0, column=0, padx=5, pady=5, sticky="e")
+        logo_label1.configure(justify="center")
+        logo_label2 = tk.Label(self, image=self.logo_img2)
+        logo_label2.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+        logo_label2.configure(justify="center")
 
         # # Adjust column weights to allocate space for the new column
         # self.grid_rowconfigure("all", weight=1)
@@ -67,7 +74,7 @@ class MenuApp:
     def __init__(self, root):
         self.menu_bar = None
         self.root = root
-        self.root.title("Menu App")
+        self.root.title("GP Racing: The one and only!")
         # self.root.geometry("1200x600")
         sk.set_theme("dark")
         self.frames = {}  # Dictionary to store frames
@@ -874,6 +881,8 @@ class MenuApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.minsize()
+    root.iconbitmap("img/f1.ico")
     app = MenuApp(root)
 
     # COMIENZO PRUEBA
