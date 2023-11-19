@@ -36,12 +36,12 @@ class FieldFrame(tk.Frame):
         # Create labels for the title and description
         title_label = tk.Label(self, text=nombre_proceso, font=("Helvetica", 16), anchor="center")
         self.configure(padx=20, pady=20)
-        self.grid(row=0, column=0, sticky="nsew")
+        #self.grid(row=0, column=0, sticky="nsew")
 
         # Use grid to make labels span the same width as the window
-        title_label.grid(row=0, column=0, padx=60, pady=60, sticky="nsew")
+        title_label.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
         title_label.configure(justify="center")
-        description_label.grid(row=1, column=0, padx=60, sticky="nsew")
+        description_label.grid(row=1, column=0, padx=20, sticky="nsew")
         description_label.configure(justify="center")
 
         if logo_path == "random":
@@ -666,6 +666,7 @@ class MenuApp:
             #tk.messagebox.showinfo("Eleccion realizada", "Has confirmado la seleccion de equipos")
             carrera_creada = Carrera(ciudad_elegida, dificultad_elegida, dificultad_elegida, circuito_elegido, int(mes_elegido), director_elegido)
             carreras_listo += 1
+            combobox_meses.set('')
             campeonato.agregarCarrera(carrera_creada)
             meses_disponibles.remove(mes_elegido)
 
@@ -694,7 +695,7 @@ class MenuApp:
 
             jj = 1
             for carrera in campeonato.getListaCarreras():
-                listbox6.insert(jj, str(jj) + " | " + carrera.get_nombre() + " | " + carrera.getFecha() + " | " + carrera.getPremioEfectivo())
+                listbox6.insert(jj, str(jj) + " | " + carrera.nombre_circuito+ " | " + carrera.getFecha() + " | " + str(carrera.getPremioEfectivo()))
                 jj += 1
 
             # Pasar al siguiente frame
