@@ -122,6 +122,8 @@ class MenuApp:
         # sub menu ayuda
         ayuda = tk.Menu(self.menu_bar, tearoff=False)
         ayuda.add_command(label='Acerca de', command=lambda: self.change_frame('acerca_de'))
+        ayuda.add_command(label='Guardar', command=lambda: Serializado.serializar())
+
         self.menu_bar.add_cascade(label='Ayuda', menu=ayuda)
 
         # Putting the Initiation Buttons

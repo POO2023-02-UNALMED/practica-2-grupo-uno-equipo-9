@@ -66,9 +66,9 @@ class Pieza(Decimales):
                 for neumatico in neumaticos_disponibles:
                     combinacion = [motor, aleron, neumatico]
                     if (
-                            motor.get_precio()
-                            + aleron.get_precio()
-                            + neumatico.get_precio()
+                            motor.getPrecio()
+                            + aleron.getPrecio()
+                            + neumatico.getPrecio()
                             <= vehiculo_carrera.piloto.contrato.plata
                     ):
                         if combinacion not in combinaciones:
