@@ -54,11 +54,12 @@ class Pieza(Decimales):
 
         return combinaciones_disponibles
 
-    def combinaciones(vehiculo_carrera):
+    @classmethod
+    def combinaciones(cls, vehiculo_carrera):
         combinaciones = []
-        motores_disponibles = Pieza.motores_disponibles(vehiculo_carrera.get_marca())
-        aleron_disponible = Pieza.alerones_disponibles(vehiculo_carrera.get_marca())
-        neumaticos_disponibles = Pieza.neumaticos_disponibles(vehiculo_carrera.get_marca())
+        motores_disponibles = Pieza.motoresDisponibles(vehiculo_carrera.get_marca())
+        aleron_disponible = Pieza.aleronesDisponibles(vehiculo_carrera.get_marca())
+        neumaticos_disponibles = Pieza.neumaticosDisponibles(vehiculo_carrera.get_marca())
 
         for motor in motores_disponibles:
             for aleron in aleron_disponible:
@@ -68,7 +69,7 @@ class Pieza(Decimales):
                             motor.get_precio()
                             + aleron.get_precio()
                             + neumatico.get_precio()
-                            <= vehiculo_carrera.get_piloto().get_equipo().get_plata()
+                            <= vehiculo_carrera.piloto.contrato.plata
                     ):
                         if combinacion not in combinaciones:
                             combinaciones.append(combinacion)

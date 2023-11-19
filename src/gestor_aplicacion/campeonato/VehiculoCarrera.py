@@ -9,8 +9,8 @@ class VehiculoCarrera(Chasis, Decimales):
     listaVehiculos = []
     idActual = 1
 
-    def __init__(self, marca, modelo, velocidad, maniobrabilidad, precio, piloto, motor, neumaticos, aleron):
-        super().__init__(marca, modelo, velocidad, maniobrabilidad, precio)
+    def __init__(self, chasis, piloto):
+        super().__init__(chasis.marca, chasis.modelo, chasis.velocidad, chasis.maniobrabilidad, chasis.precio)
         self.piloto = piloto
         self.id = VehiculoCarrera.idActual
         VehiculoCarrera.idActual += 1
@@ -21,13 +21,13 @@ class VehiculoCarrera(Chasis, Decimales):
         self.velocidadTuneao = 0
         self.velocidadCircumstancias = 0
         self.velocidadActual = 0
-        self.probabilidadChoque = 0
-        self.motor = motor
-        self.neumaticos = neumaticos
-        self.aleron = aleron
+        self.probabilidadChoque = max(1 - piloto.habilidad - chasis.maniobrabilidad, 0.3)
         self.gasolina = 100
         self.piezasComprar = []
         self.redondear()
+        self.motor = None
+        self.aleron = None
+        self.neumaticos = None
         VehiculoCarrera.listaVehiculos.append(self)
 
     def redondear(self):
@@ -113,8 +113,12 @@ class VehiculoCarrera(Chasis, Decimales):
         self.velocidadActual = self.velocidadTuneao + self.velocidadCircumstancias
 
     def actualizarVelocidadT(self):
-        self.velocidadTuneao = self.motor.velocidadAnadida + self.aleron.velocidadAnadida + self.neumaticos.velocidadAnadida + self.velocidad
-    
+        if self.motor is None or self.aleron is None or self.neumaticos is None:
+            self.velocidadTuneao = self.velocidad
+        else:
+            self.velocidadTuneao = self.motor.velocidadAnadida + self.aleron.velocidadAnadida + self.neumaticos.velocidadAnadida + self.velocidad
+        self.actualizarVelocidadActual()
+
     @staticmethod
     def setVehiculos(lista_vehiculos):
         VehiculoCarrera.listaVehiculos = lista_vehiculos
@@ -122,6 +126,20 @@ class VehiculoCarrera(Chasis, Decimales):
     @staticmethod
     def getVehiculos():
         return VehiculoCarrera.listaVehiculos
+
+    def setMotor(self, motor):
+        self.motor = motor
+        self.actualizarVelocidadT()
+
+    def setNeumaticos(self, neumaticos):
+        self.neumaticos = neumaticos
+        self.actualizarVelocidadT()
+
+    def setAleron(self, aleron):
+        self.aleron = aleron
+        self.actualizarVelocidadT()
+
+
 
     @classmethod
     def vehiculos_piloto(cls, piloto):
@@ -150,7 +168,14 @@ class VehiculoCarrera(Chasis, Decimales):
         aleron = Pieza.piezaNoElegida("A")
         llantas = Pieza.piezaNoElegida("N")
         motor = Pieza.piezaNoElegida("M")
-        return cls("Default",modelo,velocidad,maniobrabilidad,precio,piloto,motor,llantas,aleron)
+        chasis_default = Chasis.create_chasis("Default", modelo)
+        vechiculo = cls(chasis_default, piloto)
+        vechiculo.setMotor(motor)
+        vechiculo.setNeumaticos(llantas)
+        vechiculo.setAleron(aleron)
+
+        return vechiculo
+
 
 
 

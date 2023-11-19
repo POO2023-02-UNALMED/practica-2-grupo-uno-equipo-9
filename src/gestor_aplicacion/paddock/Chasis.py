@@ -1,7 +1,6 @@
 import random
 
 from src.gestor_aplicacion.Decimales import Decimales
-from src.gestor_aplicacion.campeonato import VehiculoCarrera
 
 
 class Chasis(Decimales):
@@ -27,9 +26,10 @@ class Chasis(Decimales):
         return nuevo_chasis
 
     @classmethod
-    def chasis_disponible(cls, piloto):
-        precio_maximo = piloto.presupuesto_vehiculo * 0.6
-        lista_chasis = [chasis for chasis in Chasis.listaChasis if chasis.precio > precio_maximo and chasis.marca != "Default"]
+    def chasis_disponibles(cls, piloto):
+        precio_maximo = piloto.presupuestoVehiculo * 0.6
+        lista_chasis = [chasis for chasis in Chasis.listaChasis if
+                        chasis.precio > precio_maximo and chasis.marca != "Default"]
         return lista_chasis
 
     def redondear(self):
@@ -38,7 +38,8 @@ class Chasis(Decimales):
         self.precio = self.dos_decimales(self.precio)
 
     def comprar(self, piloto):
-        piloto.equipo.plata -= self.precio
+        piloto.contrato.plata -= self.precio
+        from src.gestor_aplicacion.campeonato.VehiculoCarrera import VehiculoCarrera
         vehiculo = VehiculoCarrera(self, piloto)
         return vehiculo
 
@@ -98,4 +99,7 @@ class Chasis(Decimales):
     @staticmethod
     def set_id_actual(id_actual):
         Chasis.idActual = id_actual
+
+
+
 

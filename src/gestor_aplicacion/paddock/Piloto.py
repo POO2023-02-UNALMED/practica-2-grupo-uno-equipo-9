@@ -44,8 +44,8 @@ class Piloto(Persona, Decimales):
     @classmethod
     def pilotos_desbloqueados(cls):
         pilotos_desbloqueados = []
-        for campeonato in Campeonato.campeonatos_desbloqueados():
-            for piloto in campeonato.listaPilotos:
+        for campeonato in Campeonato.campeonatosDesbloqueados():
+            for piloto in campeonato.getListaPilotos():
                 if piloto.elegido:
                     pilotos_desbloqueados.append(piloto)
         return pilotos_desbloqueados
