@@ -45,19 +45,33 @@ class Pieza(Decimales):
         return cls(False, random_speed, random_maniobrability, "Default", "", random_price, tipo)
 
     @classmethod
-    def combinacionesDisponibles(cls, vehiculoCarrera, neumatico):
+    def combinacionesDisponibles(cls, vehiculoCarrera, pieza, combinaciones):
+        combinaciones_disponibles = combinaciones.copy()
+
+        for combinacion in combinaciones:
+            if pieza not in combinacion:
+                combinaciones_disponibles.remove(combinacion)
+
+        return combinaciones_disponibles
+
+    def combinaciones(vehiculo_carrera):
         combinaciones = []
-        motores_disponibles = cls.motoresDisponibles(vehiculoCarrera.marca)
-        aleron_disponibles = cls.aleronesDisponibles(vehiculoCarrera.marca)
-        neumaticos_disponibles = cls.neumaticosDisponibles(vehiculoCarrera.marca)
+        motores_disponibles = Pieza.motores_disponibles(vehiculo_carrera.get_marca())
+        aleron_disponible = Pieza.alerones_disponibles(vehiculo_carrera.get_marca())
+        neumaticos_disponibles = Pieza.neumaticos_disponibles(vehiculo_carrera.get_marca())
 
         for motor in motores_disponibles:
-            for aleron in aleron_disponibles:
-                combinacion = [motor, aleron, neumatico]
-                price = sum(p.getPrecio() for p in combinacion)
-
-                if price <= vehiculoCarrera.piloto.equipo.plata:
-                    combinaciones.append(combinacion)
+            for aleron in aleron_disponible:
+                for neumatico in neumaticos_disponibles:
+                    combinacion = [motor, aleron, neumatico]
+                    if (
+                            motor.get_precio()
+                            + aleron.get_precio()
+                            + neumatico.get_precio()
+                            <= vehiculo_carrera.get_piloto().get_equipo().get_plata()
+                    ):
+                        if combinacion not in combinaciones:
+                            combinaciones.append(combinacion)
 
         return combinaciones
 
