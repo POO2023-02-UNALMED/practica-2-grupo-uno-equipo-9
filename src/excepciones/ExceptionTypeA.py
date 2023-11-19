@@ -1,4 +1,6 @@
 from src.excepciones.ErrorAplicacion import ErrorAplicacion
+
+
 class ExceptionTypeA(ErrorAplicacion):
-    def __init__(self,err_input,type):
-        super().__init__("Hubo un error con los tipos. Se ingreso {}, de tipo")
+    def __init__(self, text):
+        super().__init__("Error con el ingreso de datos: " + text)
