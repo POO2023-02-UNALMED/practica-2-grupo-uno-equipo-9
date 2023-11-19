@@ -1,14 +1,14 @@
 import pickle
-from gestor_aplicacion.campeonato import Campeonato
-from gestor_aplicacion.campeonato import DirectorCarrera
-from gestor_aplicacion.campeonato import Equipo
-from gestor_aplicacion.campeonato import VehiculoCarrera
-from gestor_aplicacion.paddock import Patrocinador
-from gestor_aplicacion.paddock import Pieza
-from gestor_aplicacion.paddock import Piloto
-from gestor_aplicacion.paddock import Chasis
-from gestor_aplicacion.paddock import Circuito
-from gestor_aplicacion.ubicaciones import Ciudad
+from src.gestor_aplicacion.campeonato.Campeonato import Campeonato
+from src.gestor_aplicacion.campeonato.DirectorCarrera import DirectorCarrera
+from src.gestor_aplicacion.campeonato.Equipo import Equipo
+from src.gestor_aplicacion.campeonato.VehiculoCarrera import VehiculoCarrera
+from src.gestor_aplicacion.paddock.Patrocinador import Patrocinador
+from src.gestor_aplicacion.paddock.Pieza import Pieza
+from src.gestor_aplicacion.paddock.Piloto import Piloto
+from src.gestor_aplicacion.paddock.Chasis import Chasis
+from src.gestor_aplicacion.paddock.Circuito import Circuito
+from src.gestor_aplicacion.ubicaciones.Ciudad import Ciudad
 
 class Deserializado():
 
