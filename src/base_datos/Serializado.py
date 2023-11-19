@@ -1,4 +1,5 @@
 import pickle
+import os
 from src.gestor_aplicacion.campeonato.Campeonato import Campeonato
 from src.gestor_aplicacion.campeonato.DirectorCarrera import DirectorCarrera
 from src.gestor_aplicacion.campeonato.Equipo import Equipo
@@ -16,54 +17,57 @@ class Serializado():
     @staticmethod
     def serializar():
 
+        if not os.path.exists('base_Datos/temp'):
+            os.makedirs('base_Datos/temp')
+
         #CAMPEONATOS
-        archivo = open('src/base_Datos/temp/datosCampeonatos.txt','wb')
+        archivo = open('base_Datos/temp/datosCampeonatos.txt','wb')
         pickle.dump(Campeonato.getCampeonatos(), archivo)
         archivo.close()
 
         #CIUDADES
-        archivo = open('src/base_Datos/temp/datosCiudades.txt','wb')
+        archivo = open('base_Datos/temp/datosCiudades.txt','wb')
         pickle.dump(Ciudad.get_lista_ciudades(), archivo)
         archivo.close()
 
         #DIRECTORES
-        archivo = open('src/base_Datos/temp/datosDirectores.txt','wb')
+        archivo = open('base_Datos/temp/datosDirectores.txt','wb')
         pickle.dump(DirectorCarrera.getListaDirectores(), archivo)
         archivo.close()
 
         #EQUIPOS
-        archivo = open('src/base_Datos/temp/datosEquipos.txt','wb')
+        archivo = open('base_Datos/temp/datosEquipos.txt','wb')
         pickle.dump(Equipo.getEquipos(), archivo)
         archivo.close()
 
         #PATROCINADORES
-        archivo = open('src/base_Datos/temp/datosPatrocinadores.txt','wb')
+        archivo = open('base_Datos/temp/datosPatrocinadores.txt','wb')
         pickle.dump(Patrocinador.getPatrocinadores(), archivo)
         archivo.close()
 
         #PIEZAS
-        archivo = open('src/base_Datos/temp/datosPiezas.txt','wb')
+        archivo = open('base_Datos/temp/datosPiezas.txt','wb')
         pickle.dump(Pieza.getPiezas(), archivo)
         archivo.close()
 
         #PILOTOS
-        archivo = open('src/base_Datos/temp/datosPilotos.txt','wb')
+        archivo = open('base_Datos/temp/datosPilotos.txt','wb')
         pickle.dump(Piloto.getPilotos(), archivo)
         archivo.close()
 
         #CHASIS
-        archivo = open('src/base_Datos/temp/datosChasis.txt','wb')
+        archivo = open('base_Datos/temp/datosChasis.txt','wb')
         pickle.dump(Chasis.get_lista_chasis(), archivo)
         archivo.close()
 
         #VEHICULO CARRERA
-        archivo = open('src/base_Datos/temp/datosVehiculos.txt','wb')
+        archivo = open('base_Datos/temp/datosVehiculos.txt','wb')
         pickle.dump(VehiculoCarrera.getVehiculos(), archivo)
         archivo.close()
 
         #CIRCUITOS
-        archivo = open('src/base_Datos/temp/datosCircuitos.txt','wb')
-        pickle.dump(Circuito.get_circuitos(), archivo)####
+        archivo = open('base_Datos/temp/datosCircuitos.txt','wb')
+        pickle.dump(Circuito.get_circuitos(), archivo)
         archivo.close()
 
     @staticmethod
