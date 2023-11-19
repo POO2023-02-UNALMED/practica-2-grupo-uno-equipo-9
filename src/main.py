@@ -87,7 +87,8 @@ class MenuApp:
                                                         "Aqui puedes preparar un nuevo campeonato desde cero!")
         self.frames["planificar_calendario"] = FieldFrame(self.root, None, "Planificar Calendario de Carreras",
                                                           "Aqui puedes planificar el calendario de carreras de un campeonato")
-        self.frames["personalizar_vehiculo"] = FieldFrame(self.root, None, "Personalizar Vehiculo de Carreras")
+        self.frames["personalizar_vehiculo"] = FieldFrame(self.root, None, "Personalizar Vehiculo de Carreras",
+                                                          "Aqui puedes personalizar tu vehiculo de carreras. Comprar piezas, chasis, etc.")
         self.frames["forjar_alianza"] = FieldFrame(self.root, None, "Forjar Alianza con el Maestro de Carreras")
         self.frames["gp_racing"] = FieldFrame(self.root, None, "GP Racing")
         self.frames["acerca_de"] = FieldFrame(self.root, None)
@@ -546,7 +547,7 @@ class MenuApp:
         frame7.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
 
-        label7_1 = tk.Label(frame7, text="Los detalles de tu campeonato")
+        label7_1 = tk.Label(frame7, text="Los detalles de tu campeonato y pilotos participantes")
         label7_1.grid(column=0, row=3, padx=20, pady=20, sticky="nsew")
         inner_frame = tk.Frame(frame7, padx=5, pady=5, bg=None)
         inner_frame.grid(row=4, column=0, columnspan=2, pady=5)
@@ -556,8 +557,7 @@ class MenuApp:
         tablaCampeonatoResultante = ttk.Treeview(inner_frame, columns=('1', '2'), show="")
 
         tablaCampeonatoResultante.grid(column=0, row=0, rowspan=4, padx=20, pady=20, sticky="nsew")
-        label7_2 = tk.Label(frame7, text="Los pilotos participantes")
-        label7_2.grid(column=0, row=7, padx=20, pady=20, sticky="nsew")
+
         listbox7_2 = tk.Listbox(frame7)
 
         # crear Tabla
@@ -776,23 +776,27 @@ class MenuApp:
         circuitos_para_elegir = []
 
         # Frame 3: Escoger Mes, Dificultad
-        frame3 = FieldFrame(self.frames[frame_name], None, "Escoger Mes, Dificultad y Ciudad",
-                            "Estos son los meses, dificultades y ciudades disponibles para correr.\nEscoge uno de cada uno!")
+        frame3 = FieldFrame(self.frames[frame_name], None, "Escoger Mes y la Dificultad",
+                            "Estos son los meses y dificultades disponibles para la carrera.\nEscoge uno de cada uno!")
         frame3.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         mes_seleccionado = tk.StringVar(frame3)
         mes_seleccionado.set(meses_disponibles[0])
         # Create Combobox for month selection
+        label33 = tk.Label(frame3, text="Elige el numero del mes en el que quieres reservar el circuito:")
+        label33.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
         combobox_meses = ttk.Combobox(frame3, values=meses_disponibles)
         combobox_meses.grid(column=0, row=3, padx=20, pady=20)
         combobox_meses.bind("<<ComboboxSelected>>", elegir_mes)
         combobox_meses.configure(justify="center")
 
         # Create Combobox for difficulty selection
+        label34 = tk.Label(frame3, text="Elige la dificultad de la carrera:")
+        label34.grid(column=0, row=4, padx=20, pady=20, sticky="nsew")
         dificultad_seleccionada = tk.StringVar(frame3)
         dificultad_seleccionada.set(dificultades[0])
         combobox_dificultad = ttk.Combobox(frame3, textvariable=dificultad_seleccionada, values=dificultades)
-        combobox_dificultad.grid(column=0, row=4, padx=20, pady=20)
+        combobox_dificultad.grid(column=0, row=5, padx=20, pady=20)
         combobox_dificultad.bind("<<ComboboxSelected>>", elegir_dificultad)
         combobox_dificultad.configure(justify="center")
 
@@ -809,27 +813,31 @@ class MenuApp:
         ciudad_elegida = None
 
         # Frame 4: Escoger Circuito y Ciudad
-        frame4 = FieldFrame(self.frames[frame_name], None, "Circuitos Disponibles",
-                            "Estos son los circuitos disponibles el mes que seleccioanste que puede pagar el director de carrera \ny que estan en el continente")
+        frame4 = FieldFrame(self.frames[frame_name], None, "Circuitos y Cuidades disponbles",
+                            "Estos son los circuitos disponibles el mes que seleccioanste que puede pagar el director de carrera \n y ciudades que estan en el continente")
         frame4.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Comp4onentes del frame
 
         ciudad_seleccionada = tk.StringVar(frame4)
         ciudad_seleccionada.set(dificultades[0])
+        label42 = tk.Label(frame4, text="Estas son las ciudades disponibles en el continente:")
+        label42.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
         combobox_ciudad = ttk.Combobox(frame4, values=dificultades)
-        combobox_ciudad.grid(column=0, row=2, padx=20, pady=20)
+        combobox_ciudad.grid(column=0, row=3, padx=20, pady=20)
         combobox_ciudad.bind("<<ComboboxSelected>>", elegir_ciudad)
         combobox_ciudad.configure(justify="center")
 
+        label41 = tk.Label(frame4, text="Estos son los circuitos disponibles:")
+        label41.grid(column=0, row=4, padx=20, pady=20, sticky="nsew")
         listbox4 = tk.Listbox(frame4)
-        listbox4.grid(column=0, row=3, rowspan=2, padx=20, pady=20, sticky="nsew")
+        listbox4.grid(column=0, row=5, rowspan=2, padx=20, pady=20, sticky="nsew")
 
         entry4 = tk.Entry(frame4)
-        entry4.grid(column=0, row=6, padx=20, pady=20)
+        entry4.grid(column=0, row=9, padx=20, pady=20)
         entry4.configure(justify="center")
 
         button4 = tk.Button(frame4, text="Elegir Circuito", command=lambda: elegir_circuito())
-        button4.grid(column=0, row=7, padx=20, pady=20)
+        button4.grid(column=0, row=10, padx=20, pady=20)
         button4.configure(justify="center")
 
         # Ciudad elegida
@@ -848,7 +856,7 @@ class MenuApp:
         entry5_1.grid(column=0, row=4, padx=20, pady=20)
         entry5_1.configure(justify="center")
 
-        label5_2 = tk.Label(frame5, text="Premio en efectivo todas las carreras")
+        label5_2 = tk.Label(frame5, text="Premio en efectivo todas las carreras, este se va a usar para premiar todas las carreras de acuerdo a su dificultd")
         label5_2.grid(column=0, row=5, padx=20, pady=20, sticky="nsew")
         entry5_2 = tk.Entry(frame5)
         entry5_2.grid(column=0, row=6, padx=20, pady=20)
@@ -863,8 +871,8 @@ class MenuApp:
         premio_carreras = 0
 
         # Frame 6: Mostrar Campeonato Preparado
-        frame6 = FieldFrame(self.frames[frame_name], None, "Campeonato Preparado",
-                            "Con todo lo que has organizado,\nfinalmente este es el campeonato que has creado")
+        frame6 = FieldFrame(self.frames[frame_name], None, "Calendario de Carreras",
+                            "Con todo lo que has organizado,\nfinalmente este es el calendario de carreas que has creado")
         frame6.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         label6 = tk.Label(frame6, text="Este es el calendario de carreras del campeonato")
@@ -1149,7 +1157,7 @@ class MenuApp:
             button6.configure(justify="center")
 
     def personalizar_vehiculo(self, frame_name):
-        global pilotos_desbloqueados, piloto_seleccionado
+        global pilotos_desbloqueados, piloto_seleccionado, aleron_elegido, neumatico_elegdo, motor_elegido, vehiculo_seleccionado
 
         def elegir_piloto():
             global piloto_seleccionado, pilotos_desbloqueados, chasis_disponibles
@@ -1181,8 +1189,7 @@ class MenuApp:
 
             jj = 1
             for aleron in alerones_disponibles:
-                listbox3.insert(jj, str(jj) + " | " + aleron.marca + " | " + aleron.modelo + " | " + str(
-                    aleron.velocidad) + " | " + str(aleron.precio))
+                listbox3.insert(jj, str(jj) + " | " + aleron.nombre + " | " + str(aleron.maniobrabilidadAnadida) + " | " + str(aleron.precio) + " | " + str(aleron.velocidadAnadida))
                 jj += 1
             # Pasar al siguiente frame
 
@@ -1193,16 +1200,16 @@ class MenuApp:
 
         # Para frame 3
         def elegir_aleron():
-            global aleron_seleccionado, alerones_disponibles, combinaciones2, vehiculo_seleccionado, combinaciones, neumaticos_disponibles
+            global aleron_elegido, alerones_disponibles, combinaciones2, vehiculo_seleccionado, combinaciones, neumaticos_disponibles
             # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
-            aleron_seleccionado = alerones_disponibles[int(entry3.get()) - 1]
-            combinaciones2 = Pieza.combinacionesDisponibles(vehiculo_seleccionado, aleron_seleccionado, combinaciones)
+            aleron_elegido = alerones_disponibles[int(entry3.get()) - 1]
+            combinaciones2 = Pieza.combinacionesDisponibles(vehiculo_seleccionado, aleron_elegido, combinaciones)
             neumaticos_disponibles = Pieza.filterNeumaticos(combinaciones2)
 
             jj = 1
             for neumatico in neumaticos_disponibles:
-                listbox4.insert(jj, str(jj) + " | " + neumatico.marca + " | " + neumatico.modelo + " | " + str(
-                    neumatico.velocidad) + " | " + str(neumatico.precio))
+                listbox4.insert(jj, str(jj) + " | " + neumatico.nombre + " | " + str(neumatico.maniobrabilidadAnadida) + " | " + str(neumatico.maniobrabilidadAnadida)
+                                + " | " + str(neumatico.velocidadAnadida) + " | " + str(neumatico.precio))
                 jj += 1
 
             # Pasar al siguiente frame
@@ -1213,17 +1220,18 @@ class MenuApp:
 
         # Para frame 4
         def elegir_neumatico():
-            global neumaticos_disponibles
+            global neumatico_elegido, neumaticos_disponibles, combinaciones3, vehiculo_seleccionado, combinaciones2, motores_disponibles
             # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
-            neumatico_seleccionado = neumaticos_disponibles[int(entry4.get()) - 1]
-            combinaciones3 = Pieza.combinacionesDisponibles(vehiculo_seleccionado, neumatico_seleccionado,
+            neumatico_elegido = neumaticos_disponibles[int(entry4.get()) - 1]
+            combinaciones3 = Pieza.combinacionesDisponibles(vehiculo_seleccionado, neumatico_elegido,
                                                             combinaciones2)
             motores_disponibles = Pieza.filterMotores(combinaciones3)
 
             jj = 1
-            for motor in motores_disponibles:
-                listbox5.insert(jj, str(jj) + " | " + motor.marca + " | " + motor.modelo + " | " + str(
-                    motor.velocidad) + " | " + str(motor.precio))
+            for neumatico in motores_disponibles:
+                listbox5.insert(jj, str(jj) + " | " + neumatico.nombre + " | " + str(
+                    neumatico.maniobrabilidadAnadida) + " | " + str(neumatico.maniobrabilidadAnadida)
+                                + " | " + str(neumatico.velocidadAnadida) + " | " + str(neumatico.precio))
                 jj += 1
 
             # Pasar al siguiente frame
@@ -1233,40 +1241,29 @@ class MenuApp:
             frame5.tkraise()
 
         # Para frame 5
-        def descuento():
-            global premio_campeonato, premio_carreras, campeonato
-            # premio_campeonato = float(entry5_1.get())
-            # premio_carreras = float(entry5_2.get())
-            campeonato.logisticaPremios(premio_campeonato, premio_carreras)
-            campeonato.organizarCarreras()
+        def elegir_motor():
+            global motor_elegido, motores_disponibles, piezas_asignar, aleron_elegido, neumatico_elegido, motor_elegido, precio_total, equipo, descuento, porcentaje_descuento
+            # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
+            motor_elegido = motores_disponibles[int(entry5.get()) - 1]
+            piezas_asignar = [aleron_elegido, neumatico_elegido, motor_elegido]
+            vehiculo_seleccionado.setPiezasComprar(piezas_asignar)
 
-            jj = 1
-            for carrera in campeonato.getListaCarreras():
-                listbox6.insert(jj,
-                                str(jj) + " | " + carrera.getNombreCircuito() + " | " + carrera.getFecha() + " | " + str(
-                                    carrera.getPremioEfectivo()))
-                jj += 1
+            precio_total = Pieza.precioTotal(piezas_asignar, vehiculo_seleccionado)
+            equipo = vehiculo_seleccionado.piloto.contrato
+            descuento = equipo.descuento(precio_total, vehiculo_seleccionado)
 
-            # Pasar al siguiente frame
-            frame5.grid_remove()
-            frame5.grid_forget()
-            frame6.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame6.tkraise()
+            if descuento:
+                porcentaje_descuento = equipo.calcular_descuento(precio_total, vehiculo_seleccionado)
+                label6_1.config(text="Has impresionado a los proveedores! \n\nTe han hecho un descuento de " + str(round(porcentaje_descuento, 2)) + "% debido a tus habilidades y el dinero del equipo")
+            else:
+                label6_1.config(text="No has impresionado a los proveedores, no te han hecho descuento")
 
-        # Para frame 6
-        def entrega():
-            global premio_campeonato, premio_carreras, campeonato
-            # premio_campeonato = float(entry5_1.get())
-            # premio_carreras = float(entry5_2.get())
-            campeonato.logisticaPremios(premio_campeonato, premio_carreras)
-            campeonato.organizarCarreras()
+            equipo.comprar_piezas(precio_total, vehiculo_seleccionado)
 
-            jj = 1
-            for carrera in campeonato.getListaCarreras():
-                listbox6.insert(jj,
-                                str(jj) + " | " + carrera.getNombreCircuito() + " | " + carrera.getFecha() + " | " + str(
-                                    carrera.getPremioEfectivo()))
-                jj += 1
+            label6_3.config(text=aleron_elegido.nombre)
+            label6_4.config(text=neumatico_elegido.nombre)
+            label6_5.config(text=motor_elegido.nombre)
+
 
             # Pasar al siguiente frame
             frame5.grid_remove()
@@ -1276,7 +1273,7 @@ class MenuApp:
 
         # Para frame 6
         def muerte_y_destruccion():
-            self.planificar_calendario(frame_name)
+            self.personalizar_vehiculo(frame_name)
             frame1.destroy()
             frame2.destroy()
             frame3.destroy()
@@ -1315,8 +1312,8 @@ class MenuApp:
         chasis_disponibless = []
 
         # Frame 2: Elegr Chasis
-        frame2 = FieldFrame(self.frames[frame_name], None, "Elige un chasis para el vehiculo de carreras",
-                            "Estos son los alerones disponibles para tu piloto de acuerdo a su presupuesto y de la marca de tu chasis")
+        frame2 = FieldFrame(self.frames[frame_name], None, "Elige un chasis",
+                            "Estos son los chasis disponibles para tu piloto de acuerdo a su presupuesto. Elige uno!")
         frame2.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         listbox2 = tk.Listbox(frame2)
@@ -1324,7 +1321,7 @@ class MenuApp:
         entry2 = tk.Entry(frame2)
         entry2.grid(column=0, row=6, padx=20, pady=20)
         entry2.configure(justify="center")
-        button2 = tk.Button(frame2, text="Elegir Director", command=lambda: elegir_chasis())
+        button2 = tk.Button(frame2, text="Elegir Chasis", command=lambda: elegir_chasis())
         button2.grid(column=0, row=7, padx=20, pady=20)
         button2.configure(justify="center")
         # Variables
@@ -1333,8 +1330,8 @@ class MenuApp:
         combinaciones = []
 
         # Frame 3: Elegr Aleron
-        frame3 = FieldFrame(self.frames[frame_name], None, "Escoger Mes, Dificultad y Ciudad",
-                            "Estos son los meses, dificultades y ciudades disponibles para correr.\nEscoge uno de cada uno!")
+        frame3 = FieldFrame(self.frames[frame_name], None, "Elegir Aleron",
+                            "Estos son los alerones disponibles para tu piloto de acuerdo a su presupuesto y de la marca de tu chasis. Elige uno!")
         frame3.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         listbox3 = tk.Listbox(frame3)
@@ -1342,17 +1339,17 @@ class MenuApp:
         entry3 = tk.Entry(frame3)
         entry3.grid(column=0, row=6, padx=20, pady=20)
         entry3.configure(justify="center")
-        button3 = tk.Button(frame3, text="Elegir", command=lambda: elegir_aleron())
+        button3 = tk.Button(frame3, text="Elegir Aleron", command=lambda: elegir_aleron())
         button3.grid(column=0, row=7, padx=20, pady=20)
         button3.configure(justify="center")
         # Variables
-        aleron_seleccionado = None
+        aleron_elegido = None
         combinaciones2 = []
         neumaticos_disponibles = []
 
         # Frame 4: Escoger Neumatico
-        frame4 = FieldFrame(self.frames[frame_name], None, "Circuitos Disponibles",
-                            "Estos son los circuitos disponibles el mes que seleccioanste que puede pagar el director de carrera \ny que estan en el continente")
+        frame4 = FieldFrame(self.frames[frame_name], None, "Elegir Neumatico",
+                            "Estos son los neumaticos disponibles para tu piloto de acuerdo a su presupuesto y de la marca de tu chasis. Elige uno!")
         frame4.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         listbox4 = tk.Listbox(frame4)
@@ -1362,7 +1359,7 @@ class MenuApp:
         entry4.grid(column=0, row=6, padx=20, pady=20)
         entry4.configure(justify="center")
 
-        button4 = tk.Button(frame4, text="Elegir Circuito", command=lambda: elegir_neumatico())
+        button4 = tk.Button(frame4, text="Elegir Neumatico", command=lambda: elegir_neumatico())
         button4.grid(column=0, row=7, padx=20, pady=20)
         button4.configure(justify="center")
 
@@ -1371,52 +1368,49 @@ class MenuApp:
         motores_disponibles = []
         combinaciones3 = []
 
-        # Frame 5: Elegr Motor
-        frame5 = FieldFrame(self.frames[frame_name], None, "Elige los premios ",
-                            "Elige el valor del premio del ganador del campeonato y elige el premio en efectivo destinado para premiar todas las carreras")
+        # Frame 5: Elegir Motor
+        frame5 = FieldFrame(self.frames[frame_name], None, "Elegir Motor",
+                            "Estos son los motores disponibles para tu piloto de acuerdo a su presupuesto y de la marca de tu chasis. Elige uno!")
         frame5.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         listbox5 = tk.Listbox(frame5)
         listbox5.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
         entry5 = tk.Entry(frame5)
-        entry5.grid(column=0, row=4, padx=20, pady=20)
+        entry5.grid(column=0, row=6, padx=20, pady=20)
         entry5.configure(justify="center")
 
-        button5 = tk.Button(frame5, text="Elegir", command=lambda: elegir_neumatico())
+        button5 = tk.Button(frame5, text="Elegir Motor", command=lambda: elegir_motor())
         button5.grid(column=0, row=7, padx=20, pady=20)
         button5.configure(justify="center")
 
-        # Primer y Segundo piloto del equipo
-        premio_campeonato = 0
-        premio_carreras = 0
+        # Variables
+        motor_elegido = None
+
 
         # Frame 6: Descuento
-        frame6 = FieldFrame(self.frames[frame_name], None, "Campeonato Preparado",
-                            "Con todo lo que has organizado,\nfinalmente este es el campeonato que has creado")
+        frame6 = FieldFrame(self.frames[frame_name], None, "Vehiculo Personalizado",
+                            "Con todo lo que has organizado,\nfinalmente este es el vehiculo que has creado")
         frame6.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         label6 = tk.Label(frame6, text="Este es el calendario de carreras del campeonato")
         label6.grid(column=0, row=3, padx=20, pady=20, sticky="nsew")
+        label6_1 = tk.Label(frame6, text="Este es el calendario de carreras del campeonato")
+        label6_1.grid(column=0, row=4, padx=20, pady=20, sticky="nsew")
 
-        listbox6 = tk.Listbox(frame6)
-        listbox6.grid(column=0, row=8, rowspan=3, padx=20, pady=20, sticky="nsew")
-        button6 = tk.Button(frame6, text="Volver a Preparar un Campeonato", command=lambda: muerte_y_destruccion())
+        label6_2 = tk.Label(frame6, text="Tu equipoo ha comprado:")
+        label6_2.grid(column=0, row=6, padx=20, pady=20, sticky="nsew")
+        label6_3 = tk.Label(frame6, text="aleron:")
+        label6_3.grid(column=0, row=7, padx=20, pady=20, sticky="nsew")
+        label6_4 = tk.Label(frame6, text="neumatico:")
+        label6_4.grid(column=0, row=8, padx=20, pady=20, sticky="nsew")
+        label6_5 = tk.Label(frame6, text="motor:")
+        label6_5.grid(column=0, row=9, padx=20, pady=20, sticky="nsew")
+
+
+        button6 = tk.Button(frame6, text="Volver a Personalizar el Vehiculo de Carreras ", command=lambda: muerte_y_destruccion())
         button6.grid(column=0, row=11, padx=20, pady=20)
         button6.configure(justify="center")
 
-        # Frame 7: Entrega
-        frame6 = FieldFrame(self.frames[frame_name], None, "Campeonato Preparado",
-                            "Con todo lo que has organizado,\nfinalmente este es el campeonato que has creado")
-        frame6.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
-        # Componentes del frame
-        label6 = tk.Label(frame6, text="Este es el calendario de carreras del campeonato")
-        label6.grid(column=0, row=3, padx=20, pady=20, sticky="nsew")
-
-        listbox6 = tk.Listbox(frame6)
-        listbox6.grid(column=0, row=8, rowspan=3, padx=20, pady=20, sticky="nsew")
-        button6 = tk.Button(frame6, text="Volver a Preparar un Campeonato", command=lambda: muerte_y_destruccion())
-        button6.grid(column=0, row=11, padx=20, pady=20)
-        button6.configure(justify="center")
 
     def acerca_de(self, frame_name):
         self.change_frame(frame_name)

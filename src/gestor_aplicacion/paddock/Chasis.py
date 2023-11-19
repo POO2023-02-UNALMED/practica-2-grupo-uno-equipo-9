@@ -23,6 +23,7 @@ class Chasis(Decimales):
         precio = (random.random() * 40001 + 1000) * 3
         velocidad = random.randint(200, 249)
         nuevo_chasis= Chasis(marca, modelo, velocidad, maniobrabilidad, precio)
+        nuevo_chasis.redondear()
         return nuevo_chasis
 
     @classmethod

@@ -113,7 +113,7 @@ class Equipo:
         descuento = self.calcular_descuento(precio_total, vehiculo_carrera)
         precio_final = precio_total - descuento * precio_total
         self.plata -= precio_final
-        vehiculo_carrera.configurar_vehiculo(vehiculo_carrera.piezas_comprar)
+        vehiculo_carrera.configurarVehiculo(vehiculo_carrera.piezasComprar)
 
     def agregar_patrocinador(self, patrocinador):
         self.patrocinadores_equipo.append(patrocinador)

@@ -29,12 +29,14 @@ class Pieza(Decimales):
         else:
             Pieza.piezas.append(self)
 
+
     @staticmethod
     def create_pieza(nombre, tipo, marca):
         maniobrabilidad = 0.1 + (0.4 - 0.1) * random.random()
         precio = random.random() * 1000
         velocidad = random.random() * 20
         nueva_pieza= Pieza(False, velocidad, maniobrabilidad, marca, nombre, precio, tipo, False)
+        nueva_pieza.redondear()
         return nueva_pieza
 
     @classmethod
@@ -116,7 +118,7 @@ class Pieza(Decimales):
     @classmethod
     def precioTotal(cls, piezas, vehiculoCarrera):
         total_price = sum(p.getPrecio() for p in piezas)
-        vehiculoCarrera.setPiezasComprar(piezas)
+        vehiculoCarrera.piezasComprar = piezas
         return total_price
 
     def arreglar(self):
@@ -133,9 +135,9 @@ class Pieza(Decimales):
             return False
 
     def redondear(self):
-        self.precio = self.dosDecimales(self.precio)
-        self.velocidadAnadida = self.dosDecimales(self.velocidadAnadida)
-        self.maniobrabilidadAnadida = self.dosDecimales(self.maniobrabilidadAnadida)
+        self.precio = self.dos_decimales(self.precio)
+        self.velocidadAnadida = self.dos_decimales(self.velocidadAnadida)
+        self.maniobrabilidadAnadida = self.dos_decimales(self.maniobrabilidadAnadida)
 
     def __str__(self):
         return f"ID: {self.id}, Marca: {self.marca}, Nombre: {self.nombre}, Precio: {self.precio}"

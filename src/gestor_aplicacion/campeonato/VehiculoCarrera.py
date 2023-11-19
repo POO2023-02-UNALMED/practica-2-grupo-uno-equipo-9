@@ -82,6 +82,11 @@ class VehiculoCarrera(Chasis, Decimales):
             self.velocidadCircumstancias = -20
             self.actualizarVelocidadActual()
 
+    def unico_vehiculo(self):
+        for vehiculo in VehiculoCarrera.listaVehiculos:
+            if vehiculo != self and vehiculo.piloto == self.piloto:
+                vehiculo.piloto = None
+
     def derrapar(self, carrera):
         randomNumber = random.randint(1, 10)
         if randomNumber == 1:
@@ -176,7 +181,8 @@ class VehiculoCarrera(Chasis, Decimales):
 
         return vechiculo
 
-
+    def setPiezasComprar(self, piezas):
+        self.piezasComprar = piezas
 
 
 
