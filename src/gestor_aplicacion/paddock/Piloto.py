@@ -136,6 +136,9 @@ class Piloto(Persona, Decimales):
     def set_elegido(self,bool):
         self.elegido=bool
 
+    def isElegido(self):
+        return self.elegido
+
     def set_desbloqueado(self,bool):
         self.desbloqueado=bool
 
