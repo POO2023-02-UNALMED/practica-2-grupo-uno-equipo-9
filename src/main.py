@@ -8,6 +8,7 @@ import sv_ttk as sk
 
 # Imports de las clases
 from src.base_datos.Serializado import Serializado
+from src.base_datos.Deserializado import Deserializado
 from src.gestor_aplicacion.campeonato.Carrera import Carrera
 from src.gestor_aplicacion.campeonato.DirectorCarrera import DirectorCarrera
 from src.gestor_aplicacion.campeonato.Campeonato import Campeonato
@@ -56,8 +57,10 @@ class FieldFrame(tk.Frame):
                          "img/videogame.png", "img/volante.png", "img/formula-1-4.png"]
             logo_path = random.choice(img_paths)
 
-        self.img = (Image.open(logo_path))
+
+        self.img = Image.open(logo_path)
         resized_image = self.img.resize((50, 50))
+
         # Load the logo image
         self.logo_img1 = ImageTk.PhotoImage(resized_image)
         self.logo_img2 = ImageTk.PhotoImage(resized_image)
@@ -70,14 +73,15 @@ class FieldFrame(tk.Frame):
         logo_label2.grid(row=0, column=0, padx=5, pady=5, sticky="w")
         logo_label2.configure(justify="center")
 
-        # # Adjust column weights to allocate space for the new column  # self.grid_rowconfigure("all", weight=1)  # self.grid_columnconfigure(0, weight=1)  # self.grid_columnconfigure(1, weight=0)  # Adjust the weight for the new column  # # adjust the height of the new column to small  # self.grid_columnconfigure(2, weight=1)
+
+
+
 
 
 class MenuApp:
     def __init__(self, root):
         self.menu_bar = None
         self.root = root
-        self.root.title("GP Racing: The one and only!")
         # self.root.geometry("1200x600")
         sk.set_theme("dark")
         self.frames = {}  # Dictionary to store frames
@@ -1175,6 +1179,7 @@ class MenuApp:
             button6.grid(column=0, row=11, padx=20, pady=20)
             button6.configure(justify="center")
 
+    # Funcionalodad 3: Tunear el Vehiculo de Carreras
     def personalizar_vehiculo(self, frame_name):
         global pilotos_desbloqueados, piloto_seleccionado, aleron_elegido, neumatico_elegdo, motor_elegido, vehiculo_seleccionado
 
@@ -1430,14 +1435,14 @@ class MenuApp:
         button6.grid(column=0, row=11, padx=20, pady=20)
         button6.configure(justify="center")
 
+    # Funcionalidad 4: Forjar una Alianza con el Maestro de Carreras
     def forjar_amistad(self, frame_name):
-        global pilotos_desbloqueados, piloto_seleccionado, aleron_elegido, neumatico_elegdo, motor_elegido, vehiculo_seleccionado
-
+        # Funciones para el funcionamiento de la funcionalidad
         def elegir_piloto():
             global piloto_seleccionado, pilotos_desbloqueados, campeonato_piloto, maestros_disponibles
             piloto_seleccionado = pilotos_desbloqueados[int(entry1.get()) - 1]
             # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el campeonato " + campeonato.getNombre() + "\nEl campeonato tiene " + str(campeonato.getCantidadMaxCarreras()) + " carreras, debes planificarlas todas")
-            camppeonato_piloto = Campeonato.campeonatoPiloto(piloto_seleccionado)
+            campeonato_piloto = Campeonato.campeonatoPiloto(piloto_seleccionado)
             maestros_disponibles = Campeonato.directoresCarrera(campeonato_piloto)
             jj = 1
             for maestro in maestros_disponibles:
@@ -1455,15 +1460,8 @@ class MenuApp:
             global piloto_seleccionado, campeonato_piloto, maestros_disponibles, maestro_elegido
             maestro_elegido = maestros_disponibles[int(entry2.get()) - 1]
             # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el director " + director_elegido.get_nombre())
-            combinaciones = Pieza.combinaciones(vehiculo_seleccionado)
-            alerones_disponibles = Pieza.filterAlerones(combinaciones)
-
-            jj = 1
-            for aleron in alerones_disponibles:
-                listbox3.insert(jj, str(jj) + " | " + aleron.nombre + " | " + str(
-                    aleron.maniobrabilidadAnadida) + " | " + str(aleron.precio) + " | " + str(aleron.velocidadAnadida))
-                jj += 1
             # Pasar al siguiente frame
+            label3.configure(text="(Tu equipo cuenta con ${})".format(piloto_seleccionado.contrato.get_nombre()))
 
             frame2.grid_remove()
             frame2.grid_forget()
@@ -1471,10 +1469,10 @@ class MenuApp:
             frame3.tkraise()
 
         # Para frame 3
-        def elegir_aleron():
-            global aleron_elegido, alerones_disponibles, combinaciones2, vehiculo_seleccionado, combinaciones, neumaticos_disponibles
+        def sobornar():
+            global piloto_seleccionado, campeonato_piloto, maestros_disponibles, maestro_elegido, plata_ofrecida
             # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
-            aleron_elegido = alerones_disponibles[int(entry3.get()) - 1]
+            plata_ofrecida = int(entry3.get())
             combinaciones2 = Pieza.combinacionesDisponibles(vehiculo_seleccionado, aleron_elegido, combinaciones)
             neumaticos_disponibles = Pieza.filterNeumaticos(combinaciones2)
 
@@ -1580,12 +1578,13 @@ class MenuApp:
         button1.grid(column=0, row=7, padx=20, pady=20)
         button1.configure(justify="center")
         # Important Variables
+        pilotos_desbloqueados = []
         piloto_seleccionado = None
         campeonato_piloto = None
 
         maestros_disponibles = []
 
-        # Frame 2: Elegr Chasis
+        # Frame 2: Elegir Maestro de Carreras
         frame2 = FieldFrame(self.frames[frame_name], None, "Elige un Maestro de Carreras",
                             "En la distancia, puedes observar a los distintos Directores de Carrera que dirigen en el campeonato,\n"
                             "Elije alguno para acercarte")
@@ -1596,52 +1595,63 @@ class MenuApp:
         entry2 = tk.Entry(frame2)
         entry2.grid(column=0, row=6, padx=20, pady=20)
         entry2.configure(justify="center")
-        button2 = tk.Button(frame2, text="Elegir Chasis", command=lambda: elegir_maestro_de_carreras())
+        button2 = tk.Button(frame2, text="Elegir Maestro de Carreras", command=lambda: elegir_maestro_de_carreras())
         button2.grid(column=0, row=7, padx=20, pady=20)
         button2.configure(justify="center")
         # Variables
         maestro_de_carrera = None
-        carta_seleccionada = random.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21])
-        selecciones = []
 
-        # Frame 3: Apuesta Ilegal con el Maestro de Carreras
-        frame3 = FieldFrame(self.frames[frame_name], None, "Problemas economicos",
-                            "Estos son los alerones disponibles para tu piloto de acuerdo a su presupuesto y de la marca de tu chasis. Elige uno!")
+
+        # Frame 3: Soborno Inicial al Maestro de Carreras
+        frame3 = FieldFrame(self.frames[frame_name], None, "Problemas economicos :,(",
+                            "Mientras hablabas con el director de carrera" + ", te cuenta:\n" +
+                            "'Hay ciertos problemas economicos que me preocupan'\nQuizas darle un 'incentivo' pueda lograr captar su atencion.~")
         frame3.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
-        listbox3 = tk.Listbox(frame3)
-        listbox3.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
+        label3 = tk.Label(frame3)
+        label3.grid(column=0, row=4, padx=20, pady=20)
+        label3.configure(justify="center")
         entry3 = tk.Entry(frame3)
-        entry3.grid(column=0, row=6, padx=20, pady=20)
+        entry3.grid(column=0, row=4, padx=20, pady=20)
         entry3.configure(justify="center")
-        button3 = tk.Button(frame3, text="Elegir Aleron", command=lambda: elegir_aleron())
-        button3.grid(column=0, row=7, padx=20, pady=20)
+        button3 = tk.Button(frame3, text="Dar Incentivo", command=lambda: sobornar())
+        button3.grid(column=0, row=5, padx=20, pady=20)
         button3.configure(justify="center")
-        # Variables
-        aleron_elegido = None
-        combinaciones2 = []
-        neumaticos_disponibles = []
 
-        # Frame 4: Escoger Neumatico
-        frame4 = FieldFrame(self.frames[frame_name], None, "Elegir Neumatico",
-                            "Estos son los neumaticos disponibles para tu piloto de acuerdo a su presupuesto y de la marca de tu chasis. Elige uno!")
+        # Variables
+        plata_ofrecida = None
+        carta_seleccionada = random.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21])
+
+
+
+        # Frame 4: Apuesta Ilegal con el Maestro de Carreras
+        frame4 = FieldFrame(self.frames[frame_name], None, "Elige tu Destino",
+                            "La 'conversacion' sigue de manera normal, y repentinamente, el Director te pide ir a 'un lugar mas tranquilo'\n" +
+                            "...\n" +
+                            "Llegan a una sala oscura, y no es sino parpadera, y enfrente tuyo encuentras un manojo de cartas organizado\n" +
+                            "'Vamos, escoge tres cartas'\n"
+                            "'La primera es tu pasado, la segunda, tu presente, y la ultima tu futuro'")
         frame4.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
-        listbox4 = tk.Listbox(frame4)
-        listbox4.grid(column=0, row=3, rowspan=2, padx=20, pady=20, sticky="nsew")
-
         entry4 = tk.Entry(frame4)
         entry4.grid(column=0, row=6, padx=20, pady=20)
-        entry4.configure(justify="center")
+        entry4.configure(justify="center", state="disabled")
 
         button4 = tk.Button(frame4, text="Elegir Neumatico", command=lambda: elegir_neumatico())
         button4.grid(column=0, row=7, padx=20, pady=20)
         button4.configure(justify="center")
 
+        # Cartas
+        extra_frame_4 = tk.Frame(frame4)
+        extra_frame_4.grid(row=4, column=0, padx=5, pady=5, sticky="nsew")
+
+        image4p = Image.open("img/card_deck.png")
+        image4 = ImageTk.PhotoImage(image4p)
+        image_label_4 = tk.Label(frame4, image=image4)
+        image_label_4.place(relx=0.5,rely=0.5,relwidth=1,relheight=1)
+
         # Variables
-        neumatico_elegido = None
-        motores_disponibles = []
-        combinaciones3 = []
+        selecciones = []
 
         # Frame 5: Elegir Motor
         frame5 = FieldFrame(self.frames[frame_name], None, "Elegir Motor",
@@ -1729,14 +1739,304 @@ class MenuApp:
 
 
 if __name__ == "__main__":
+    def pasar_a_ventana_principal():
+        ventana.state("iconic")
+        root.state("normal")
+        root.tkraise()
+        app = MenuApp(root)
+
+    # Initial Root
     root = tk.Tk()
     root.minsize()
     root.iconbitmap("img/f1.ico")
-    app = MenuApp(root)
+    root.title("GP Racing: The one and only!")
+    # Ventana Inicial
+    ventana = tk.Toplevel(root, height=800, width=1280)
+    ventana.iconbitmap("img/f1.ico")
 
-    # COMIENZO PRUEBA
-    Serializado.crearObjetos()
-    # FIN PRUEBA
+    frameP1 = tk.Frame(ventana)
+    frameP1.place(relx=0.5, rely=0.5, relwidth=0.5, relheight=1, anchor="e")
+
+    frameP2 = tk.Frame(ventana)
+    frameP2.place(relx=0.5, rely=0.5, relwidth=0.5, relheight=1, anchor="w")
+
+    frameP3 = tk.Frame(frameP1)
+    frameP3.place(relx=0.5, rely=0.3, relwidth=0.98, relheight=0.29, anchor="s")
+
+    frameP4 = tk.Frame(frameP1)
+    frameP4.place(relx=0.5, rely=0.31, relwidth=0.98, relheight=0.68, anchor="n")
+
+    frameP5 = tk.Frame(frameP2)
+    frameP5.place(relx=0.5, rely=0.3, relwidth=0.98, relheight=0.29, anchor="s")
+
+    frameP6 = tk.Frame(frameP2)
+    frameP6.place(relx=0.5, rely=0.31, relwidth=0.98, relheight=0.68, anchor="n")
+
+    def salirApp():
+        ventana.destroy()
+
+    def descripcion():
+        messagebox.showinfo("Descripcion de la aplicacion",
+                            "El " "Proyecto de la Fédération Internationale de l'Automobile" "es una aplicación desarrollada bajo el paradigma de Programación Orientada a Objetos que se enfoca en la gestión integral de un campeonato de carreras automovilísticas.")
+
+    # menu
+    menu = tk.Menu(ventana, tearoff=0)
+    ventana.config(menu=menu)
+
+    menuInicio = tk.Menu(menu)
+    menu.add_cascade(label="Inicio", menu=menuInicio)
+
+    menuInicio.add_command(label="Salir", command=salirApp)
+    menuInicio.add_command(label="Descripción", command=descripcion)
+
+    mensaje = ("¡Bienvenido a nuestro simulador de carreras de la\n Fédération Internationale de l'Automobile,\n"
+               "donde podrás experimentar la emoción de competir en carreras \n"
+               "de Fórmula 1 como nunca antes!")
+
+    # mesaje bienvenida
+    mensaje1 = tk.Label(frameP3,
+                        text=mensaje,
+                        justify=tk.CENTER,
+                        font='Times 15',
+                        relief="solid",
+                        bd=2.5
+                        )
+    mensaje1.place(relx=0.5, rely=0.5, relwidth=0.98, relheight=0.98, anchor="center")
+
+    # Fotos proyecto
+    fotoCarro0 = Image.open("fotosInicio/carrof1.png")
+    fotoCarro = ImageTk.PhotoImage(fotoCarro0)
+    fotoBanderas0 = Image.open("fotosInicio/banderas.png")
+    fotoBanderas = ImageTk.PhotoImage(fotoBanderas0)
+    fotoLogo0 = Image.open("fotosInicio/logo.png")
+    fotoLogo = ImageTk.PhotoImage(fotoLogo0)
+    fotoPiloto0 = Image.open("fotosInicio/piloto.png")
+    fotoPiloto = ImageTk.PhotoImage(fotoPiloto0)
+    fotoCircuito0 = Image.open("fotosInicio/circuito.png")
+    fotoCircuito = ImageTk.PhotoImage(fotoCircuito0)
+    # Fotos Mariana
+    fotoMariana1p = Image.open("fotosInicio/Mariana1.png")
+    fotoMariana1 = ImageTk.PhotoImage(fotoMariana1p)
+    fotoMariana2p = Image.open("fotosInicio/Mariana2.png")
+    fotoMariana2 = ImageTk.PhotoImage(fotoMariana2p)
+    fotoMariana3p = Image.open("fotosInicio/Mariana3.png")
+    fotoMariana3 = ImageTk.PhotoImage(fotoMariana3p)
+    fotoMariana4p = Image.open("fotosInicio/Mariana4.png")
+    fotoMariana4 = ImageTk.PhotoImage(fotoMariana4p)
+    # Fotos David
+    fotoDavid1p = Image.open("fotosInicio/David1.png")
+    fotoDavid1 = ImageTk.PhotoImage(fotoDavid1p)
+    fotoDavid2p = Image.open("fotosInicio/David2.png")
+    fotoDavid2 = ImageTk.PhotoImage(fotoDavid2p)
+    fotoDavid3p = Image.open("fotosInicio/David3.png")
+    fotoDavid3 = ImageTk.PhotoImage(fotoDavid3p)
+    fotoDavid4p = Image.open("fotosInicio/David4.png")
+    fotoDavid4 = ImageTk.PhotoImage(fotoDavid4p)
+    # Fotos Samuel
+    fotoSamuel1p = Image.open("fotosInicio/Samuel1.png")
+    fotoSamuel1 = ImageTk.PhotoImage(fotoSamuel1p)
+    fotoSamuel2p = Image.open("fotosInicio/Samuel2.png")
+    fotoSamuel2 = ImageTk.PhotoImage(fotoSamuel2p)
+    fotoSamuel3p = Image.open("fotosInicio/Samuel3.png")
+    fotoSamuel3 = ImageTk.PhotoImage(fotoSamuel3p)
+    fotoSamuel4p = Image.open("fotosInicio/Samuel4.png")
+    fotoSamuel4 = ImageTk.PhotoImage(fotoSamuel4p)
+    # Fotos Juan
+    fotoJuan1p = Image.open("fotosInicio/Juan1.png")
+    fotoJuan1 = ImageTk.PhotoImage(fotoJuan1p)
+    fotoJuan2p = Image.open("fotosInicio/Juan2.png")
+    fotoJuan2 = ImageTk.PhotoImage(fotoJuan2p)
+    fotoJuan3p = Image.open("fotosInicio/Juan3.png")
+    fotoJuan3 = ImageTk.PhotoImage(fotoJuan3p)
+    fotoJuan4p = Image.open("fotosInicio/Juan4.png")
+    fotoJuan4 = ImageTk.PhotoImage(fotoJuan4p)
+    # Fotos Santiago
+    fotoSantiago1p = Image.open("fotosInicio/Santiago1.png")
+    fotoSantiago1 = ImageTk.PhotoImage(fotoSantiago1p)
+    fotoSantiago2p = Image.open("fotosInicio/Santiago2.png")
+    fotoSantiago2 = ImageTk.PhotoImage(fotoSantiago2p)
+    fotoSantiago3p = Image.open("fotosInicio/Santiago3.png")
+    fotoSantiago3 = ImageTk.PhotoImage(fotoSantiago3p)
+    fotoSantiago4p = Image.open("fotosInicio/Santiago4.png")
+    fotoSantiago4 = ImageTk.PhotoImage(fotoSantiago4p)
+    def cambiarFoto(event):
+        if BotonP4["text"] == "1":
+            BotonP4.config(image=fotoBanderas, text="2")
+        elif BotonP4["text"] == "2":
+            BotonP4.config(image=fotoCarro, text="3")
+        elif BotonP4["text"] == "3":
+            BotonP4.config(image=fotoPiloto, text="4")
+        elif BotonP4["text"] == "4":
+            BotonP4.config(image=fotoLogo, text="5")
+        elif BotonP4["text"] == "5":
+            BotonP4.config(image=fotoCircuito, text="1")
+
+    # imagenes cambiantes con acercar el mouse
+    BotonP4 = tk.Button(frameP4, image=fotoLogo, text="1", relief="solid", bd=2.5)
+    BotonP4.bind("<Enter>", cambiarFoto)
+    BotonP4.place(relx=0.5, rely=0.8, relwidth=0.8, relheight=0.75, anchor="s")
+    # boton ingresar
+    botonIngresar = tk.Button(frameP4, text="Ingresar", font='Times 15', width=30, height=2, relief="solid", bd=2.,
+                              command=pasar_a_ventana_principal)
+    botonIngresar.pack(side='bottom', pady=10)
+
+    # hojas de vida
+    david = """Soy David Toro, estudiante de Ingeniería de Sistemas, con conocimientos en lenguajes como Python y Java. Apasionado por el desarrollo web y de videojuegos, estoy enfocado en ampliar mi experiencia en estas áreas.
+        \nclic para cambiar"""
+
+    david = '\n'.join(david[i:i + 81] for i in range(0, len(david), 81))
+
+    samuel = """Soy Samuel Mira,"I love you, this world, and everyone in it!" Programador novicio, prospecto en Java y Python. Estudiante de Ciencias de la Computación, siempre maravillado con todo lo que hay por descubrir. Todos los dias son buenos dias para aprender
+        """
+
+    samuel = '\n'.join(samuel[i:i + 81] for i in range(0, len(samuel), 81))
+
+    mariana = """Soy Mariana Valencia Cubillos, estudiante de Ciencias de la Computación y apasionada por la inteligencia artificial. Con amplia experiencia en programación (Java, Python, Scala, HTML) y enfoque en Power Apps, Power BI y SSIS como freelancer, mi interés se centra en la automatización de procesos. Encuentro satisfacción en la innovación y la aplicación creativa de la tecnología para resolver problemas cotidianos.
+        \nclic para cambiar"""
+
+    # Agregar salto de línea cada 81 caracteres
+    mariana = '\n'.join(mariana[i:i + 81] for i in range(0, len(mariana), 81))
+
+    santiago = """Soy Santiago López Ayala, estudiante de Ingeniería de Sistemas, entusiasta de la tecnología y todo lo relacionado con el espacio. Poseo conocimientos sólidos en Java y Python, y estoy comprometido con el constante aprendizaje y desarrollo en el campo de la ingeniería informática.
+        \nclic para cambiar"""
+
+    santiago = '\n'.join(santiago[i:i + 81] for i in range(0, len(santiago), 81))
+
+    juan = """Soy Juan Andrés Jiménez Vélez, estudiante de Ingeniería de Sistemas e Informática y técnico en electricidad y electrónica. Tengo conocimientos de programación con los lenguajes Python y Java, y del desarrollo de aplicaciones web con Angular. Mi experiencia abarca el trabajo en instalaciones eléctricas residenciales. Me considero una persona con una gran capacidad para aprender y resolver problemas de manera eficiente.
+        \nclic para cambiar"""
+
+    juan = '\n'.join(juan[i:i + 81] for i in range(0, len(juan), 81))
+
+    def cambiarTexto():
+        if hojasDeVida["text"] == david:
+            inner_frame_David.pack_forget()
+            inner_frame_Samuel.pack()
+            hojasDeVida.config(text=samuel)
+
+        elif hojasDeVida["text"] == samuel:
+            inner_frame_Samuel.pack_forget()
+            inner_frame_Mariana.pack()
+            hojasDeVida.config(text=mariana)
+
+        elif hojasDeVida["text"] == mariana:
+            inner_frame_Mariana.pack_forget()
+            inner_frame_Juan.pack()
+
+            hojasDeVida.config(text=juan)
+
+        elif hojasDeVida["text"] == juan:
+
+            inner_frame_Juan.pack_forget()
+            inner_frame_Santiago.pack()
+
+            hojasDeVida.config(text=santiago)
+
+        elif hojasDeVida["text"] == santiago:
+            inner_frame_Santiago.pack_forget()
+            inner_frame_David.pack()
+
+            hojasDeVida.config(text=david)
+
+    # hojas de vida
+    tituloHojasDeVida = tk.Label(frameP5, text="Breve hoja de vida", font='Times 13', relief="solid", bd=2.5)
+    tituloHojasDeVida.place(relx=0.5, rely=0.21, relwidth=0.98, relheight=0.2, anchor="s")
+
+    hojasDeVida = tk.Button(frameP5, width=50, height=2, text=david, font='Times 13', relief="solid", bd=2.5,
+                            command=cambiarTexto)
+    hojasDeVida.place(relx=0.5, rely=0.1899, relwidth=0.98, relheight=0.8, anchor="n")
+
+    # fotos
+
+    # crear los arreglos de las fotos 4x4
+    def create_inner_frame_David(parent_frame):
+
+        inner_frame = tk.Frame(parent_frame)
+
+        imagenes = [fotoDavid1, fotoDavid2, fotoDavid3, fotoDavid4]
+
+        for i in range(2):
+            for j in range(2):
+                imagen_label = tk.Label(inner_frame, image=imagenes[i * 2 + j], width=230, height=230,
+                                        relief="solid",
+                                        bd=2.5)
+                imagen_label.grid(row=i, column=j, padx=5, pady=5)
+
+        return inner_frame
+
+    def create_inner_frame_Mariana(parent_frame):
+        inner_frame = tk.Frame(parent_frame)
+
+        imagenes = [fotoMariana1, fotoMariana2, fotoMariana4, fotoMariana3]
+
+        for i in range(2):
+            for j in range(2):
+                imagen_label = tk.Label(inner_frame, image=imagenes[i * 2 + j], width=230, height=230,
+                                        relief="solid",
+                                        bd=2.5)
+                imagen_label.grid(row=i, column=j, padx=5, pady=5)
+
+        return inner_frame
+
+    def create_inner_frame_Samuel(parent_frame):
+        inner_frame = tk.Frame(parent_frame)
+
+        imagenes = [fotoSamuel1, fotoSamuel2, fotoSamuel3, fotoSamuel4]
+
+        for i in range(2):
+            for j in range(2):
+                imagen_label = tk.Label(inner_frame, image=imagenes[i * 2 + j], width=230, height=230,
+                                        relief="solid",
+                                        bd=2.5)
+                imagen_label.grid(row=i, column=j, padx=5, pady=5)
+
+        return inner_frame
+
+    def create_inner_frame_Juan(parent_frame):
+        inner_frame = tk.Frame(parent_frame)
+
+        imagenes = [fotoJuan1, fotoJuan2, fotoJuan3, fotoJuan4]
+
+        for i in range(2):
+            for j in range(2):
+                imagen_label = tk.Label(inner_frame, image=imagenes[i * 2 + j], width=230, height=230,
+                                        relief="solid",
+                                        bd=2.5)
+                imagen_label.grid(row=i, column=j, padx=5, pady=5)
+
+        return inner_frame
+
+    def create_inner_frame_Santiago(parent_frame):
+        inner_frame = tk.Frame(parent_frame)
+
+        imagenes = [fotoSantiago1, fotoSantiago2, fotoSantiago3, fotoSantiago4]
+
+        for i in range(2):
+            for j in range(2):
+                imagen_label = tk.Label(inner_frame, image=imagenes[i * 2 + j], width=230, height=230,
+                                        relief="solid",
+                                        bd=2.5)
+                imagen_label.grid(row=i, column=j, padx=5, pady=5)
+
+        return inner_frame
+
+    # crea Frames con fotos
+    inner_frame_David = create_inner_frame_David(frameP6)
+    # ubicar primer Frame
+    inner_frame_David.pack()
+
+    inner_frame_Mariana = create_inner_frame_Mariana(frameP6)
+    inner_frame_Samuel = create_inner_frame_Samuel(frameP6)
+    inner_frame_Juan = create_inner_frame_Juan(frameP6)
+    inner_frame_Santiago = create_inner_frame_Santiago(frameP6)
+
+    # DATA MANAGEMENT
+    # Serializado.crearObjetos()
+    Deserializado.deserializar()
+
+    # Window States
+    root.state("iconic")
+    ventana.state("normal")
+    ventana.tkraise()
 
     sk.set_theme("dark")
     root.mainloop()
