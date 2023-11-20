@@ -12,15 +12,16 @@ class VehiculoCarrera(Chasis, Decimales):
     def __init__(self, chasis, piloto):
         super().__init__(chasis.marca, chasis.modelo, chasis.velocidad, chasis.maniobrabilidad, chasis.precio)
         self.piloto = piloto
+        self.chasis = chasis
         self.id = VehiculoCarrera.idActual
         VehiculoCarrera.idActual += 1
         self.tiempo = 0
         self.distanciaRecorrida = 0
         self.terminado = False
         self.morido = False
-        self.velocidadTuneao = 0
+        self.velocidadTuneao = chasis.velocidad
         self.velocidadCircumstancias = 0
-        self.velocidadActual = 0
+        self.velocidadActual = chasis.velocidad
         self.probabilidadChoque = max(1 - piloto.habilidad - chasis.maniobrabilidad, 0.3)
         self.gasolina = 100
         self.piezasComprar = []
@@ -113,9 +114,6 @@ class VehiculoCarrera(Chasis, Decimales):
     @classmethod
     def crear_vehiculo_pilotos_no_elegidos(cls,piloto):
         modelo = str(cls.cantidad_vehiculos_default() + 1 )
-        velocidad = random.randint(1,59) + 200
-        precio = random.randint(1,5) * 3000
-        maniobrabilidad = random.randint(2,4) / 10
         aleron = Pieza.piezaNoElegida("A")
         llantas = Pieza.piezaNoElegida("N")
         motor = Pieza.piezaNoElegida("M")
@@ -124,6 +122,7 @@ class VehiculoCarrera(Chasis, Decimales):
         vechiculo.setMotor(motor)
         vechiculo.setNeumaticos(llantas)
         vechiculo.setAleron(aleron)
+        vechiculo.actualizar_velocidadT()
 
         return vechiculo
 
@@ -185,33 +184,33 @@ class VehiculoCarrera(Chasis, Decimales):
             self.actualizar_velocidad_actual()
 
     def frenar(self):
-        if self.velocidad_actual > 10:
-            self.velocidad_actual -= 10
+        if self.velocidadActual > 100:
+            self.velocidadActual -= 100
         else:
-            self.velocidad_actual = 0
+            self.velocidadActual = 70
 
     def hacer_maniobra(self):
         random_float = random.uniform(0, 1)
         if random_float > 0.5:
-            self.velocidad_actual += self.velocidad_actual * 0.1
+            self.velocidadActual += self.velocidadActual * 0.1
         else:
-            self.velocidad_actual -= self.velocidad_actual * 0.1
+            self.velocidadActual -= self.velocidadActual * 0.1
         self.actualizar_velocidad_actual()
 
     def defender(self):
         random_float = random.uniform(0, 1)
         if random_float > 0.5:
-            self.velocidad_actual += self.velocidad_actual * 0.05
+            self.velocidadActual += self.velocidadActual * 0.05
         else:
-            self.velocidad_actual -= self.velocidad_actual * 0.05
+            self.velocidadActual -= self.velocidadActual * 0.05
         self.actualizar_velocidad_actual()
 
     def derrapar(self):
         random_float = random.uniform(0, 1)
         if random_float > 0.5:
-            self.velocidad_actual -= self.velocidad_actual * 0.1
+            self.velocidadActual -= self.velocidadActual * 0.1
         else:
-            self.velocidad_actual += self.velocidad_actual * 0.1
+            self.velocidadActual += self.velocidadActual * 0.1
         self.actualizar_velocidad_actual()
 
     def llenar_gasolina(self):
@@ -244,6 +243,7 @@ class VehiculoCarrera(Chasis, Decimales):
         Parameters: None
         Returns: None
         """
+        self.velocidad = self.chasis.velocidad
         if self.aleron is not None and not self.aleron.isDanado:
             self.velocidadTuneao = self.get_velocidad() + self.aleron.getVelocidadAnadida()
 
@@ -255,3 +255,73 @@ class VehiculoCarrera(Chasis, Decimales):
 
         # self.actualizarVelocidadActual()  # Update actual speed
 
+
+
+    def getDistanciaRecorrida(self):
+        return self.distanciaRecorrida
+
+    def setDistanciaRecorrida(self, distanciaRecorrida):
+        self.distanciaRecorrida = distanciaRecorrida
+
+    def isTerminado(self):
+        return self.terminado
+
+    def setTerminado(self, terminado):
+        self.terminado = terminado
+
+    def isMorido(self):
+        return self.morido
+
+    def setMorido(self, morido):
+        self.morido = morido
+
+    def getVelocidadTuneao(self):
+        return self.velocidadTuneao
+
+    def setVelocidadTuneao(self, velocidadTuneao):
+        self.velocidadTuneao = velocidadTuneao
+
+    def getProbabilidadChoque(self):
+        return self.probabilidadChoque
+
+    def setProbabilidadChoque(self, probabilidadChoque):
+        self.probabilidadChoque = probabilidadChoque
+
+    def getGasolina(self):
+        return self.gasolina
+
+    def setGasolina(self, gasolina):
+        self.gasolina = gasolina
+
+    def getPiloto(self):
+        return self.piloto
+
+    def setPiloto(self, piloto):
+        self.piloto = piloto
+
+    def getTiempo(self):
+        return self.tiempo
+
+    def setTiempo(self, tiempo):
+        self.tiempo = tiempo
+
+    def getVelocidadActual(self):
+        return self.velocidadActual
+
+    def setVelocidadActual(self, velocidadActual):
+        self.velocidadActual = velocidadActual
+
+    def getVelocidadCircumstancias(self):
+        return self.velocidadCircumstancias
+
+    def setVelocidadCircumstancias(self, velocidadCircumstancias):
+        self.velocidadCircumstancias = velocidadCircumstancias
+
+    def getMotor(self):
+        return self.motor
+    def getNeumaticos(self):
+        return self.neumaticos
+    def getAleron(self):
+        return self.aleron
+    def getPiezasComprar(self):
+        return self.piezasComprar

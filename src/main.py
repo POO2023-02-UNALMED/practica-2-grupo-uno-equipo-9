@@ -1434,6 +1434,7 @@ class MenuApp:
 
     # Funcionalidad 4: Forjar una Alianza con el Maestro de Carreras
     def forjar_amistad(self, frame_name):
+        global image4
         # Funciones para el funcionamiento de la funcionalidad
         def elegir_piloto():
             global piloto_seleccionado, pilotos_desbloqueados, campeonato_piloto, maestros_disponibles
@@ -1560,7 +1561,7 @@ class MenuApp:
             jj=1
             for vehiculo in vehiculos_malditos:
                 listbox7.insert(jj, str(jj) + " | " + vehiculo.piloto.get_nombre() + " | " + str(vehiculo.velocidadActual) + " km/h | " +
-                                str(vehiculo.distanciaRecorrida) + " km")
+                                str(vehiculo.distancia) + " km")
 
             frame6.grid_remove()
             frame6.grid_forget()
@@ -1661,26 +1662,35 @@ class MenuApp:
         frame4.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         # Cartas
-        image4 = ImageTk.PhotoImage(Image.open("img/card_deck.png"))
-        extra_frame_4 = tk.Frame(frame4,width=image4.width(), height=image4.height())
-        # Create a canvas within the frame
-        canvas4 = tk.Canvas(extra_frame_4, width=image4.width(), height=image4.height())
-        canvas4.create_image(0, 0, anchor=tk.NW, image=image4)
-        # Calculate the position to center the image
-        relx = 0.5
-        rely = 0.5
-        # Place the image in the center
-        canvas4.grid(row=4, column=0, rowspan=3, padx=20, pady=20, sticky="nsew")
+        image_path = "img/card_deck.png"
+        img = Image.open(image_path)
+        img_width, img_height = 500, 500
+        resized_image = img.resize((550, 502))
 
+        image4 = ImageTk.PhotoImage(resized_image)
+
+        extra_frame_4 = tk.Frame(frame4, width=500, height=500)
         extra_frame_4.grid(row=4, column=0, rowspan=3, padx=20, pady=20, sticky="nsew")
 
+        img_label = tk.Label(extra_frame_4, image=image4)
+        img_label.grid(row=0, column=0)
 
+        # Set padding for the buttons within the extra_frame_4
+        button_padding_x = 25
+        button_padding_y = 88
 
-        # TODO: Ciclo para los botones de las cartas
+        # Calculate the dimensions for evenly placing square buttons with padding
+        button_width = 50
+        button_height = 50
 
-        button4 = tk.Button(extra_frame_4, text="1", command=lambda: elegir_destino("1"))
-        button4.place(relx=0.2, rely=0.1, anchor=tk.CENTER)
-        button4.configure(justify="center")
+        # Create 21 buttons with numbers from 1 to 21 and place them evenly on top of the image with padding
+        for i in range(1, 22):
+            row = (i - 1) // 7
+            col = (i - 1) % 7
+            x_coordinate = col * (button_width + button_padding_x) + button_padding_x
+            y_coordinate = row * (button_height + button_padding_y) + button_padding_y
+            button = tk.Button(extra_frame_4, text=str(i), command=lambda i=i: elegir_destino(str(i)))
+            button.place(x=x_coordinate, y=y_coordinate, width=button_width, height=button_height)
 
         entry4 = tk.Entry(extra_frame_4)
         entry4.place(relx=0.8, rely=0.1, anchor=tk.CENTER)
@@ -1778,7 +1788,11 @@ class MenuApp:
             if director_carrera.posicionesCorruptas:
                 carrera_actual.setPosiciones(director_carrera.posicionesCorruptas)
             else:
-                carrera_actual.setPosiciones(vehiculo for vehiculo in VehiculoCarrera.listaVehiculos if vehiculo.piloto in campeonato.getListaPilotos())
+                lista_posiciones = []
+                for vehiculo in VehiculoCarrera.listaVehiculos:
+                    if vehiculo.piloto in campeonato.getListaPilotos():
+                        lista_posiciones.append(vehiculo)
+                carrera_actual.setPosiciones(lista_posiciones)
 
             # Pasar al siguiente frame
             frame2.grid_remove()
@@ -1791,27 +1805,43 @@ class MenuApp:
             global campeonato, carreras, cant_carreras, carrera_actual, piloto_elegido, vehiculo_elegido
             button3_0.place_forget()
             if not carrera_actual.actualizarTerminado():
+                print(carrera_actual.actualizarTerminado)
                 cant_iteraciones = random.randint(2,8)
                 for i in range(cant_iteraciones):
                     carrera_actual.actualizarPosiciones()
                     if not vehiculo_elegido.morido and not vehiculo_elegido.terminado:
                         carrera_actual.actualizarGasolina(piloto_elegido,carrera_actual)
-                # TODO: ACTUALIZAR POSICIONES Y STATS DEL CARRO
+                if (vehiculo_elegido.isMorido()):
+                    messagebox.showerror("KABOOM!","Te has chocado. La carrera finalizara automaticamente.")
+                    while True:
+                        if carrera_actual.actualizarTerminado():
+                            break
+                        carrera_actual.actualizarPosiciones()
+                # TODO: ACTUALIZAR STATS DEL CARRO
+                label3_1.configure(text="Distancia Recorrida: {}/{}".format(str(vehiculo_elegido.getDistanciaRecorrida()), str(carrera_actual.getDistancia())))
+                label3_2.configure(text="Tiempo Transcurrido: {} s.".format(str(vehiculo_elegido.getTiempo())))
+                label3_3.configure(text="Gasolina del vehiculo: {}/100".format(str(vehiculo_elegido.getGasolina())))
+                # TODO: ACTUALIZAR POSICIONES EN LA TABLA
+                listbox3.delete(0,"end")
+                jj = 1
+                for vehiculo in carrera_actual.posiciones:
+                    listbox3.insert(jj, "{} | {} | {}".format(str(jj),vehiculo.piloto.get_nombre(),str(vehiculo.getDistanciaRecorrida())))
+                # OPCIONES
                 lista_opciones = carrera_actual.actualizarOpciones()
                 if lista_opciones[0]:
-                    button3_1.place(relx=0.9, rely=0.4)
+                    button3_1.place(relx=0.8, rely=0.3)
                 if lista_opciones[1]:
-                    button3_2.place(relx=0.9, rely=0.5)
+                    button3_2.place(relx=0.8, rely=0.4)
                 if lista_opciones[2]:
-                    button3_3.place(relx=0.9, rely=0.6)
+                    button3_3.place(relx=0.8, rely=0.5)
                 if lista_opciones[3]:
-                    button3_4.place(relx=0.9, rely=0.7)
+                    button3_4.place(relx=0.8, rely=0.6)
                 if lista_opciones[4]:
-                    button3_5.place(relx=0.9, rely=0.8)
+                    button3_5.place(relx=0.8, rely=0.7)
                 if vehiculo_elegido.velocidadActual < 200:
-                    button3_6.place(relx=0.9, rely=0.9)
+                    button3_6.place(relx=0.8, rely=0.8)
             else:
-                button3.place(relx=0.9,rely=0.9)
+                button3.place(relx=0.8,rely=0.8)
 
         def aprovechar_drs():
             global vehiculo_elegido
@@ -1871,9 +1901,9 @@ class MenuApp:
             button3_4.place_forget()
             button3_5.place_forget()
             button3_6.place_forget()
-            button3_6_1.place(relx=0.5, rely=0.5)
-            button3_6_2.place(relx=0.5, rely=0.5)
-            button3_6_3.place(relx=0.5, rely=0.5)
+            button3_6_1.place(relx=0.8, rely=0.4)
+            button3_6_2.place(relx=0.8, rely=0.5)
+            button3_6_3.place(relx=0.8, rely=0.6)
         def rellenar_gasolina():
             global vehiculo_elegido
             button3_6_1.place_forget()
@@ -2002,13 +2032,25 @@ class MenuApp:
                             "Pon atencion! Tienes que tomar las decisiones correctas para poder ganar!")
         frame3.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
-        mini_frame3 = tk.Frame(frame3)
+        mini_frame3 = tk.Frame(frame3,width=800,height=600)
+        mini_frame3.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
         # TODO: IMAGEN
         # TODO: TABLA DE LAS POSICIONES
+        listbox3 = tk.Listbox(mini_frame3)
+        listbox3.place(relx=0.2, rely=0.55, anchor=tk.CENTER)
         # TODO: TABLA CONFIGURACION DEL VEHICULO
+        label3_1 = tk.Label(mini_frame3,text="Distancia Recorrida: ")
+        label3_1.place(relx=0.2,rely=0.1, anchor=tk.CENTER)
+        label3_1.configure(justify="center")
+        label3_2 = tk.Label(mini_frame3,text="Tiempo Transcurrido: ")
+        label3_2.place(relx=0.2,rely=0.2, anchor=tk.CENTER)
+        label3_2.configure(justify="center")
+        label3_3 = tk.Label(mini_frame3,text="Gasolina del vehiculo: ")
+        label3_3.place(relx=0.2,rely=0.3, anchor=tk.CENTER)
+        label3_3.configure(justify="center")
         # Boton para correr la carrera
         button3_0 = tk.Button(mini_frame3, text="CORRER!", command=lambda: correr_carrera())
-        button3_0.place(relx=0.5,rely=0.5)
+        button3_0.place(relx=0.5,rely=0.5, anchor=tk.CENTER)
         button3_0.configure(justify="center")
         # Botones para las selecciones de las acciones
         button3_1 = tk.Button(mini_frame3, text="Aprovechar DRS (FIAOO)", command=lambda: aprovechar_drs())
@@ -2027,7 +2069,7 @@ class MenuApp:
         button3_6_1.configure(justify="center")
         button3_6_2 = tk.Button(mini_frame3, text="Reparar el Vehiculo", command=lambda: reparar())
         button3_6_2.configure(justify="center")
-        button3_6_3 = tk.Button(mini_frame3, text="Entrar a la Pit Stop", command=lambda: salir_pit_stop())
+        button3_6_3 = tk.Button(mini_frame3, text="Salir de la Pit Stop", command=lambda: salir_pit_stop())
         button3_6_3.configure(justify="center")
 
         # Boton para terminar la carrera

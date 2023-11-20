@@ -1,8 +1,8 @@
 import random
-from typing import List
+# from typing import List
 from decimal import Decimal, ROUND_HALF_UP
 
-from src.gestor_aplicacion.campeonato import VehiculoCarrera
+from src.gestor_aplicacion.campeonato.VehiculoCarrera import VehiculoCarrera
 
 
 class Carrera:
@@ -37,7 +37,7 @@ class Carrera:
 
     def actualizarGasolina(self, piloto, carrera):
         carroElegidoCarrera = None
-        for vehiculoCarrera in VehiculoCarrera.listaVehiculosCarrera:
+        for vehiculoCarrera in VehiculoCarrera.listaVehiculos:
             if vehiculoCarrera.getPiloto() == piloto:
                 carroElegidoCarrera = vehiculoCarrera
         if carroElegidoCarrera.getGasolina() > 3:
@@ -47,6 +47,7 @@ class Carrera:
 
     def actualizarPosiciones(self):
         rand = random.Random()
+        print(self.posiciones)
         if self.posiciones:
             for vehiculo in self.posiciones:
                 vehiculo.setDistanciaRecorrida(vehiculo.getDistanciaRecorrida() + vehiculo.getVelocidadActual())
