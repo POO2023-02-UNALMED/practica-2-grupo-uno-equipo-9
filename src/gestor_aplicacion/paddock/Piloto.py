@@ -93,10 +93,10 @@ class Piloto(Persona, Decimales):
         vehiculos_devolver = [VehiculoCarrera.vehiculos_piloto(piloto)[0]]
         vehiculo_maldito = None
 
-        for vehiculo_carrera in VehiculoCarrera.listaVehiculosCarrera:
+        for vehiculo_carrera in VehiculoCarrera.listaVehiculos:
             if vehiculo_carrera.piloto == self:
                 vehiculo_maldito = vehiculo_carrera
-            if campeonato.listaPilotos.__contains__(vehiculo_carrera.piloto) and vehiculo_carrera.piloto != piloto:
+            if campeonato._listaPilotos.__contains__(vehiculo_carrera.piloto) and vehiculo_carrera.piloto != piloto:
                 vehiculos_devolver.append(vehiculo_carrera)
 
         if plata >= (self.valorContrato * 3 / 4):
@@ -162,5 +162,7 @@ class Piloto(Persona, Decimales):
     def setPatrocinador(self,patrocinador):
         self.patrocinador = patrocinador
 
+    def getSanciones(self):
+        return self.sanciones
 
 

@@ -35,6 +35,39 @@ class Equipo:
         return nuevo_equipo
 
     @classmethod
+    def puntuarEquipos(cls, terminados, plata, campeonato):
+        puntos_actuales = 13
+        for vehiculo in terminados:
+            piloto = vehiculo.piloto.buscarPiloto(vehiculo.piloto)
+
+            if not vehiculo.morido:
+                piloto.puntos += puntos_actuales
+                piloto.equipo.recalcularPuntos(campeonato)
+
+                if puntos_actuales >= 8:
+                    puntos_actuales -= 2
+                else:
+                    puntos_actuales -= 1
+
+            if piloto.sanciones != 0:
+                piloto.puntos += puntos_actuales
+
+            piloto.registrarTiempo(vehiculo.tiempo)
+
+        for equipo in campeonato.listaEquipos:
+            equipo.recalcularPuntos(campeonato)
+
+        terminados[0].piloto.recibirPlata(plata * 0.9)
+
+        for patrocinador in terminados[0].piloto.equipo.patrocinadoresEquipo:
+            patrocinador.recibirPlata(plata * 0.5)
+
+        terminados[1].piloto.recibirPlata(plata * 0.3)
+        terminados[2].piloto.recibirPlata(plata * 0.2)
+
+        Equipo.organizarEquiposPuntos(campeonato)
+
+    @classmethod
     def organizar_equipos_puntos(cls, campeonato):
         lista_organizada = list(campeonato.lista_equipos)
         for equipo in lista_organizada:

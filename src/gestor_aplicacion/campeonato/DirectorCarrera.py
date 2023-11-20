@@ -63,13 +63,16 @@ class DirectorCarrera(Persona):
     def pilotos_desfavorecidos(self, plata, piloto, campeonato):
         carrera_director = self.carrera_campeonato(campeonato)
         pilotos_desfavorecidos = []
-        for piloto1 in campeonato.lista_pilotos:
-            if piloto.equipo != piloto1.equipo and piloto1.valor_contrato * 0.05 < plata and piloto1 not in carrera_director.equipos_beneficiados:
+        for piloto1 in campeonato._listaPilotos:
+            if piloto.contrato != piloto1.contrato and piloto1.valorContrato * 0.05 < plata and piloto1.contrato not in carrera_director.equiposBeneficiados:
                 pilotos_desfavorecidos.append(piloto1)
-        return pilotos_desfavorecidos
+        if pilotos_desfavorecidos:
+            return pilotos_desfavorecidos
+        else:
+            return random.sample(campeonato._listaPilotos,5)
 
     def carrera_campeonato(self, campeonato):
-        lista_carreras_director = [carrera for carrera in campeonato.lista_carreras if carrera.director_carrera == self]
+        lista_carreras_director = [carrera for carrera in campeonato._listaCarreras if carrera.director_carrera == self]
         return random.choice(lista_carreras_director)
 
     @staticmethod

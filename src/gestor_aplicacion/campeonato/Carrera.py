@@ -100,10 +100,10 @@ class Carrera:
         self.mes = mes
 
     def getNombreCircuito(self):
-        return self.nombreCircuito
+        return self.nombre_circuito
 
     def setNombreCircuito(self, nombre):
-        self.nombreCircuito = nombre
+        self.nombre_circuito = nombre
 
     def getDistancia(self):
         return self.distancia
@@ -118,10 +118,10 @@ class Carrera:
         self.premioEfectivo = premio
 
     def getDirectorCarrera(self):
-        return self.directorCarrera
+        return self.director_carrera
 
     def setDirectorCarrera(self, director):
-        self.directorCarrera = director
+        self.director_carrera = director
         director.setCarrera(self)
 
     def getCiudad(self):

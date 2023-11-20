@@ -45,19 +45,19 @@ class VehiculoCarrera(Chasis, Decimales):
         tipoPieza = pieza.tipo
         if tipoPieza == "A":
             self.aleron = pieza
-            self.actualizarVelocidadT()
+            self.actualizar_velocidadT()
         elif tipoPieza == "N":
             self.neumaticos = pieza
-            self.actualizarVelocidadT()
+            self.actualizar_velocidadT()
         elif tipoPieza == "M":
             self.motor = pieza
-            self.actualizarVelocidadT()
+            self.actualizar_velocidadT()
 
     def configurarVehiculo(self, piezas):
         for pieza in piezas:
             self.cambiarPieza(pieza)
             pieza.elegida = True
-        self.llenarGasolina()
+        self.llenar_gasolina()
 
     def repararVehiculo(self):
         precio = (self.motor.precio + self.aleron.precio + self.neumaticos.precio) / 2
@@ -70,60 +70,6 @@ class VehiculoCarrera(Chasis, Decimales):
             return True
         return False
 
-    def llenarGasolina(self):
-        self.gasolina = 100
-
-    def defender(self, carrera):
-        randomNumber = random.randint(1, 10)
-        if randomNumber <= 5:
-            self.velocidadCircumstancias = 20
-            self.actualizarVelocidadActual()
-        else:
-            self.velocidadCircumstancias = -20
-            self.actualizarVelocidadActual()
-
-    def unico_vehiculo(self):
-        for vehiculo in VehiculoCarrera.listaVehiculos:
-            if vehiculo != self and vehiculo.piloto == self.piloto:
-                vehiculo.piloto = None
-
-    def derrapar(self, carrera):
-        randomNumber = random.randint(1, 10)
-        if randomNumber == 1:
-            self.neumaticos.danado = True
-            self.actualizarVelicidadActual()
-        elif randomNumber <= 9:
-            self.velocidadCircumstancias = 30
-            self.actualizarVelocidadActual()
-        else:
-            numeroAleatorio = random.random()
-            if numeroAleatorio <= self.probabilidadChoque:
-                self.chocar(carrera)
-            else:
-                self.velocidadCircumstancias = 30
-                self.actualizarVelocidadActual()
-
-    def manejarNormal(self, carrera):
-        self.velocidadCircumstancias = 0
-        self.actualizarVelocidadActual()
-        numeroAleatorio = random.random()
-        if numeroAleatorio <= self.probabilidadChoque:
-            self.chocar(carrera)
-
-    def sumarGasolina(self):
-        if self.gasolina < 100:
-            self.gasolina += 10
-
-    def actualizarVelocidadActual(self):
-        self.velocidadActual = self.velocidadTuneao + self.velocidadCircumstancias
-
-    def actualizarVelocidadT(self):
-        if self.motor is None or self.aleron is None or self.neumaticos is None:
-            self.velocidadTuneao = self.velocidad
-        else:
-            self.velocidadTuneao = self.motor.velocidadAnadida + self.aleron.velocidadAnadida + self.neumaticos.velocidadAnadida + self.velocidad
-        self.actualizarVelocidadActual()
-
     @staticmethod
     def setVehiculos(lista_vehiculos):
         VehiculoCarrera.listaVehiculos = lista_vehiculos
@@ -134,15 +80,15 @@ class VehiculoCarrera(Chasis, Decimales):
 
     def setMotor(self, motor):
         self.motor = motor
-        self.actualizarVelocidadT()
+        self.actualizar_velocidadT()
 
     def setNeumaticos(self, neumaticos):
         self.neumaticos = neumaticos
-        self.actualizarVelocidadT()
+        self.actualizar_velocidadT()
 
     def setAleron(self, aleron):
         self.aleron = aleron
-        self.actualizarVelocidadT()
+        self.actualizar_velocidadT()
 
 
 
@@ -150,7 +96,7 @@ class VehiculoCarrera(Chasis, Decimales):
     def vehiculos_piloto(cls, piloto):
         vehiculos_del_piloto = []
         for vehiculo in cls.listaVehiculos:
-            if vehiculo.piloto == piloto:
+            if vehiculo.piloto.get_nombre() == piloto.get_nombre():
                 vehiculos_del_piloto.append(vehiculo)
         if len(vehiculos_del_piloto) == 0:
             return None
@@ -184,5 +130,128 @@ class VehiculoCarrera(Chasis, Decimales):
     def setPiezasComprar(self, piezas):
         self.piezasComprar = piezas
 
+    @classmethod
+    def manipular_vehiculos(cls, vehiculo_participantes, pilotos_desfavorecidos, piloto_maldito, piloto, plata,
+                            director_carrera, is_method_1=True):
+        """
+        Manipula la posición de los vehículos en una carrera, aplicando diferentes efectos según las condiciones de los pilotos.
 
+        Parametros de entrada:
+        - vehiculo_participantes: Lista de vehículos participantes (tipo ArrayList<VehiculoCarrera>)
+        - pilotos_desfavorecidos: Lista de pilotos desfavorecidos (tipo ArrayList<Piloto>)
+        - piloto_maldito: Piloto maldito (tipo Piloto)
+        - piloto: Piloto (tipo Piloto)
+        - plata: Cantidad de plata (tipo double)
+        - director_carrera: Director de carrera (tipo DirectorCarrera)
+        - is_method_1: Booleano para indicar qué versión del método ejecutar
+
+        Parametros de salida: Lista de vehículos con sus posiciones o velocidades manipuladas.
+        """
+        rand = random.Random()
+        posiciones_corruptas = []
+
+        for vehiculo_carrera in vehiculo_participantes:
+            if is_method_1:
+                if vehiculo_carrera.piloto == piloto_maldito:
+                    vehiculo_carrera.distanciaRecorrida = -50 - rand.randint(1, 10) * 30
+                elif vehiculo_carrera.piloto == piloto:
+                    vehiculo_carrera.distanciaRecorrida = 50 + rand.randint(1, 10) * 30
+                elif vehiculo_carrera.piloto in pilotos_desfavorecidos:
+                    vehiculo_carrera.distanciaRecorrida = -10 - rand.randint(1, 10) * 20
+            else:
+                if vehiculo_carrera.piloto == piloto:
+                    vehiculo_carrera.velocidadActual += 50
+                else:
+                    vehiculo_carrera.velocidadActual = max(vehiculo_carrera.velocidadActual-20,150)
+
+            posiciones_corruptas.append(vehiculo_carrera)
+
+        return posiciones_corruptas
+
+    def aprovechar_drs(self):
+        random_number = random.randint(1, 10)
+        if random_number == 1:
+            self.aleron.danar()
+            self.actualizar_velocidad_actual()
+        elif random_number <= 9:
+            self.velocidad_circunstancias = 50
+            self.actualizar_velocidad_actual()
+        else:
+            random_float = random.random()
+            if random_float > 0.5:
+                self.velocidad_circunstancias = 30
+            else:
+                self.velocidad_circunstancias = 60
+            self.actualizar_velocidad_actual()
+
+    def frenar(self):
+        if self.velocidad_actual > 10:
+            self.velocidad_actual -= 10
+        else:
+            self.velocidad_actual = 0
+
+    def hacer_maniobra(self):
+        random_float = random.uniform(0, 1)
+        if random_float > 0.5:
+            self.velocidad_actual += self.velocidad_actual * 0.1
+        else:
+            self.velocidad_actual -= self.velocidad_actual * 0.1
+        self.actualizar_velocidad_actual()
+
+    def defender(self):
+        random_float = random.uniform(0, 1)
+        if random_float > 0.5:
+            self.velocidad_actual += self.velocidad_actual * 0.05
+        else:
+            self.velocidad_actual -= self.velocidad_actual * 0.05
+        self.actualizar_velocidad_actual()
+
+    def derrapar(self):
+        random_float = random.uniform(0, 1)
+        if random_float > 0.5:
+            self.velocidad_actual -= self.velocidad_actual * 0.1
+        else:
+            self.velocidad_actual += self.velocidad_actual * 0.1
+        self.actualizar_velocidad_actual()
+
+    def llenar_gasolina(self):
+        self.gasolina = 100
+
+    def reparar_vehiculo(self):
+        precio = (self.motor.precio + self.aleron.precio + self.neumaticos.precio) / 2
+        equipo = self.piloto.equipo
+        if equipo.plata >= precio:
+            equipo.plata -= precio
+            self.aleron.arreglar()
+            self.motor.arreglar()
+            self.neumaticos.arreglar()
+            return True
+        else:
+            return False
+
+    def actualizar_velocidad_actual(self):
+        """
+        Description: Updates the actual speed of the vehicle based on tuned speed and circumstances speed.
+        Parameters: None
+        Returns: None
+        """
+        self.actualizar_velocidadT()  # Update tuned speed
+        self.velocidadActual = self.velocidadTuneao + self.velocidadCircumstancias  # Update actual speed
+
+    def actualizar_velocidadT(self):
+        """
+        Description: Updates the tuned speed of the vehicle based on the speed of individual parts.
+        Parameters: None
+        Returns: None
+        """
+        if self.aleron is not None and not self.aleron.isDanado:
+            self.velocidadTuneao = self.get_velocidad() + self.aleron.getVelocidadAnadida()
+
+        if self.neumaticos is not None and not self.neumaticos.isDanado:
+            self.velocidadTuneao = self.get_velocidad() + self.neumaticos.getVelocidadAnadida()
+
+        if self.motor is not None and not self.motor.isDanado:
+            self.velocidadTuneao = self.get_velocidad() + self.motor.getVelocidadAnadida()
+
+        # self.actualizarVelocidadActual()  # Update actual speed
 

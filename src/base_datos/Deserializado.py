@@ -12,6 +12,7 @@ from src.gestor_aplicacion.ubicaciones.Ciudad import Ciudad
 
 class Deserializado():
 
+    @staticmethod
     def deserializar():
 
         #CAMPEONATOS
@@ -74,3 +75,32 @@ class Deserializado():
         Circuito.set_circuitos(datos)
         archivo.close()
 
+        # TODO: VERIFICAR LAS COSAS
+        for vehiculo in VehiculoCarrera.listaVehiculos:
+            for pilotico in Piloto.listaPilotos:
+                if vehiculo.piloto.get_nombre() == pilotico.get_nombre():
+                    vehiculo.piloto = pilotico
+                    break
+
+        for piloto in Piloto.listaPilotos:
+            for equipo in Equipo.equipos:
+                if equipo.get_nombre() == piloto.contrato.get_nombre():
+                    piloto.contrato = equipo
+                    break
+
+        for campeonato in Campeonato.campeonatos:
+            if campeonato._desbloqueado:
+                lista_pilotos=[]
+                lista_equipos=[]
+                for piloto in Piloto.listaPilotos:
+                    for pilotico in campeonato._listaPilotos:
+                        if pilotico.get_nombre() == piloto.get_nombre():
+                            lista_pilotos.append(piloto)
+                            break
+                for equipo in Piloto.listaPilotos:
+                    for equipito in campeonato._listaPilotos:
+                        if equipito.get_nombre() == equipo.get_nombre():
+                            lista_equipos.append(equipo)
+                            break
+                campeonato._listaPilotos = lista_pilotos
+                campeonato._listaEquipos = lista_equipos
