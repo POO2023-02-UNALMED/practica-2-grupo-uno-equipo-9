@@ -1490,9 +1490,11 @@ class MenuApp:
             frame4.tkraise()
 
         # Para frame 4
-        def elegir_neumatico():
-            global neumatico_elegido, neumaticos_disponibles, combinaciones3, vehiculo_seleccionado, combinaciones2, motores_disponibles
+        def elegir_destino(button_text):
+            global piloto_seleccionado, campeonato_piloto, maestros_disponibles, maestro_elegido, plata_ofrecida, selecciones
             # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
+            if len(selecciones) < 3:
+
             neumatico_elegido = neumaticos_disponibles[int(entry4.get()) - 1]
             combinaciones3 = Pieza.combinacionesDisponibles(vehiculo_seleccionado, neumatico_elegido, combinaciones2)
             motores_disponibles = Pieza.filterMotores(combinaciones3)
@@ -1628,7 +1630,7 @@ class MenuApp:
         frame4 = FieldFrame(self.frames[frame_name], None, "Elige tu Destino",
                             "La 'conversacion' sigue de manera normal, y repentinamente, el Director te pide ir a 'un lugar mas tranquilo'\n" +
                             "...\n" +
-                            "Llegan a una sala oscura, y no es sino parpadera, y enfrente tuyo encuentras un manojo de cartas organizado\n" +
+                            "Llegan a una sala oscura, y no es sino parpadear, y enfrente tuyo encuentras un manojo de cartas organizado\n" +
                             "'Vamos, escoge tres cartas'\n"
                             "'La primera es tu pasado, la segunda, tu presente, y la ultima tu futuro'")
         frame4.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
@@ -1636,10 +1638,6 @@ class MenuApp:
         entry4 = tk.Entry(frame4)
         entry4.grid(column=0, row=6, padx=20, pady=20)
         entry4.configure(justify="center", state="disabled")
-
-        button4 = tk.Button(frame4, text="Elegir Neumatico", command=lambda: elegir_neumatico())
-        button4.grid(column=0, row=7, padx=20, pady=20)
-        button4.configure(justify="center")
 
         # Cartas
         extra_frame_4 = tk.Frame(frame4)
@@ -1650,12 +1648,17 @@ class MenuApp:
         image_label_4 = tk.Label(frame4, image=image4)
         image_label_4.place(relx=0.5,rely=0.5,relwidth=1,relheight=1)
 
+        button4 = tk.Button(frame4, text="1", command=lambda: elegir_neumatico())
+        button4.grid(column=0, row=7, padx=20, pady=20)
+        button4.configure(justify="center")
+
         # Variables
         selecciones = []
 
-        # Frame 5: Elegir Motor
-        frame5 = FieldFrame(self.frames[frame_name], None, "Elegir Motor",
-                            "Estos son los motores disponibles para tu piloto de acuerdo a su presupuesto y de la marca de tu chasis. Elige uno!")
+        # Frame 5: Elegir Piloto para Castigar
+        frame5 = FieldFrame(self.frames[frame_name], None, "Maldecir a un contrincante",
+                            "El Maestro de Carreras saca una lista, y poco a poco, va tachando nombres.\n" +
+                            "Pronto, te la entrega, parece ser que quiere que escojas alguien de ella")
         frame5.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         listbox5 = tk.Listbox(frame5)
@@ -1664,7 +1667,7 @@ class MenuApp:
         entry5.grid(column=0, row=6, padx=20, pady=20)
         entry5.configure(justify="center")
 
-        button5 = tk.Button(frame5, text="Elegir Motor", command=lambda: elegir_motor())
+        button5 = tk.Button(frame5, text="Marcar para maldecir", command=lambda: maldecir_piloto())
         button5.grid(column=0, row=7, padx=20, pady=20)
         button5.configure(justify="center")
 
