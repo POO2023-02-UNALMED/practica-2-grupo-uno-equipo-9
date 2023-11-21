@@ -614,7 +614,7 @@ class MenuApp:
             jj = 1
 
             for director in directores_para_elegir:
-                listbox2.insert(jj, str(jj) + " | " + director.get_nombre())
+                tablaDirectoresCarrera.insert(parent='', index=tk.END, values=(jj,director.get_nombre()))
                 jj += 1
 
             # Pasar al siguiente frame
@@ -658,7 +658,7 @@ class MenuApp:
             circuitos_para_elegir = Circuito.circuitos_disponibles(int(mes_elegido), circuitos_vender)
             jj = 1
             for circuito in circuitos_para_elegir:
-                listbox4.insert(jj, str(jj) + " | " + circuito.get_nombre())
+                tablaCiudadesDisponibles.insert(parent='', index=tk.END, values=(jj,circuito.get_nombre()))
                 jj += 1
 
             ciudades_nombres = [ciudad.get_nombre() for ciudad in ciudades_disponibles]
@@ -711,9 +711,7 @@ class MenuApp:
 
             jj = 1
             for carrera in campeonato.getListaCarreras():
-                listbox6.insert(jj,
-                                str(jj) + " | " + carrera.nombre_circuito + " | " + carrera.getFecha() + " | " + str(
-                                    carrera.getPremioEfectivo()))
+                tablaCalendarioCarreras.insert(parent='', index=tk.END, values=(carrera.nombre_circuito ,carrera.getFecha(),carrera.getPremioEfectivo()))
                 jj += 1
 
             # Pasar al siguiente frame
@@ -742,13 +740,21 @@ class MenuApp:
         frame1.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
         # Componentes del frame
         listbox1 = tk.Listbox(frame1)
+
+        # crear Tabla
+        tablaCampeonatosDesbloqueados = ttk.Treeview(frame1, columns=('OPCION', 'NOMBRE'), show='headings')
+        # configurar los cabezales
+        tablaCampeonatosDesbloqueados.heading('OPCION', text='OPCION')
+        tablaCampeonatosDesbloqueados.heading('NOMBRE', text='NOMBRE')
+        tablaCampeonatosDesbloqueados.column('OPCION',  anchor='c')
+
         ii = 1
 
         campeonatos_desbloqueados = Campeonato.campeonatosDesbloqueados()
         for campeonato in campeonatos_desbloqueados:
-            listbox1.insert(ii, str(ii) + " | " + campeonato.getNombre())
+            tablaCampeonatosDesbloqueados.insert(parent='', index=tk.END, values=(ii,campeonato.getNombre()))
             ii += 1
-        listbox1.grid(column=0, row=3, rowspan=3, padx=20, pady=20)
+        tablaCampeonatosDesbloqueados.grid(column=0, row=3, rowspan=3, padx=20, pady=20)
         entry1 = tk.Entry(frame1)
         entry1.grid(column=0, row=6, padx=20, pady=20)
         entry1.configure(justify="center")
@@ -775,7 +781,15 @@ class MenuApp:
         frame2.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         listbox2 = tk.Listbox(frame2)
-        listbox2.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
+
+        # crear Tabla
+        tablaDirectoresCarrera = ttk.Treeview(frame2, columns=('OPCION', 'NOMBRE'), show='headings')
+        # configurar los cabezales
+        tablaDirectoresCarrera.heading('OPCION', text='OPCION')
+        tablaDirectoresCarrera.heading('NOMBRE', text='NOMBRE')
+        tablaDirectoresCarrera.column('OPCION', anchor='c')
+
+        tablaDirectoresCarrera.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
         entry2 = tk.Entry(frame2)
         entry2.grid(column=0, row=6, padx=20, pady=20)
         entry2.configure(justify="center")
@@ -848,8 +862,19 @@ class MenuApp:
 
         label41 = tk.Label(frame4, text="Estos son los circuitos disponibles:")
         label41.grid(column=0, row=4, padx=20, pady=20, sticky="nsew")
+
+
         listbox4 = tk.Listbox(frame4)
-        listbox4.grid(column=0, row=5, rowspan=2, padx=20, pady=20, sticky="nsew")
+
+        # crear Tabla
+        tablaCiudadesDisponibles = ttk.Treeview(frame4, columns=('OPCION', 'NOMBRE'), show='headings')
+        # configurar los cabezales
+        tablaCiudadesDisponibles.heading('OPCION', text='OPCION')
+        tablaCiudadesDisponibles.heading('NOMBRE', text='NOMBRE')
+        tablaCiudadesDisponibles.column('OPCION', anchor='c')
+
+
+        tablaCiudadesDisponibles.grid(column=0, row=5, rowspan=2, padx=20, pady=20, sticky="nsew")
 
         entry4 = tk.Entry(frame4)
         entry4.grid(column=0, row=9, padx=20, pady=20)
@@ -899,7 +924,16 @@ class MenuApp:
         label6.grid(column=0, row=3, padx=20, pady=20, sticky="nsew")
 
         listbox6 = tk.Listbox(frame6)
-        listbox6.grid(column=0, row=8, rowspan=3, padx=20, pady=20, sticky="nsew")
+
+        # crear Tabla
+        tablaCalendarioCarreras = ttk.Treeview(frame6, columns=('CARRERA', 'FECHA','PREMIO'), show='headings' )
+        # configurar los cabezales
+        tablaCalendarioCarreras.heading('CARRERA', text='CARRERA')
+        tablaCalendarioCarreras.heading('FECHA', text='FECHA')
+        tablaCalendarioCarreras.heading('PREMIO', text='PREMIO')
+
+
+        tablaCalendarioCarreras.grid(column=0, row=8, rowspan=3, padx=20, pady=20, sticky="nsew")
         button6 = tk.Button(frame6, text="Volver a Preparar un Campeonato", command=lambda: muerte_y_destruccion())
         button6.grid(column=0, row=11, padx=20, pady=20)
         button6.configure(justify="center")
@@ -1051,16 +1085,25 @@ class MenuApp:
             frame1.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
             frame1.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
             # Componentes del frame
-            listbox1 = tk.Listbox(frame1)
+            #listbox1 = tk.Listbox(frame1)
+            # crear Tabla
+            tablaPilotoDesbloqueado = ttk.Treeview(frame1, columns=('OPCION', 'NOMBRE','CONTRATO'), show='headings')
+            # configurar los cabezales
+            tablaPilotoDesbloqueado.heading('OPCION', text='OPCION')
+            tablaPilotoDesbloqueado.heading('NOMBRE', text='NOMBRE')
+            tablaPilotoDesbloqueado.heading('CONTRATO', text='EQUIPO')
+
+
+
             ii = 1
 
             pilotos_desbloqueados = Piloto.pilotos_desbloqueados()
 
             for piloto in pilotos_desbloqueados:
-                listbox1.insert(ii, str(ii) + " | " + piloto.nombre + " | " + piloto.contrato.nombre)
+                tablaPilotoDesbloqueado.insert(parent='', index=tk.END, values=(ii,piloto.nombre(),"piloto.contrato.nombre()"))
                 ii += 1
 
-            listbox1.grid(column=0, row=3, rowspan=3, padx=20, pady=20)
+            tablaPilotoDesbloqueado.grid(column=0, row=3, rowspan=3, padx=20, pady=20)
             entry1 = tk.Entry(frame1)
             entry1.grid(column=0, row=6, padx=20, pady=20)
             entry1.configure(justify="center")
@@ -1313,15 +1356,22 @@ class MenuApp:
         frame1.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
         # Componentes del frame
         listbox1 = tk.Listbox(frame1)
+        tablaPilotoDesbloqueado = ttk.Treeview(frame1, columns=('OPCION', 'NOMBRE', 'CONTRATO'), show='headings')
+        # configurar los cabezales
+        tablaPilotoDesbloqueado.heading('OPCION', text='OPCION')
+        tablaPilotoDesbloqueado.heading('NOMBRE', text='NOMBRE')
+        tablaPilotoDesbloqueado.heading('CONTRATO', text='EQUIPO')
+
         ii = 1
 
         pilotos_desbloqueados = Piloto.pilotos_desbloqueados()
 
         for piloto in pilotos_desbloqueados:
-            listbox1.insert(ii, str(ii) + " | " + piloto.nombre + " | " + piloto.contrato.nombre)
+            tablaPilotoDesbloqueado.insert(parent='', index=tk.END,
+                                           values=(ii, piloto.nombre, piloto.contrato.nombre))
             ii += 1
 
-        listbox1.grid(column=0, row=3, rowspan=3, padx=20, pady=20)
+        tablaPilotoDesbloqueado.grid(column=0, row=3, rowspan=3, padx=20, pady=20)
         entry1 = tk.Entry(frame1)
         entry1.grid(column=0, row=6, padx=20, pady=20)
         entry1.configure(justify="center")
