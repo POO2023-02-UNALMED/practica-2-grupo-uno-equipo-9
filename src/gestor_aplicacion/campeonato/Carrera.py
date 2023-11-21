@@ -47,7 +47,6 @@ class Carrera:
 
     def actualizarPosiciones(self):
         rand = random.Random()
-        print(self.posiciones)
         if self.posiciones:
             for vehiculo in self.posiciones:
                 vehiculo.setDistanciaRecorrida(vehiculo.getDistanciaRecorrida() + vehiculo.getVelocidadActual())

@@ -38,49 +38,43 @@ class Equipo:
     def puntuarEquipos(cls, terminados, plata, campeonato):
         puntos_actuales = 13
         for vehiculo in terminados:
-            piloto = vehiculo.piloto.buscarPiloto(vehiculo.piloto)
+            piloto = vehiculo.piloto.buscar_piloto(vehiculo.piloto)
 
             if not vehiculo.morido:
                 piloto.puntos += puntos_actuales
-                piloto.equipo.recalcularPuntos(campeonato)
+                piloto.contrato.recalcular_puntos(campeonato)
 
                 if puntos_actuales >= 8:
                     puntos_actuales -= 2
                 else:
                     puntos_actuales -= 1
 
-            if piloto.sanciones != 0:
+            if piloto.sanciones == 0:
                 piloto.puntos += puntos_actuales
 
-            piloto.registrarTiempo(vehiculo.tiempo)
+            piloto.registrar_tiempo(vehiculo.tiempo)
 
-        for equipo in campeonato.listaEquipos:
-            equipo.recalcularPuntos(campeonato)
+        for equipo in campeonato._listaEquipos:
+            equipo.recalcular_puntos(campeonato)
 
-        terminados[0].piloto.recibirPlata(plata * 0.9)
+        terminados[0].piloto.recibir_plata(plata * 0.9)
 
-        for patrocinador in terminados[0].piloto.equipo.patrocinadoresEquipo:
-            patrocinador.recibirPlata(plata * 0.5)
+        for patrocinador in terminados[0].piloto.contrato.patrocinadores_equipo:
+            patrocinador.recibir_plata(plata * 0.5)
 
-        terminados[1].piloto.recibirPlata(plata * 0.3)
-        terminados[2].piloto.recibirPlata(plata * 0.2)
+        terminados[1].piloto.recibir_plata(plata * 0.3)
+        terminados[2].piloto.recibir_plata(plata * 0.2)
 
-        Equipo.organizarEquiposPuntos(campeonato)
+        Equipo.organizar_equipos_puntos(campeonato)
 
     @classmethod
     def organizar_equipos_puntos(cls, campeonato):
-        lista_organizada = list(campeonato.lista_equipos)
+        lista_organizada = campeonato._listaEquipos[:]
         for equipo in lista_organizada:
             equipo.puntos = abs(equipo.puntos)
 
-        cero = all(equipo.puntos == 0 for equipo in lista_organizada)
-        rand = random.Random()
-
-        if cero:
-            for equipo in lista_organizada:
-                equipo.puntos = rand.randint(0, 12)
-
         lista_organizada.sort(key=lambda equipo: equipo.puntos, reverse=True)
+        campeonato._listaEquipos = lista_organizada
         return lista_organizada
 
     @classmethod
@@ -120,8 +114,8 @@ class Equipo:
 
     def recalcular_puntos(self, campeonato):
         nuevos_puntos = 0
-        for piloto in campeonato.lista_pilotos:
-            if piloto.equipo == self:
+        for piloto in campeonato._listaPilotos:
+            if piloto.contrato == self:
                 nuevos_puntos += piloto.puntos
 
         self.puntos = nuevos_puntos

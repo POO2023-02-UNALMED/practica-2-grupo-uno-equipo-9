@@ -17,6 +17,7 @@ class VehiculoCarrera(Chasis, Decimales):
         VehiculoCarrera.idActual += 1
         self.tiempo = 0
         self.distanciaRecorrida = 0
+        self.distanciaInicial = 0
         self.terminado = False
         self.morido = False
         self.velocidadTuneao = chasis.velocidad
@@ -152,16 +153,16 @@ class VehiculoCarrera(Chasis, Decimales):
         for vehiculo_carrera in vehiculo_participantes:
             if is_method_1:
                 if vehiculo_carrera.piloto == piloto_maldito:
-                    vehiculo_carrera.distanciaRecorrida = -50 - rand.randint(1, 10) * 30
+                    vehiculo_carrera.distanciaInicial = -50 - rand.randint(1, 10) * 30
                 elif vehiculo_carrera.piloto == piloto:
-                    vehiculo_carrera.distanciaRecorrida = 50 + rand.randint(1, 10) * 30
+                    vehiculo_carrera.distanciaInicial = 50 + rand.randint(1, 10) * 30
                 elif vehiculo_carrera.piloto in pilotos_desfavorecidos:
-                    vehiculo_carrera.distanciaRecorrida = -10 - rand.randint(1, 10) * 20
+                    vehiculo_carrera.distanciaInicial = -10 - rand.randint(1, 10) * 20
             else:
                 if vehiculo_carrera.piloto == piloto:
-                    vehiculo_carrera.velocidadActual += 50
+                    vehiculo_carrera.velocidadTuneao = vehiculo_carrera.chasis.velocidad + 35
                 else:
-                    vehiculo_carrera.velocidadActual = max(vehiculo_carrera.velocidadActual-20,150)
+                    vehiculo_carrera.velocidadTuneao = max(vehiculo_carrera.chasis.velocidad-20,190)
 
             posiciones_corruptas.append(vehiculo_carrera)
 
@@ -170,55 +171,90 @@ class VehiculoCarrera(Chasis, Decimales):
     def aprovechar_drs(self):
         random_number = random.randint(1, 10)
         if random_number == 1:
-            self.aleron.danar()
+            self.aleron.setDanado(True)
             self.actualizar_velocidad_actual()
         elif random_number <= 9:
-            self.velocidad_circunstancias = 50
+            self.velocidadCircumstancias += 70
             self.actualizar_velocidad_actual()
         else:
             random_float = random.random()
             if random_float > 0.5:
-                self.velocidad_circunstancias = 30
+                self.velocidadCircumstancias += 55
             else:
-                self.velocidad_circunstancias = 60
+                self.velocidadCircumstancias += 45
             self.actualizar_velocidad_actual()
+        self.verificar_velocidad()
 
     def frenar(self):
         if self.velocidadActual > 100:
             self.velocidadActual -= 100
         else:
             self.velocidadActual = 70
+        self.verificar_velocidad()
 
     def hacer_maniobra(self):
         random_float = random.uniform(0, 1)
-        if random_float > 0.5:
-            self.velocidadActual += self.velocidadActual * 0.1
+        if random_float > 0.8:
+            self.velocidadCircumstancias += 100
+            self.actualizar_velocidad_actual()
         else:
-            self.velocidadActual -= self.velocidadActual * 0.1
-        self.actualizar_velocidad_actual()
+            self.velocidadCircumstancias -= 35
+            self.actualizar_velocidad_actual()
+        self.verificar_velocidad()
+
 
     def defender(self):
         random_float = random.uniform(0, 1)
         if random_float > 0.5:
-            self.velocidadActual += self.velocidadActual * 0.05
+            self.velocidadCircumstancias += 10
+            self.actualizar_velocidad_actual()
         else:
-            self.velocidadActual -= self.velocidadActual * 0.05
-        self.actualizar_velocidad_actual()
+            self.neumaticos.setDanado(True)
+            self.velocidadCircumstancias -= 10
+            self.actualizar_velocidad_actual()
+        self.verificar_velocidad()
 
     def derrapar(self):
         random_float = random.uniform(0, 1)
-        if random_float > 0.5:
-            self.velocidadActual -= self.velocidadActual * 0.1
+        if random_float > 0.65:
+            self.velocidadCircumstancias += 90
+            self.actualizar_velocidad_actual()
         else:
-            self.velocidadActual += self.velocidadActual * 0.1
+            self.neumaticos.setDanado(True)
+            self.velocidadCircumstancias -= 30
+            self.actualizar_velocidad_actual()
+        self.verificar_velocidad()
+
+    def decision_piloto_random(self):
+        rando_num = random.randint(1,20)
+        if  rando_num > 18:
+            self.velocidadCircumstancias += 60
+        elif rando_num > 15:
+            self.velocidadCircumstancias += 35
+        elif rando_num > 11:
+            self.velocidadCircumstancias += 20
+        elif rando_num > 5:
+            self.velocidadCircumstancias -= 20
+        else:
+            self.velocidadCircumstancias -= 35
+        self.verificar_velocidad()
         self.actualizar_velocidad_actual()
+
+    def verificar_velocidad(self):
+        if self.velocidadActual < 0:
+            self.velocidadCircumstancias = -50
+            self.actualizar_velocidad_actual()
+        elif self.velocidadActual > 500:
+            self.velocidadCircumstancias = 50
+            self.actualizar_velocidad_actual()
+
 
     def llenar_gasolina(self):
         self.gasolina = 100
 
     def reparar_vehiculo(self):
         precio = (self.motor.precio + self.aleron.precio + self.neumaticos.precio) / 2
-        equipo = self.piloto.equipo
+        equipo = self.piloto.contrato
         if equipo.plata >= precio:
             equipo.plata -= precio
             self.aleron.arreglar()
@@ -254,8 +290,6 @@ class VehiculoCarrera(Chasis, Decimales):
             self.velocidadTuneao = self.get_velocidad() + self.motor.getVelocidadAnadida()
 
         # self.actualizarVelocidadActual()  # Update actual speed
-
-
 
     def getDistanciaRecorrida(self):
         return self.distanciaRecorrida
@@ -325,3 +359,9 @@ class VehiculoCarrera(Chasis, Decimales):
         return self.aleron
     def getPiezasComprar(self):
         return self.piezasComprar
+
+    def getDistanciaInicial(self):
+        return self.distanciaInicial
+
+    def setDistanciaInicial(self, distancia):
+        self.distanciaInicial = distancia

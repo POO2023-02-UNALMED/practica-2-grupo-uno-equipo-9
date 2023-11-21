@@ -165,4 +165,14 @@ class Piloto(Persona, Decimales):
     def getSanciones(self):
         return self.sanciones
 
+    def setHabilidad(self,habilidad):
+        self.habilidad = habilidad
 
+    def getHabilidad(self):
+        return self.habilidad
+
+    def getPuntos(self):
+        return self.puntos
+
+    def setPuntos(self,puntos):
+        self.puntos = puntos

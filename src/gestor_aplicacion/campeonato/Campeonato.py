@@ -116,21 +116,21 @@ class Campeonato:
 
     def premiarCampeones(self, equiposPuntuados):
         self.setListaEquipos(equiposPuntuados)
-        multiplicadorDinero = 1.2
+        multiplicadorDinero = 2.2
         contadorHabilidad = 0.08
-        for equipo in equiposPuntuados:
-            equipo.setPlata(equipo.getPlata() + self._premio * multiplicadorDinero)
-            if equipo.getPatrocinadoresEquipo():
-                for patrocinador in equipo.getPatrocinadoresEquipo():
-                    patrocinador.recibirPlata(self._premio * multiplicadorDinero / 2)
-            if multiplicadorDinero > 0.2:
+        for equipo in self._listaEquipos:
+            equipo.set_plata(equipo.get_plata() + self._premio * multiplicadorDinero)
+            if equipo.get_patrocinadores_equipo():
+                for patrocinador in equipo.get_patrocinadores_equipo():
+                    patrocinador.recibir_plata(self._premio * multiplicadorDinero / 2)
+            if multiplicadorDinero > 1.2:
                 multiplicadorDinero -= 0.2
             for piloto in self.getListaPilotos():
                 if piloto.getEquipo() == equipo and piloto.getPuntos() != 0 and equiposPuntuados[0] == equipo:
-                    piloto.setHabilidad(contadorHabilidad)
-                    piloto.agregarVictoria(self)
+                    piloto.setHabilidad(piloto.habilidad + contadorHabilidad)
+                    piloto.agregar_victoria(self.getNombre() + " | " + str(Campeonato.ano))
                 elif piloto.getEquipo() == equipo and piloto.getPuntos() != 0:
-                    piloto.setHabilidad(contadorHabilidad)
+                    piloto.setHabilidad(piloto.habilidad + contadorHabilidad)
                 if contadorHabilidad > 0.02:
                     contadorHabilidad -= 0.01
 

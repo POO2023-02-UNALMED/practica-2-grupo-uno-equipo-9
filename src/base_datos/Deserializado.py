@@ -97,10 +97,11 @@ class Deserializado():
                         if pilotico.get_nombre() == piloto.get_nombre():
                             lista_pilotos.append(piloto)
                             break
-                for equipo in Piloto.listaPilotos:
-                    for equipito in campeonato._listaPilotos:
+                for equipo in Equipo.equipos:
+                    for equipito in campeonato._listaEquipos:
                         if equipito.get_nombre() == equipo.get_nombre():
                             lista_equipos.append(equipo)
                             break
-                campeonato._listaPilotos = lista_pilotos
                 campeonato._listaEquipos = lista_equipos
+                campeonato._listaPilotos = lista_pilotos
+
