@@ -1,3 +1,12 @@
+import sys
+import os
+
+# Get the directory of the current script
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Add the parent directory to the sys.path
+sys.path.append(os.path.join(current_dir, '..'))
+
 import random
 import tkinter as tk
 from tkinter import messagebox
@@ -54,15 +63,15 @@ class FieldFrame(tk.Frame):
         description_label.configure(justify="center")
 
         if logo_path == "random":
-            img_paths = ["img/formula-1-3.png", "img/podio.png", "img/fato-de-corrida.png", "img/teste.png",
-                         "img/car.png", "img/maquineta.png", "img/comentarista.png",
-                         "img/bandeira-de-corrida.png", "img/bomba-de-combustivel.png", "img/boot.png",
-                         "img/capacete.png", "img/chaqueta-de-carreras.png", "img/chassis.png", "img/comecar.png",
-                         "img/corridas.png", "img/equipe-tecnica.png", "img/f1.ico", "img/ferramentas-de-reparacao.png",
-                         "img/formula-1-1.png", "img/formula-1-2.png", "img/luvas.png", "img/motorista.png",
-                         "img/o-circuito.png", "img/parada.png", "img/perfurador.png", "img/pista-de-corrida.png",
-                         "img/pneus.png", "img/roda.png", "img/semaforo.png", "img/trofeu.png", "img/velocimetro.png",
-                         "img/videogame.png", "img/volante.png", "img/formula-1-4.png"]
+            img_paths = ["src/img/formula-1-3.png", "src/img/podio.png", "src/img/fato-de-corrida.png", "src/img/teste.png",
+                         "src/img/car.png", "src/img/maquineta.png", "src/img/comentarista.png",
+                         "src/img/bandeira-de-corrida.png", "src/img/bomba-de-combustivel.png", "src/img/boot.png",
+                         "src/img/capacete.png", "src/img/chaqueta-de-carreras.png", "src/img/chassis.png", "src/img/comecar.png",
+                         "src/img/corridas.png", "src/img/equipe-tecnica.png", "src/img/f1.ico", "src/img/ferramentas-de-reparacao.png",
+                         "src/img/formula-1-1.png", "src/img/formula-1-2.png", "src/img/luvas.png", "src/img/motorista.png",
+                         "src/img/o-circuito.png", "src/img/parada.png", "src/img/perfurador.png", "src/img/pista-de-corrida.png",
+                         "src/img/pneus.png", "src/img/roda.png", "src/img/semaforo.png", "src/img/trofeu.png", "src/img/velocimetro.png",
+                         "src/img/videogame.png", "src/img/volante.png", "src/img/formula-1-4.png"]
             logo_path = random.choice(img_paths)
 
 
@@ -119,7 +128,7 @@ class MenuApp:
         # sub menu archivo
         archivo = tk.Menu(self.menu_bar, tearoff=0)
         archivo.add_command(label='Aplicacion', command=lambda: self.aplicacion())
-        archivo.add_command(label='Salir', command=self.root.quit)
+        archivo.add_command(label='Salir', command=lambda: self.pasar_a_ventana_inicial())
         self.menu_bar.add_cascade(label='Archivo', menu=archivo)
 
         # sub menu procesos y consultas
@@ -169,6 +178,11 @@ class MenuApp:
         boton_fun_5 = tk.Button(self.frames["gp_racing"], text="¡GOTTA RUN!",
                                 command=lambda: self.simulacion_campeonato("gp_racing"))
         boton_fun_5.grid(row=2, column=0, padx=20, pady=20, sticky="nsew")
+
+    def pasar_a_ventana_inicial(self):
+        root.iconify()
+        ventana.deiconify()
+        ventana.tkraise()
 
     def aplicacion(self):
         self.acerca_de("acerca_de")
@@ -914,7 +928,7 @@ class MenuApp:
 
         # Frame 1: Escoger Campeonato desbloqueados
         frame1 = FieldFrame(self.frames[frame_name], None, "Elegir un campeonato desbloqueado",
-                            "Elige un campeonato disponible para planificar su calendario", "img/car.png")
+                            "Elige un campeonato disponible para planificar su calendario", "src/img/car.png")
         frame1.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         frame1.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
         # Componentes del frame
@@ -1304,7 +1318,7 @@ class MenuApp:
 
         # Frame 1: Escoger Piloto desbloqueados
         frame1 = FieldFrame(self.frames[frame_name], None, "Elegir un piloto desbloqueado",
-                            "Elige un piloto para personalizar su vehiculo de carreras", "img/car.png")
+                            "Elige un piloto para personalizar su vehiculo de carreras", "src/img/car.png")
         frame1.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         frame1.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
         # Componentes del frame
@@ -1688,7 +1702,7 @@ class MenuApp:
         # Frame 1: Escoger Piloto desbloqueado
         frame1 = FieldFrame(self.frames[frame_name], None, "Elegir un piloto desbloqueado",
                             "Elige un piloto para personificarlo mientras habla con un Director de Carreras",
-                            "img/car.png")
+                            "src/img/car.png")
         frame1.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         frame1.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
         # Componentes del frame
@@ -1781,7 +1795,7 @@ class MenuApp:
         frame4.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         # Cartas
-        image_path = "img/card_deck.png"
+        image_path = "src/img/card_deck.png"
         img = Image.open(image_path)
         img_width, img_height = 500, 500
         resized_image = img.resize((550, 502))
@@ -2238,7 +2252,7 @@ class MenuApp:
 
         # Frame 1: Escoger Campeonato desbloqueado
         frame1 = FieldFrame(self.frames[frame_name], None, "Elegir un campeonato desbloqueado",
-                            "¡Elige un campeonato disponible para comenzar a divertirse!", "img/car.png")
+                            "¡Elige un campeonato disponible para comenzar a divertirse!", "src/img/car.png")
         frame1.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         frame1.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
         # Componentes del frame
@@ -2309,7 +2323,7 @@ class MenuApp:
         mini_frame3.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=2)
         action_font = ("Segoe UI",9,"italic")
         # Background Image
-        image_path = "img/car_view.gif"
+        image_path = "src/img/car_view.gif"
         img3_0 = Image.open(image_path)
         resized_frames = []
         for frame in ImageSequence.Iterator(img3_0):
@@ -2322,7 +2336,7 @@ class MenuApp:
             frame3.after(50, update_label_1, (frame_idx+1) % len(resized_frames))
         update_label_1()
         # Crashed Image
-        image_path_2 = "img/explosion.gif"
+        image_path_2 = "src/img/explosion.gif"
         img3_1 = Image.open(image_path_2)
         resized_frames_2 = []
         for frame in ImageSequence.Iterator(img3_1):
@@ -2339,6 +2353,7 @@ class MenuApp:
 
         # crear Tabla
         tablaPociciones = ttk.Treeview(mini_frame3, columns=('OPCION', 'NOMBRE','VELOCIDAD'), show='headings')
+        tablaPociciones.tag_configure('TreeviewFont', font=('Segoe UI', 9))
         # configurar los cabezales
         tablaPociciones.heading('OPCION', text='POSICION')
         tablaPociciones.heading('NOMBRE', text='PILOTO')
@@ -2348,42 +2363,42 @@ class MenuApp:
 
         tablaPociciones.place(relx=0.33, rely=0.77, anchor=tk.CENTER)
         # TODO: TABLA CONFIGURACION DEL VEHICULO
-        label3_1 = tk.Label(mini_frame3,text="Distancia Recorrida: {}/{}".format("0","0"), width=46, font=action_font)
+        label3_1 = tk.Label(mini_frame3,text="Distancia Recorrida: {}/{}".format("0","0"), width=46)
         label3_1.place(relx=0.19,rely=0.1, anchor=tk.CENTER)
         label3_1.configure(justify="center")
-        label3_2 = tk.Label(mini_frame3,text="Tiempo Transcurrido: {} s.".format("0"), width=46, font=action_font)
+        label3_2 = tk.Label(mini_frame3,text="Tiempo Transcurrido: {} s.".format("0"), width=46)
         label3_2.place(relx=0.19,rely=0.2, anchor=tk.CENTER)
         label3_2.configure(justify="center")
-        label3_3 = tk.Label(mini_frame3,text="Gasolina del vehiculo: {}/100".format("100"), width=46, font=action_font)
+        label3_3 = tk.Label(mini_frame3,text="Gasolina del vehiculo: {}/100".format("100"), width=46)
         label3_3.place(relx=0.19,rely=0.3, anchor=tk.CENTER)
         label3_3.configure(justify="center")
         # Boton para correr la carrera
-        button3_0 = tk.Button(mini_frame3, text="¡CORRER!", font=("Magneto", 24, "bold italic"), command=lambda: correr_carrera())
+        button3_0 = tk.Button(mini_frame3, text="¡CORRER!", command=lambda: correr_carrera())
         button3_0.place(relx=0.5,rely=0.4, anchor=tk.CENTER)
         button3_0.configure(justify="center")
         # Botones para las selecciones de las acciones
         button3_1 = tk.Button(mini_frame3, text="Aprovechar DRS (FIAOO)", command=lambda: aprovechar_drs())
-        button3_1.configure(justify="center", font=action_font)
+        button3_1.configure(justify="center")
         button3_2 = tk.Button(mini_frame3, text="Frenar!", command=lambda: frenar())
-        button3_2.configure(justify="center", font=action_font)
+        button3_2.configure(justify="center")
         button3_3 = tk.Button(mini_frame3, text="Hacer Maniobra (KACHOW)", command=lambda: hacer_maniobra())
-        button3_3.configure(justify="center", font=action_font)
+        button3_3.configure(justify="center")
         button3_4 = tk.Button(mini_frame3, text="Defender la posicion", command=lambda: defender_la_posicion())
-        button3_4.configure(justify="center", font=action_font)
+        button3_4.configure(justify="center")
         button3_5 = tk.Button(mini_frame3, text="Derrapar", command=lambda: derrapar())
-        button3_5.configure(justify="center", font=action_font)
+        button3_5.configure(justify="center")
         button3_6 = tk.Button(mini_frame3, text="Entrar a la Pit Stop", command=lambda: pit_stop())
-        button3_6.configure(justify="center", font=action_font)
+        button3_6.configure(justify="center")
         button3_6_1 = tk.Button(mini_frame3, text="Rellenar la Gasolina", command=lambda: rellenar_gasolina())
-        button3_6_1.configure(justify="center", font=action_font)
+        button3_6_1.configure(justify="center")
         button3_6_2 = tk.Button(mini_frame3, text="Reparar el Vehiculo", command=lambda: reparar())
-        button3_6_2.configure(justify="center", font=action_font)
+        button3_6_2.configure(justify="center")
         button3_6_3 = tk.Button(mini_frame3, text="Salir de la Pit Stop", command=lambda: salir_pit_stop())
-        button3_6_3.configure(justify="center", font=action_font)
+        button3_6_3.configure(justify="center")
 
         # Boton para terminar la carrera
         button3 = tk.Button(mini_frame3, text="Terminar la carrera", command=lambda: premiacion_carrera())
-        button3.configure(justify="center", font=action_font)
+        button3.configure(justify="center")
 
 
         # Frame 4: Frame de la premiacion de la carrera
@@ -2412,7 +2427,7 @@ class MenuApp:
 
         # Frame 5: Frame de la premiacion del campeonato
         frame5 = FieldFrame(self.frames[frame_name], None, "El campeonato ha terminado",
-                            "A continuacion, los resultados en general de los equipos participantes", "img/podio.png")
+                            "A continuacion, los resultados en general de los equipos participantes", "src/img/podio.png")
         frame5.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=1)
         # Componentes del frame
         label5_1 = tk.Label(frame5, text="Asi quedaron los equipos en orden de puntaje")
@@ -2428,6 +2443,8 @@ class MenuApp:
         tablaEquiposPuntos.column('OPCION', anchor='c')
 
         tablaEquiposPuntos.grid(column=0, row=4, rowspan=2, padx=20, pady=20, sticky="nsew")
+        tablaEquiposPuntos.configure(height=5)
+
         label5_2 = tk.Label(frame5, text="El equipo ganador ha sido: ")
         label5_2.grid(column=0, row=6, padx=20, pady=20, sticky="nsew")
         label5_3 = tk.Label(frame5, text="Los pilotos ganadores han sido:")
@@ -2438,8 +2455,10 @@ class MenuApp:
         label5_4.grid(column=0, row=8, padx=20, pady=20, sticky="nsew")
         listbox5_1 = tk.Listbox(frame5,width=50)
         listbox5_1.grid(column=0, row=9, rowspan=2, padx=20, pady=20, sticky="nsw")
+        listbox5_1.configure(height=2)
         listbox5_2 = tk.Listbox(frame5,width=50)
         listbox5_2.grid(column=0, row=9, rowspan=2, padx=20, pady=20, sticky="nse")
+        listbox5_2.configure(height=2)
 
         button5_1 = tk.Button(frame5, text="Ver estadisticas de otro equipo", command=lambda: estadisticas_siguiente_equipo())
         button5_1.grid(column=0, row=10, padx=20, pady=20)
@@ -2457,7 +2476,7 @@ class MenuApp:
         frame_acerca.grid(column=0, row=0, padx=20, pady=20, sticky="nsew")
         global logo_path, logo_img1
         # add image
-        logo_path = "img/gp_racing.png"
+        logo_path = "src/img/gp_racing.png"
         img = Image.open(logo_path)
         #resized_image = img.resize((500, 500))
 
@@ -2498,11 +2517,11 @@ if __name__ == "__main__":
     # Initial Root
     root = tk.Tk()
     root.minsize()
-    root.iconbitmap("img/f1.ico")
+    root.iconbitmap("src/img/f1.ico")
     root.title("GP Racing: The one and only!")
     # Ventana Inicial
     ventana = tk.Toplevel(root, height=800, width=1280)
-    ventana.iconbitmap("img/f1.ico")
+    ventana.iconbitmap("src/img/f1.ico")
 
     frameP1 = tk.Frame(ventana)
     frameP1.place(relx=0.5, rely=0.5, relwidth=0.5, relheight=1, anchor="e")
@@ -2523,7 +2542,7 @@ if __name__ == "__main__":
     frameP6.place(relx=0.5, rely=0.31, relwidth=0.98, relheight=0.68, anchor="n")
 
     def salirApp():
-        ventana.destroy()
+        root.destroy()
 
     def descripcion():
         messagebox.showinfo("Descripcion de la aplicacion",
@@ -2547,67 +2566,67 @@ if __name__ == "__main__":
     mensaje1 = tk.Label(frameP3,
                         text=mensaje,
                         justify=tk.CENTER,
-                        font='Times 15',
+                        font=("Helvetica", 16),
                         relief="solid",
                         bd=2.5
                         )
     mensaje1.place(relx=0.5, rely=0.5, relwidth=0.98, relheight=0.98, anchor="center")
 
     # Fotos proyecto
-    fotoCarro0 = Image.open("fotosInicio/carrof1.png")
+    fotoCarro0 = Image.open("src/fotosInicio//carrof1.png")
     fotoCarro = ImageTk.PhotoImage(fotoCarro0)
-    fotoBanderas0 = Image.open("fotosInicio/banderas.png")
+    fotoBanderas0 = Image.open("src/fotosInicio//banderas.png")
     fotoBanderas = ImageTk.PhotoImage(fotoBanderas0)
-    fotoLogo0 = Image.open("fotosInicio/logo.png")
+    fotoLogo0 = Image.open("src/fotosInicio//logo.png")
     fotoLogo = ImageTk.PhotoImage(fotoLogo0)
-    fotoPiloto0 = Image.open("fotosInicio/piloto.png")
+    fotoPiloto0 = Image.open("src/fotosInicio//piloto.png")
     fotoPiloto = ImageTk.PhotoImage(fotoPiloto0)
-    fotoCircuito0 = Image.open("fotosInicio/circuito.png")
+    fotoCircuito0 = Image.open("src/fotosInicio//circuito.png")
     fotoCircuito = ImageTk.PhotoImage(fotoCircuito0)
     # Fotos Mariana
-    fotoMariana1p = Image.open("fotosInicio/Mariana1.png")
+    fotoMariana1p = Image.open("src/fotosInicio//Mariana1.png")
     fotoMariana1 = ImageTk.PhotoImage(fotoMariana1p)
-    fotoMariana2p = Image.open("fotosInicio/Mariana2.png")
+    fotoMariana2p = Image.open("src/fotosInicio//Mariana2.png")
     fotoMariana2 = ImageTk.PhotoImage(fotoMariana2p)
-    fotoMariana3p = Image.open("fotosInicio/Mariana3.png")
+    fotoMariana3p = Image.open("src/fotosInicio//Mariana3.png")
     fotoMariana3 = ImageTk.PhotoImage(fotoMariana3p)
-    fotoMariana4p = Image.open("fotosInicio/Mariana4.png")
+    fotoMariana4p = Image.open("src/fotosInicio//Mariana4.png")
     fotoMariana4 = ImageTk.PhotoImage(fotoMariana4p)
     # Fotos David
-    fotoDavid1p = Image.open("fotosInicio/David1.png")
+    fotoDavid1p = Image.open("src/fotosInicio//David1.png")
     fotoDavid1 = ImageTk.PhotoImage(fotoDavid1p)
-    fotoDavid2p = Image.open("fotosInicio/David2.png")
+    fotoDavid2p = Image.open("src/fotosInicio//David2.png")
     fotoDavid2 = ImageTk.PhotoImage(fotoDavid2p)
-    fotoDavid3p = Image.open("fotosInicio/David3.png")
+    fotoDavid3p = Image.open("src/fotosInicio//David3.png")
     fotoDavid3 = ImageTk.PhotoImage(fotoDavid3p)
-    fotoDavid4p = Image.open("fotosInicio/David4.png")
+    fotoDavid4p = Image.open("src/fotosInicio//David4.png")
     fotoDavid4 = ImageTk.PhotoImage(fotoDavid4p)
     # Fotos Samuel
-    fotoSamuel1p = Image.open("fotosInicio/Samuel1.png")
+    fotoSamuel1p = Image.open("src/fotosInicio//Samuel1.png")
     fotoSamuel1 = ImageTk.PhotoImage(fotoSamuel1p)
-    fotoSamuel2p = Image.open("fotosInicio/Samuel2.png")
+    fotoSamuel2p = Image.open("src/fotosInicio//Samuel2.png")
     fotoSamuel2 = ImageTk.PhotoImage(fotoSamuel2p)
-    fotoSamuel3p = Image.open("fotosInicio/Samuel3.png")
+    fotoSamuel3p = Image.open("src/fotosInicio//Samuel3.png")
     fotoSamuel3 = ImageTk.PhotoImage(fotoSamuel3p)
-    fotoSamuel4p = Image.open("fotosInicio/Samuel4.png")
+    fotoSamuel4p = Image.open("src/fotosInicio//Samuel4.png")
     fotoSamuel4 = ImageTk.PhotoImage(fotoSamuel4p)
     # Fotos Juan
-    fotoJuan1p = Image.open("fotosInicio/Juan1.png")
+    fotoJuan1p = Image.open("src/fotosInicio//Juan1.png")
     fotoJuan1 = ImageTk.PhotoImage(fotoJuan1p)
-    fotoJuan2p = Image.open("fotosInicio/Juan2.png")
+    fotoJuan2p = Image.open("src/fotosInicio//Juan2.png")
     fotoJuan2 = ImageTk.PhotoImage(fotoJuan2p)
-    fotoJuan3p = Image.open("fotosInicio/Juan3.png")
+    fotoJuan3p = Image.open("src/fotosInicio//Juan3.png")
     fotoJuan3 = ImageTk.PhotoImage(fotoJuan3p)
-    fotoJuan4p = Image.open("fotosInicio/Juan4.png")
+    fotoJuan4p = Image.open("src/fotosInicio//Juan4.png")
     fotoJuan4 = ImageTk.PhotoImage(fotoJuan4p)
     # Fotos Santiago
-    fotoSantiago1p = Image.open("fotosInicio/Santiago1.png")
+    fotoSantiago1p = Image.open("src/fotosInicio//Santiago1.png")
     fotoSantiago1 = ImageTk.PhotoImage(fotoSantiago1p)
-    fotoSantiago2p = Image.open("fotosInicio/Santiago2.png")
+    fotoSantiago2p = Image.open("src/fotosInicio//Santiago2.png")
     fotoSantiago2 = ImageTk.PhotoImage(fotoSantiago2p)
-    fotoSantiago3p = Image.open("fotosInicio/Santiago3.png")
+    fotoSantiago3p = Image.open("src/fotosInicio//Santiago3.png")
     fotoSantiago3 = ImageTk.PhotoImage(fotoSantiago3p)
-    fotoSantiago4p = Image.open("fotosInicio/Santiago4.png")
+    fotoSantiago4p = Image.open("src/fotosInicio//Santiago4.png")
     fotoSantiago4 = ImageTk.PhotoImage(fotoSantiago4p)
     def cambiarFoto(event):
         if BotonP4["text"] == "1":
@@ -2626,7 +2645,7 @@ if __name__ == "__main__":
     BotonP4.bind("<Enter>", cambiarFoto)
     BotonP4.place(relx=0.5, rely=0.8, relwidth=0.8, relheight=0.75, anchor="s")
     # boton ingresar
-    botonIngresar = tk.Button(frameP4, text="Ingresar", font='Times 15', width=30, height=2, relief="solid", bd=2.,
+    botonIngresar = tk.Button(frameP4, text="Ingresar",  width=30, height=2, relief="solid", bd=2.,
                               command=pasar_a_ventana_principal)
     botonIngresar.pack(side='bottom', pady=10)
 
@@ -2688,10 +2707,10 @@ if __name__ == "__main__":
             hojasDeVida.config(text=david)
 
     # hojas de vida
-    tituloHojasDeVida = tk.Label(frameP5, text="Breve hoja de vida", font='Times 13', relief="solid", bd=2.5)
+    tituloHojasDeVida = tk.Label(frameP5, text="Breve hoja de vida", relief="solid", bd=2.5)
     tituloHojasDeVida.place(relx=0.5, rely=0.21, relwidth=0.98, relheight=0.2, anchor="s")
 
-    hojasDeVida = tk.Button(frameP5, width=50, height=2, text=david, font='Times 13', relief="solid", bd=2.5,
+    hojasDeVida = tk.Button(frameP5, width=50, height=2, text=david, relief="solid", bd=2.5,
                             command=cambiarTexto)
     hojasDeVida.place(relx=0.5, rely=0.1899, relwidth=0.98, relheight=0.8, anchor="n")
 

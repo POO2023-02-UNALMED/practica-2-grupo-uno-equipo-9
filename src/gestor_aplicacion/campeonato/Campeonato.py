@@ -37,10 +37,10 @@ class Campeonato:
     @staticmethod
     def create_campeonato_base(nombre,cantCarreras,continente):
         premio = randint(70, 100) * 10000
-        cantCarreras = 2
+        #cantCarreras = 2
         patrocinadorCampeonato = choice(Patrocinador.listaPatrocinadores)
         patrocinadorCampeonato.setPatrocinadorCampeonato()
-        #cantCarreras = randint(0, 2) + Campeonato.MINCARRERAS
+        cantCarreras = randint(0, 2) + Campeonato.MINCARRERAS
         campeonato_base = Campeonato(None,None,None,None,nombre,continente,cantCarreras,premio,False,patrocinadorCampeonato)
         return campeonato_base
 

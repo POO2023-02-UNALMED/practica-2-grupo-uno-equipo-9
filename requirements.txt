@@ -1,0 +1,6 @@
+Pillow==10.1.0
+darkdetect==0.8.0
+packaging==23.2
+pip==23.2.1
+setuptools==65.5.0
+sv-ttk==2.5.5
