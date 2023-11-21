@@ -8,6 +8,6 @@ class NullPointerException(ExceptionTypeB):
         super().__init__("No se ha encontrado un objeto del tipo '{}'".format(obj_type))
         self.obj_type = obj_type
 
-        messagebox.showerror("Error en el proceso",
+        messagebox.showerror("Error en el proceso (Null Pointer)",
                              "No se ha encontrado un objeto del tipo '{}'.".format(
                                  self.obj_type))

@@ -124,3 +124,25 @@ frame.bind("<Configure>", lambda event, canva=canvas: onFrameConfigure(canva))
 populate(frame)
 
 root.mainloop()
+
+# PARA COPIAR RAPIDAMENTE
+# if entry1.get() == "":
+#     missing_fields = ["Seleccion de Continente"]
+#     raise NoInputException("", missing_fields)
+#
+# if entry5_1.get() == "" or entry5_2.get() == "":
+#     missing_fields = []
+#     if entry4.get() == "":
+#         missing_fields += ["Premio del Campeonato"]
+#     if dificultad_elegida == None:
+#         missing_fields += ["Premio de las Carreras"]
+#     raise NoInputException("", missing_fields)
+#
+# except NoInputException:
+#     pass
+# except RepeatedSelectionException:
+#     pass
+# except IndexError:
+#     raise OutOfBoundsException(1, len(pilotos_equipo))
+# except ValueError:
+#     raise IncorrectTypeException("número")

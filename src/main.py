@@ -1,6 +1,8 @@
 import random
 import tkinter as tk
 from tkinter import messagebox
+
+import ImageSequence
 from PIL import Image, ImageTk
 from tkinter import ttk
 
@@ -21,6 +23,11 @@ from src.gestor_aplicacion.paddock.Pieza import Pieza
 from src.gestor_aplicacion.paddock.Piloto import Piloto
 from src.gestor_aplicacion.ubicaciones.Ciudad import Ciudad
 from src.gestor_aplicacion.ubicaciones.Continente import Continente
+from src.excepciones.IncorrectTypeException import IncorrectTypeException
+from src.excepciones.NoInputException import NoInputException
+from src.excepciones.NullPointerException import NullPointerException
+from src.excepciones.OutOfBoundsException import OutOfBoundsException
+from src.excepciones.RepeatedSelectionException import RepeatedSelectionException
 
 
 class FieldFrame(tk.Frame):
@@ -185,188 +192,271 @@ class MenuApp:
         # Para frame 1
         def elegir_continente():
             global continente, campeonatos_para_elegir
-            lista_continentes = [c for c in Continente]
-            continente = lista_continentes[int(entry1.get()) - 1]
-            # continente = Ciudad.convertir_continente(int(entry1.get()))
-            # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el continente " + continente.value)
+            try:
+                lista_continentes = [c for c in Continente]
+                if entry1.get()=="":
+                    missing_fields = ["Seleccion de Continente"]
+                    raise NoInputException("", missing_fields)
+                continente = lista_continentes[int(entry1.get()) - 1]
+                # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el continente " + continente.value)
 
-            campeonatos_disponibles = Campeonato.campeonatosDisponibles()
-            campeonatos_continente = Campeonato.campeonatosContinente(continente)
-            campeonatos_para_elegir = []
-            for campeonato in campeonatos_disponibles:
-                if campeonato.getContinente() == continente:
-                    campeonatos_para_elegir.append(campeonato)
-            jj = 1
+                campeonatos_disponibles = Campeonato.campeonatosDisponibles()
+                campeonatos_continente = Campeonato.campeonatosContinente(continente)
+                campeonatos_para_elegir = []
+                for campeonato in campeonatos_disponibles:
+                    if campeonato.getContinente() == continente:
+                        campeonatos_para_elegir.append(campeonato)
+                jj = 1
 
-            for campeonatico in campeonatos_para_elegir:
-                tablaCampeonatos.insert(parent='', index=tk.END, values=(jj, campeonatico.getNombre()))
-                jj += 1
+                for campeonatico in campeonatos_para_elegir:
+                    tablaCampeonatos.insert(parent='', index=tk.END, values=(jj, campeonatico.getNombre()))
+                    jj += 1
 
-            # Pasar al siguiente frame
-            frame1.grid_remove()
-            frame1.grid_forget()
-            frame2.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame2.tkraise()
+                # Pasar al siguiente frame
+                frame1.grid_remove()
+                frame1.grid_forget()
+                frame2.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame2.tkraise()
+            except NoInputException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1,len(lista_continentes))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 2
         def elegir_campeonato():
             global continente, campeonato_elegido, campeonatos_para_elegir, equipos_disponibles
-            campeonato_elegido = campeonatos_para_elegir[int(entry2.get()) - 1]
-            # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el campeonato " + campeonato_elegido.getNombre())
+            try:
+                if entry2.get()=="":
+                    missing_fields = ["Seleccion de Campeonato"]
+                    raise NoInputException("", missing_fields)
+                campeonato_elegido = campeonatos_para_elegir[int(entry2.get()) - 1]
+                # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el campeonato " + campeonato_elegido.getNombre())
 
-            equipos_continente = Equipo.equipos_continente(continente)
-            equipos_disponibles = Equipo.equipos_disponibles(equipos_continente)
-            # Colocar los equipos disponibles
-            jj = 1
-            for equipo in equipos_disponibles:
-                tablaEquipos.insert(parent='', index=tk.END, values=(jj, equipo.get_nombre()))
-                jj += 1
+                equipos_continente = Equipo.equipos_continente(continente)
+                equipos_disponibles = Equipo.equipos_disponibles(equipos_continente)
+                # Colocar los equipos disponibles
+                jj = 1
+                for equipo in equipos_disponibles:
+                    tablaEquipos.insert(parent='', index=tk.END, values=(jj, equipo.get_nombre()))
+                    jj += 1
 
-            # Pasar al siguiente frame
-            frame2.grid_remove()
-            frame2.grid_forget()
-            frame3.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame3.tkraise()
+                # Pasar al siguiente frame
+                frame2.grid_remove()
+                frame2.grid_forget()
+                frame3.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame3.tkraise()
+            except NoInputException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1,len(campeonatos_para_elegir))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 3
         def elegir_equipo():
             global equipo_elegido, campeonato_elegido, equipos_disponibles, participantes
-            equipo_elegido = equipos_disponibles[int(entry3.get()) - 1]
-            # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el equipo " + equipo_elegido.get_nombre())
-            participantes = Equipo.elegir_contrincantes(equipo_elegido, campeonato_elegido, equipos_disponibles)
-            campeonato_elegido._listaEquipos = participantes
-            jj = 1
-            for equipo in participantes:
-                tablaParticipantes.insert(parent='', index=tk.END, values=(jj, equipo.get_nombre()))
-                jj += 1
+            try:
+                if entry3.get()=="":
+                    missing_fields = ["Seleccion de Equipo"]
+                    raise NoInputException("", missing_fields)
+                equipo_elegido = equipos_disponibles[int(entry3.get()) - 1]
+                # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el equipo " + equipo_elegido.get_nombre())
+                participantes = Equipo.elegir_contrincantes(equipo_elegido, campeonato_elegido, equipos_disponibles)
+                campeonato_elegido._listaEquipos = participantes
+                jj = 1
+                for equipo in participantes:
+                    tablaParticipantes.insert(parent='', index=tk.END, values=(jj, equipo.get_nombre()))
+                    jj += 1
 
-            # Pasar al siguiente frame
-            frame3.grid_remove()
-            frame3.grid_forget()
-            frame4.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame4.tkraise()
+                # Pasar al siguiente frame
+                frame3.grid_remove()
+                frame3.grid_forget()
+                frame4.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame4.tkraise()
+            except NoInputException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1,len(equipos_disponibles))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 4
         def confirmar_equipos():
             global campeonato_elegido, equipo_elegido, participantes, pilotos_equipo
-            # tk.messagebox.showinfo("Eleccion realizada", "Has confirmado la seleccion de equipos")
-            pilotos_disponibles = Piloto.pilotos_disponibles()
-            pilotos_equipo = Piloto.pilotos_equipo(equipo_elegido, pilotos_disponibles)
-            jj = 1
-            for piloto in pilotos_equipo:
-                tablaPilotos.insert(parent='', index=tk.END, values=(jj, piloto.get_nombre()))
-                jj += 1
+            try:
+                # tk.messagebox.showinfo("Eleccion realizada", "Has confirmado la seleccion de equipos")
+                pilotos_disponibles = Piloto.pilotos_disponibles()
+                pilotos_equipo = Piloto.pilotos_equipo(equipo_elegido, pilotos_disponibles)
+                jj = 1
+                for piloto in pilotos_equipo:
+                    tablaPilotos.insert(parent='', index=tk.END, values=(jj, piloto.get_nombre()))
+                    jj += 1
 
-            # Pasar al siguiente frame
-            frame4.grid_remove()
-            frame4.grid_forget()
-            frame5.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame5.tkraise()
+                # Pasar al siguiente frame
+                frame4.grid_remove()
+                frame4.grid_forget()
+                frame5.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame5.tkraise()
+            except:
+                pass
 
         # Para frame 5.1
         def elegir_primer_piloto():
             global campeonato_elegido, equipo_elegido, participantes, pilotos_equipo, piloto_1, pilotos_participar
-            piloto_1 = pilotos_equipo[int(entry5_1.get()) - 1]
-            piloto_1.set_elegido(True)
-            piloto_1.set_desbloqueado(True)
-            pilotos_participar = []
-            pilotos_participar.append(piloto_1)
-            listbox5.delete(int(entry5_1.get()) - 1)
-            # Quitar label y boton
-            entry5_1.destroy()
-            button5_1.destroy()
-            # Colocar nuevo boton
-            button5_2.configure(text="Elegir Segundo Piloto")
+            try:
+                if entry5_1.get()=="":
+                    missing_fields = ["Seleccion de Piloto"]
+                    raise NoInputException("", missing_fields)
+                piloto_1 = pilotos_equipo[int(entry5_1.get()) - 1]
+                piloto_1.set_elegido(True)
+                piloto_1.set_desbloqueado(True)
+                pilotos_participar = []
+                pilotos_participar.append(piloto_1)
+                listbox5.delete(int(entry5_1.get()) - 1)
+                # Quitar label y boton
+                entry5_1.destroy()
+                button5_1.destroy()
+                # Colocar nuevo boton
+                button5_2.configure(text="Elegir Segundo Piloto")
+            except NoInputException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(pilotos_equipo))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 5.2
         def elegir_segundo_piloto():
             global campeonato_elegido, equipo_elegido, participantes, pilotos_equipo, piloto_1, piloto_2, pilotos_participar, patrocinadores_disponibles, patrocinadores_piloto_1
-            piloto_2 = pilotos_equipo[int(entry5_2.get()) - 1]
-            pilotos_participar.append(piloto_2)
-            # tk.messagebox.showinfo("Eleccion realizada", "Has elegido a ambos pilotos de tu equipo")
-            piloto_2.no_es_elegido()
-            # Elegir pilotos contrincantes
-            pilotos_disponibles = Piloto.pilotos_disponibles()
-            for equipo in participantes:
-                if not (equipo == equipo_elegido):
-                    pilotos_equipo = Piloto.pilotos_equipo(equipo, pilotos_disponibles)
-                    piloto_contrincante_1 = random.choice(pilotos_equipo)
-                    pilotos_participar.append(piloto_contrincante_1)
-                    pilotos_equipo.remove(piloto_contrincante_1)
-                    piloto_contrincante_2 = random.choice(pilotos_equipo)
-                    pilotos_participar.append(piloto_contrincante_2)
-            # Patrocinadores y Vehiculos Contrincantes
-            patrocinadores_disponibles = Patrocinador.patrocinadoresDisponibles()
-            for pilotico in pilotos_participar:
-                pilotico.contratar()
-                if not (pilotico.elegido) and not (pilotico.contrato == equipo_elegido):
-                    pilotico.no_es_elegido()
-                    Patrocinador.patrocinadorPilotoContrincante(pilotico, patrocinadores_disponibles)
-            campeonato_elegido.setListaPilotos(pilotos_participar)
+            try:
+                if entry5_2.get()=="":
+                    missing_fields = ["Seleccion de Piloto"]
+                    raise NoInputException("", missing_fields)
+                piloto_2 = pilotos_equipo[int(entry5_2.get()) - 1]
+                if piloto_2 == piloto_1:
+                    raise RepeatedSelectionException(entry5_2.get())
+                pilotos_participar.append(piloto_2)
+                # tk.messagebox.showinfo("Eleccion realizada", "Has elegido a ambos pilotos de tu equipo")
+                piloto_2.no_es_elegido()
+                # Elegir pilotos contrincantes
+                pilotos_disponibles = Piloto.pilotos_disponibles()
+                for equipo in participantes:
+                    if not (equipo == equipo_elegido):
+                        pilotos_equipo = Piloto.pilotos_equipo(equipo, pilotos_disponibles)
+                        piloto_contrincante_1 = random.choice(pilotos_equipo)
+                        pilotos_participar.append(piloto_contrincante_1)
+                        pilotos_equipo.remove(piloto_contrincante_1)
+                        piloto_contrincante_2 = random.choice(pilotos_equipo)
+                        pilotos_participar.append(piloto_contrincante_2)
+                # Patrocinadores y Vehiculos Contrincantes
+                patrocinadores_disponibles = Patrocinador.patrocinadoresDisponibles()
+                for pilotico in pilotos_participar:
+                    pilotico.contratar()
+                    if not (pilotico.elegido) and not (pilotico.contrato == equipo_elegido):
+                        pilotico.no_es_elegido()
+                        Patrocinador.patrocinadorPilotoContrincante(pilotico, patrocinadores_disponibles)
+                campeonato_elegido.setListaPilotos(pilotos_participar)
 
-            # Patrocinadores del primer piloto
-            patrocinadores_piloto_1 = Patrocinador.patrocinadorPiloto(piloto_1, patrocinadores_disponibles)
-            jj = 1
-            for patrocinador in patrocinadores_piloto_1:
-                tablaPatrocinadores1.insert(parent='', index=tk.END, values=(jj, patrocinador.get_nombre()))
-                jj += 1
+                # Patrocinadores del primer piloto
+                patrocinadores_piloto_1 = Patrocinador.patrocinadorPiloto(piloto_1, patrocinadores_disponibles)
+                jj = 1
+                for patrocinador in patrocinadores_piloto_1:
+                    tablaPatrocinadores1.insert(parent='', index=tk.END, values=(jj, patrocinador.get_nombre()))
+                    jj += 1
 
-            # Pasar al siguiente frame
-            frame5.grid_remove()
-            frame5.grid_forget()
-            frame6.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame6.tkraise()
+                # Pasar al siguiente frame
+                frame5.grid_remove()
+                frame5.grid_forget()
+                frame6.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame6.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(pilotos_equipo))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 6.1
         def elegir_primer_patrocinador():
             global campeonato_elegido, equipo_elegido, participantes, piloto_1, piloto_2, patrocinadores_disponibles, patrocinadores_piloto_1, patrocinadores_piloto_2, patrocinador_1
-            patrocinador_1 = patrocinadores_piloto_1[int(entry6_1.get()) - 1]
-            patrocinador_1.pensarNegocio(piloto_1)
+            try:
+                if entry6_1.get()=="":
+                    missing_fields = ["Seleccion de Patrocinador"]
+                    raise NoInputException("", missing_fields)
+                patrocinador_1 = patrocinadores_piloto_1[int(entry6_1.get()) - 1]
+                patrocinador_1.pensarNegocio(piloto_1)
 
-            # Patrocinadores segundo piloto
-            patrocinadores_piloto_2 = Patrocinador.patrocinadorPiloto(piloto_2, patrocinadores_disponibles)
-            jj = 1
-            for patrocinador in patrocinadores_piloto_2:
-                tablaPatrocinadores2.insert(parent='', index=tk.END, values=(jj, patrocinador.get_nombre()))
-                jj += 1
-            # Quitar label y boton
-            entry6_1.destroy()
-            button6_1.destroy()
-            listbox6_1.destroy()
-            # Colocar nuevo boton
-            button6_2.configure(text="Elegir Segundo Patrocinador")
+                # Patrocinadores segundo piloto
+                patrocinadores_piloto_2 = Patrocinador.patrocinadorPiloto(piloto_2, patrocinadores_disponibles)
+                jj = 1
+                for patrocinador in patrocinadores_piloto_2:
+                    tablaPatrocinadores2.insert(parent='', index=tk.END, values=(jj, patrocinador.get_nombre()))
+                    jj += 1
+                # Quitar label y boton
+                entry6_1.destroy()
+                button6_1.destroy()
+                listbox6_1.destroy()
+                # Colocar nuevo boton
+                button6_2.configure(text="Elegir Segundo Patrocinador")
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(patrocinadores_piloto_1))
+            except ValueError:
+                raise IncorrectTypeException("número")
+
 
         # Para frame 6.2
         def elegir_segundo_patrocinador():
             global continente, campeonato_elegido, equipo_elegido, participantes, pilotos_participar, piloto_1, piloto_2, patrocinadores_disponibles, patrocinadores_piloto_1, patrocinadores_piloto_2, patrocinador_1, patrocinador_2
-            patrocinador_2 = patrocinadores_piloto_2[int(entry6_2.get()) - 1]
-            patrocinador_2.pensarNegocio(piloto_2)
-            # tk.messagebox.showinfo("Eleccion realizada", "Has elegido a ambos patrocinadores de tu equipo")
+            try:
+                if entry6_2.get()=="":
+                    missing_fields = ["Seleccion de Patrocinador"]
+                    raise NoInputException("", missing_fields)
+                patrocinador_2 = patrocinadores_piloto_2[int(entry6_2.get()) - 1]
+                if patrocinador_1 == patrocinador_2:
+                    raise RepeatedSelectionException(entry6_2.get())
+                patrocinador_2.pensarNegocio(piloto_2)
+                # tk.messagebox.showinfo("Eleccion realizada", "Has elegido a ambos patrocinadores de tu equipo")
 
-            # Campeonato is now unlocked
-            campeonato_elegido.setDesbloqueado(True)
+                # Campeonato is now unlocked
+                campeonato_elegido.setDesbloqueado(True)
 
-            # listbox7_1.insert(0, "Nombre del campeonato: " + campeonato_elegido.getNombre())
-            # listbox7_1.insert(1, "Continente: " + continente.value)
-            # listbox7_1.insert(2, "Cantidad de carreras:" + str(campeonato_elegido.getCantidadMaxCarreras()))
+                # listbox7_1.insert(0, "Nombre del campeonato: " + campeonato_elegido.getNombre())
+                # listbox7_1.insert(1, "Continente: " + continente.value)
+                # listbox7_1.insert(2, "Cantidad de carreras:" + str(campeonato_elegido.getCantidadMaxCarreras()))
 
-            tablaCampeonatoResultante.insert(parent='', index=tk.END,
-                                             values=("Nombre del campeonato:", campeonato_elegido.getNombre()))
-            tablaCampeonatoResultante.insert(parent='', index=tk.END, values=("Continente: ", continente.value))
-            tablaCampeonatoResultante.insert(parent='', index=tk.END, values=(
-                "Cantidad de carreras:", str(campeonato_elegido.getCantidadMaxCarreras())))
-            tablaCampeonatoResultante.configure(height=1)
+                tablaCampeonatoResultante.insert(parent='', index=tk.END,
+                                                 values=("Nombre del campeonato:", campeonato_elegido.getNombre()))
+                tablaCampeonatoResultante.insert(parent='', index=tk.END, values=("Continente: ", continente.value))
+                tablaCampeonatoResultante.insert(parent='', index=tk.END, values=(
+                    "Cantidad de carreras:", str(campeonato_elegido.getCantidadMaxCarreras())))
+                tablaCampeonatoResultante.configure(height=1)
 
-            jj = 1
-            for piloto in pilotos_participar:
-                tablaPilotosParticipantes.insert(parent='', index=tk.END, values=(jj, piloto.get_nombre()))
-                jj += 1
+                jj = 1
+                for piloto in pilotos_participar:
+                    tablaPilotosParticipantes.insert(parent='', index=tk.END, values=(jj, piloto.get_nombre()))
+                    jj += 1
 
-            # Pasar al siguiente frame
-            frame6.grid_remove()
-            frame6.grid_forget()
-            frame7.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame7.tkraise()
+                # Pasar al siguiente frame
+                frame6.grid_remove()
+                frame6.grid_forget()
+                frame7.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame7.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(patrocinadores_piloto_2))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         def muerte_y_destruccion():
             self.preparar_campeonato(frame_name)
@@ -607,7 +697,7 @@ class MenuApp:
 
     # Funcionalidad 2: Planificar Calendario de Carreras
     def planificar_calendario(self, frame_name):
-        global carreras_listo, meses_disponibles, mes_seleccionado, campeonato
+        global carreras_listo, meses_disponibles, mes_seleccionado, campeonato, mes_elegido, dificultad_elegida
         carreras_listo = 0
         meses_disponibles = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
 
@@ -615,42 +705,65 @@ class MenuApp:
         # Para frame 1
         def elegir_campeonato():
             global campeonato, cantidad_carreras, circuitos_ubicacion, directores_para_elegir, ciudades_disponibles, meses_disponibles, dificultades
-            campeonato = campeonatos_desbloqueados[int(entry1.get()) - 1]
-            # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el campeonato " + campeonato.getNombre() + "\nEl campeonato tiene " + str(campeonato.getCantidadMaxCarreras()) + " carreras, debes planificarlas todas")
-            cantidad_carreras = campeonato.getCantidadMaxCarreras()
-            circuitos_ubicacion = Circuito.circuitos_ubicacion(campeonato)
-            ciudades_disponibles = Ciudad.ciudades_continente(campeonato.getContinente())
+            try:
+                if entry1.get() == "":
+                    missing_fields = ["Seleccion de Campeonato"]
+                    raise NoInputException("", missing_fields)
+                campeonato = campeonatos_desbloqueados[int(entry1.get()) - 1]
+                # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el campeonato " + campeonato.getNombre() + "\nEl campeonato tiene " + str(campeonato.getCantidadMaxCarreras()) + " carreras, debes planificarlas todas")
+                cantidad_carreras = campeonato.getCantidadMaxCarreras()
+                circuitos_ubicacion = Circuito.circuitos_ubicacion(campeonato)
+                ciudades_disponibles = Ciudad.ciudades_continente(campeonato.getContinente())
 
-            directores_para_elegir = DirectorCarrera.dc_disponibles()
-            jj = 1
+                directores_para_elegir = DirectorCarrera.dc_disponibles()
+                jj = 1
 
-            for director in directores_para_elegir:
-                tablaDirectoresCarrera.insert(parent='', index=tk.END, values=(jj,director.get_nombre()))
-                jj += 1
+                for director in directores_para_elegir:
+                    tablaDirectoresCarrera.insert(parent='', index=tk.END, values=(jj,director.get_nombre()))
+                    jj += 1
 
-            # Pasar al siguiente frame
-            frame1.grid_remove()
-            frame1.grid_forget()
-            frame2.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame2.tkraise()
+                # Pasar al siguiente frame
+                frame1.grid_remove()
+                frame1.grid_forget()
+                frame2.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame2.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(campeonatos_desbloqueados))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 2
         def elegir_director():
             # all variables used
             global directores_para_elegir, director_elegido, circuitos_ubicacion, ciudades_nombres, circuitos_vender, ciudades_disponibles, ciudad_seleccionada, ciudad_elegida, circuitos_para_elegir, meses_disponibles, mes_seleccionado, mes_elegido, dificultades, dificultad_seleccionada, dificultad_elegida
+            try:
+                if entry2.get() == "":
+                    missing_fields = ["Seleccion de Director"]
+                    raise NoInputException("", missing_fields)
+                director_elegido = directores_para_elegir[int(entry2.get()) - 1]
+                # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el director " + director_elegido.get_nombre())
 
-            director_elegido = directores_para_elegir[int(entry2.get()) - 1]
-            # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el director " + director_elegido.get_nombre())
+                circuitos_vender = Circuito.circuitos_vender(director_elegido, circuitos_ubicacion)
 
-            circuitos_vender = Circuito.circuitos_vender(director_elegido, circuitos_ubicacion)
-
-            combobox_meses['values'] = meses_disponibles
-            mes_seleccionado.set(meses_disponibles[0])
-            # Pasar al siguiente frame
-            frame2.grid_remove()
-            frame2.grid_forget()
-            frame3.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame3.tkraise()
+                combobox_meses['values'] = meses_disponibles
+                mes_seleccionado.set(meses_disponibles[0])
+                # Pasar al siguiente frame
+                frame2.grid_remove()
+                frame2.grid_forget()
+                frame3.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame3.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(directores_para_elegir))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 3
         def elegir_mes(event):
@@ -664,24 +777,40 @@ class MenuApp:
             dificultad_elegida = dificultades_dict.get(dif)
 
         def elegir_mes_dificutad():
-            global circuitos_para_elegir, mes_elegido, circuitos_vender, ciudades_nombres, ciudades_disponibles
-            # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
-            circuitos_para_elegir = Circuito.circuitos_disponibles(int(mes_elegido), circuitos_vender)
-            jj = 1
-            for circuito in circuitos_para_elegir:
-                tablaCiudadesDisponibles.insert(parent='', index=tk.END, values=(jj,circuito.get_nombre()))
-                jj += 1
+            global circuitos_para_elegir, mes_elegido, dificultad_elegida, circuitos_vender, ciudades_nombres, ciudades_disponibles
+            try:
+                if not mes_elegido or not dificultad_elegida:
+                    missing_fields = []
+                    if mes_elegido == None:
+                        missing_fields += ["Seleccion de Mes"]
+                    if dificultad_elegida == None:
+                        missing_fields += ["Seleccion de Dificultad"]
+                    raise NoInputException("", missing_fields)
+                # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
+                circuitos_para_elegir = Circuito.circuitos_disponibles(int(mes_elegido), circuitos_vender)
+                jj = 1
+                for circuito in circuitos_para_elegir:
+                    tablaCiudadesDisponibles.insert(parent='', index=tk.END, values=(jj,circuito.get_nombre()))
+                    jj += 1
 
-            ciudades_nombres = [ciudad.get_nombre() for ciudad in ciudades_disponibles]
-            combobox_ciudad['values'] = ciudades_nombres
-            # Pasar al siguiente frame
-            frame3.grid_remove()
-            frame3.grid_forget()
-            frame4.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame4.tkraise()
+                ciudades_nombres = [ciudad.get_nombre() for ciudad in ciudades_disponibles]
+                combobox_ciudad['values'] = ciudades_nombres
+
+                # Pasar al siguiente frame
+                frame3.grid_remove()
+                frame3.grid_forget()
+                frame4.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame4.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, 12)
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 4
-
         def elegir_ciudad(event):
             global ciudad_seleccionada, ciudad_elegida, ciudades_disponibles
             ciudad_seleccionada = combobox_ciudad.get()
@@ -690,46 +819,85 @@ class MenuApp:
 
         def elegir_circuito():
             global circuito_elegido, circuitos_para_elegir, carrera_creada, ciudad_elegida, dificultad_elegida, dificultad_elegida, circuito_elegido, mes_elegido, director_elegido, campeonato, carreras_listo, meses_disponibles
-            circuito_elegido = circuitos_para_elegir[int(entry4.get()) - 1]
-            # tk.messagebox.showinfo("Eleccion realizada", "Has confirmado la seleccion de equipos")
-            carrera_creada = Carrera(ciudad_elegida, dificultad_elegida, dificultad_elegida, circuito_elegido,
-                                     int(mes_elegido), director_elegido)
-            carreras_listo += 1
-            combobox_meses.set('')
-            campeonato.agregarCarrera(carrera_creada)
-            meses_disponibles.remove(mes_elegido)
+            try:
+                if entry4.get()=="" or not ciudad_elegida:
+                    missing_fields = []
+                    if entry4.get()=="":
+                        missing_fields += ["Seleccion de Circuito"]
+                    if dificultad_elegida == None:
+                        missing_fields += ["Seleccion de Ciudad"]
+                    raise NoInputException("", missing_fields)
+                circuito_elegido = circuitos_para_elegir[int(entry4.get()) - 1]
+                # tk.messagebox.showinfo("Eleccion realizada", "Has confirmado la seleccion de equipos")
+                carrera_creada = Carrera(ciudad_elegida, dificultad_elegida, dificultad_elegida, circuito_elegido,
+                                         int(mes_elegido), director_elegido)
+                carreras_listo += 1
 
-            if carreras_listo == campeonato.getCantidadMaxCarreras():
-                # Pasar al siguiente frame
-                frame4.grid_remove()
-                frame4.grid_forget()
-                frame5.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-                frame5.tkraise()
-            else:  # volver al frame 2
-                frame4.grid_remove()
-                frame4.grid_forget()
-                frame2.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-                frame2.tkraise()
+                campeonato.agregarCarrera(carrera_creada)
+                meses_disponibles.remove(mes_elegido)
+
+                # Borrar datos
+                combobox_meses.set('')
+                combobox_dificultad.set('')
+                entry4.delete(0,"end")
+                mes_elegido = None
+                dificultad_elegida = None
+
+                if carreras_listo == campeonato.getCantidadMaxCarreras():
+                    # Pasar al siguiente frame
+                    frame4.grid_remove()
+                    frame4.grid_forget()
+                    frame5.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                    frame5.tkraise()
+                else:  # volver al frame 2
+                    frame4.grid_remove()
+                    frame4.grid_forget()
+                    frame2.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                    frame2.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(circuitos_para_elegir))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 5
         def elegir_premios():
             global premio_campeonato, premio_carreras, campeonato
-            premio_campeonato = float(entry5_1.get())
-            premio_carreras = float(entry5_2.get())
+            try:
+                if entry5_1.get()=="" or entry5_2.get()=="":
+                    missing_fields = []
+                    if entry4.get()=="":
+                        missing_fields += ["Premio del Campeonato"]
+                    if dificultad_elegida == None:
+                        missing_fields += ["Premio de las Carreras"]
+                    raise NoInputException("", missing_fields)
+                premio_campeonato = float(entry5_1.get())
+                premio_carreras = float(entry5_2.get())
 
-            campeonato.logisticaPremios(premio_campeonato, premio_carreras)
-            campeonato.organizarCarreras()
+                campeonato.logisticaPremios(premio_campeonato, premio_carreras)
+                campeonato.organizarCarreras()
 
-            jj = 1
-            for carrera in campeonato.getListaCarreras():
-                tablaCalendarioCarreras.insert(parent='', index=tk.END, values=(carrera.nombre_circuito ,carrera.getFecha(),carrera.getPremioEfectivo()))
-                jj += 1
+                jj = 1
+                for carrera in campeonato.getListaCarreras():
+                    tablaCalendarioCarreras.insert(parent='', index=tk.END, values=(carrera.nombre_circuito ,carrera.getFecha(),carrera.getPremioEfectivo()))
+                    jj += 1
 
-            # Pasar al siguiente frame
-            frame5.grid_remove()
-            frame5.grid_forget()
-            frame6.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame6.tkraise()
+                # Pasar al siguiente frame
+                frame5.grid_remove()
+                frame5.grid_forget()
+                frame6.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame6.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, 2)
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 6
         def muerte_y_destruccion():
@@ -783,7 +951,7 @@ class MenuApp:
         # cantidad de carreras
         cantidad_carreras = 0
 
-        # meses disponibles
+        # Dificultades disponibles
         dificultades = ["Principiante", "Avanzado", "Experto"]
 
         # Frame 2: Escoger Director de Carrera
@@ -838,13 +1006,11 @@ class MenuApp:
         label34 = tk.Label(frame3, text="Elige la dificultad de la carrera:")
         label34.grid(column=0, row=4, padx=20, pady=20, sticky="nsew")
         dificultad_seleccionada = tk.StringVar(frame3)
-        dificultad_seleccionada.set(dificultades[0])
+        # dificultad_seleccionada.set(dificultades[0])
         combobox_dificultad = ttk.Combobox(frame3, textvariable=dificultad_seleccionada, values=dificultades)
         combobox_dificultad.grid(column=0, row=5, padx=20, pady=20)
         combobox_dificultad.bind("<<ComboboxSelected>>", elegir_dificultad)
         combobox_dificultad.configure(justify="center")
-
-        ciudad_elegida = None
 
         button3 = tk.Button(frame3, text="Elegir", command=lambda: elegir_mes_dificutad())
         button3.grid(column=0, row=7, padx=20, pady=20)
@@ -950,122 +1116,182 @@ class MenuApp:
         button6.configure(justify="center")
 
 
-    # Funcionalodad 3: Tunear el Vehiculo de Carreras
+    # Funcionalidad 3: Tunear el Vehiculo de Carreras
     def personalizar_vehiculo(self, frame_name):
         global pilotos_desbloqueados, piloto_seleccionado, aleron_elegido, neumatico_elegdo, motor_elegido, vehiculo_seleccionado
 
         def elegir_piloto():
             global piloto_seleccionado, pilotos_desbloqueados, chasis_disponibles
-            piloto_seleccionado = pilotos_desbloqueados[int(entry1.get()) - 1]
-            # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el campeonato " + campeonato.getNombre() + "\nEl campeonato tiene " + str(campeonato.getCantidadMaxCarreras()) + " carreras, debes planificarlas todas")
-            chasis_disponibles = Chasis.chasis_disponibles(piloto_seleccionado)
-            jj = 1
+            try:
+                if entry1.get() == "":
+                    missing_fields = ["Seleccion de Piloto"]
+                    raise NoInputException("", missing_fields)
+                piloto_seleccionado = pilotos_desbloqueados[int(entry1.get()) - 1]
+                # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el campeonato " + campeonato.getNombre() + "\nEl campeonato tiene " + str(campeonato.getCantidadMaxCarreras()) + " carreras, debes planificarlas todas")
+                chasis_disponibles = Chasis.chasis_disponibles(piloto_seleccionado)
+                jj = 1
 
-            for chasis in chasis_disponibles:
-                listbox2.insert(jj, str(jj) + " | " + chasis.marca + " | " + chasis.modelo + " | " + str(
-                    chasis.velocidad) + " | " + str(chasis.precio))
-                jj += 1
+                for chasis in chasis_disponibles:
+                    listbox2.insert(jj, str(jj) + " | " + chasis.marca + " | " + chasis.modelo + " | " + str(
+                        chasis.velocidad) + " | " + str(chasis.precio))
+                    jj += 1
 
-            # Pasar al siguiente frame
-            frame1.grid_remove()
-            frame1.grid_forget()
-            frame2.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame2.tkraise()
+                # Pasar al siguiente frame
+                frame1.grid_remove()
+                frame1.grid_forget()
+                frame2.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame2.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(pilotos_desbloqueados))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 2
         def elegir_chasis():
             # all variables used
             global chasis_seleccionado, chasis_disponibles, vehiculo_seleccionado, combinaciones, alerones_disponibles, piloto_seleccionado
-            chasis_seleccionado = chasis_disponibles[int(entry2.get()) - 1]
-            # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el director " + director_elegido.get_nombre())
-            vehiculo_seleccionado = chasis_seleccionado.comprar(piloto_seleccionado)
-            combinaciones = Pieza.combinaciones(vehiculo_seleccionado)
-            alerones_disponibles = Pieza.filterAlerones(combinaciones)
+            try:
+                if entry2.get() == "":
+                    missing_fields = ["Seleccion de Chasis"]
+                    raise NoInputException("", missing_fields)
+                chasis_seleccionado = chasis_disponibles[int(entry2.get()) - 1]
+                # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el director " + director_elegido.get_nombre())
+                vehiculo_seleccionado = chasis_seleccionado.comprar(piloto_seleccionado)
+                combinaciones = Pieza.combinaciones(vehiculo_seleccionado)
+                alerones_disponibles = Pieza.filterAlerones(combinaciones)
 
-            jj = 1
-            for aleron in alerones_disponibles:
-                listbox3.insert(jj, str(jj) + " | " + aleron.nombre + " | " + str(
-                    aleron.maniobrabilidadAnadida) + " | " + str(aleron.precio) + " | " + str(aleron.velocidadAnadida))
-                jj += 1
-            # Pasar al siguiente frame
+                jj = 1
+                for aleron in alerones_disponibles:
+                    listbox3.insert(jj, str(jj) + " | " + aleron.nombre + " | " + str(
+                        aleron.maniobrabilidadAnadida) + " | " + str(aleron.precio) + " | " + str(aleron.velocidadAnadida))
+                    jj += 1
+                # Pasar al siguiente frame
 
-            frame2.grid_remove()
-            frame2.grid_forget()
-            frame3.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame3.tkraise()
+                frame2.grid_remove()
+                frame2.grid_forget()
+                frame3.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame3.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(chasis_disponibles))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 3
         def elegir_aleron():
             global aleron_elegido, alerones_disponibles, combinaciones2, vehiculo_seleccionado, combinaciones, neumaticos_disponibles
-            # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
-            aleron_elegido = alerones_disponibles[int(entry3.get()) - 1]
-            combinaciones2 = Pieza.combinacionesDisponibles(vehiculo_seleccionado, aleron_elegido, combinaciones)
-            neumaticos_disponibles = Pieza.filterNeumaticos(combinaciones2)
+            try:
+                if entry3.get() == "":
+                    missing_fields = ["Seleccion de Aleron"]
+                    raise NoInputException("", missing_fields)
+                # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
+                aleron_elegido = alerones_disponibles[int(entry3.get()) - 1]
+                combinaciones2 = Pieza.combinacionesDisponibles(vehiculo_seleccionado, aleron_elegido, combinaciones)
+                neumaticos_disponibles = Pieza.filterNeumaticos(combinaciones2)
 
-            jj = 1
-            for neumatico in neumaticos_disponibles:
-                listbox4.insert(jj, str(jj) + " | " + neumatico.nombre + " | " + str(
-                    neumatico.maniobrabilidadAnadida) + " | " + str(neumatico.maniobrabilidadAnadida) + " | " + str(
-                    neumatico.velocidadAnadida) + " | " + str(neumatico.precio))
-                jj += 1
+                jj = 1
+                for neumatico in neumaticos_disponibles:
+                    listbox4.insert(jj, str(jj) + " | " + neumatico.nombre + " | " + str(
+                        neumatico.maniobrabilidadAnadida) + " | " + str(neumatico.maniobrabilidadAnadida) + " | " + str(
+                        neumatico.velocidadAnadida) + " | " + str(neumatico.precio))
+                    jj += 1
 
-            # Pasar al siguiente frame
-            frame3.grid_remove()
-            frame3.grid_forget()
-            frame4.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame4.tkraise()
+                # Pasar al siguiente frame
+                frame3.grid_remove()
+                frame3.grid_forget()
+                frame4.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame4.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(alerones_disponibles))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 4
         def elegir_neumatico():
             global neumatico_elegido, neumaticos_disponibles, combinaciones3, vehiculo_seleccionado, combinaciones2, motores_disponibles
-            # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
-            neumatico_elegido = neumaticos_disponibles[int(entry4.get()) - 1]
-            combinaciones3 = Pieza.combinacionesDisponibles(vehiculo_seleccionado, neumatico_elegido, combinaciones2)
-            motores_disponibles = Pieza.filterMotores(combinaciones3)
+            try:
+                if entry4.get() == "":
+                    missing_fields = ["Seleccion de Neumatico"]
+                    raise NoInputException("", missing_fields)
+                # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
+                neumatico_elegido = neumaticos_disponibles[int(entry4.get()) - 1]
+                combinaciones3 = Pieza.combinacionesDisponibles(vehiculo_seleccionado, neumatico_elegido, combinaciones2)
+                motores_disponibles = Pieza.filterMotores(combinaciones3)
 
-            jj = 1
-            for neumatico in motores_disponibles:
-                listbox5.insert(jj, str(jj) + " | " + neumatico.nombre + " | " + str(
-                    neumatico.maniobrabilidadAnadida) + " | " + str(neumatico.maniobrabilidadAnadida) + " | " + str(
-                    neumatico.velocidadAnadida) + " | " + str(neumatico.precio))
-                jj += 1
+                jj = 1
+                for neumatico in motores_disponibles:
+                    listbox5.insert(jj, str(jj) + " | " + neumatico.nombre + " | " + str(
+                        neumatico.maniobrabilidadAnadida) + " | " + str(neumatico.maniobrabilidadAnadida) + " | " + str(
+                        neumatico.velocidadAnadida) + " | " + str(neumatico.precio))
+                    jj += 1
 
-            # Pasar al siguiente frame
-            frame4.grid_remove()
-            frame4.grid_forget()
-            frame5.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame5.tkraise()
+                # Pasar al siguiente frame
+                frame4.grid_remove()
+                frame4.grid_forget()
+                frame5.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame5.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(neumaticos_disponibles))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 5
         def elegir_motor():
             global motor_elegido, motores_disponibles, piezas_asignar, aleron_elegido, neumatico_elegido, motor_elegido, precio_total, equipo, descuento, porcentaje_descuento
-            # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
-            motor_elegido = motores_disponibles[int(entry5.get()) - 1]
-            piezas_asignar = [aleron_elegido, neumatico_elegido, motor_elegido]
-            vehiculo_seleccionado.setPiezasComprar(piezas_asignar)
+            try:
+                if entry5.get() == "":
+                    missing_fields = ["Seleccion de Motor"]
+                    raise NoInputException("", missing_fields)
+                # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
+                motor_elegido = motores_disponibles[int(entry5.get()) - 1]
+                piezas_asignar = [aleron_elegido, neumatico_elegido, motor_elegido]
+                vehiculo_seleccionado.setPiezasComprar(piezas_asignar)
 
-            precio_total = Pieza.precioTotal(piezas_asignar, vehiculo_seleccionado)
-            equipo = vehiculo_seleccionado.piloto.contrato
-            descuento = equipo.descuento(precio_total, vehiculo_seleccionado)
+                precio_total = Pieza.precioTotal(piezas_asignar, vehiculo_seleccionado)
+                equipo = vehiculo_seleccionado.piloto.contrato
+                descuento = equipo.descuento(precio_total, vehiculo_seleccionado)
 
-            if descuento:
-                porcentaje_descuento = equipo.calcular_descuento(precio_total, vehiculo_seleccionado)
-                label6_1.config(text="Has impresionado a los proveedores! \n\nTe han hecho un descuento de " + str(
-                    round(porcentaje_descuento, 2)) + "% debido a tus habilidades y el dinero del equipo")
-            else:
-                label6_1.config(text="No has impresionado a los proveedores, no te han hecho descuento")
+                if descuento:
+                    porcentaje_descuento = equipo.calcular_descuento(precio_total, vehiculo_seleccionado)
+                    label6_1.config(text="Has impresionado a los proveedores! \n\nTe han hecho un descuento de " + str(
+                        round(porcentaje_descuento, 2)) + "% debido a tus habilidades y el dinero del equipo")
+                else:
+                    label6_1.config(text="No has impresionado a los proveedores, no te han hecho descuento")
 
-            equipo.comprar_piezas(precio_total, vehiculo_seleccionado)
+                equipo.comprar_piezas(precio_total, vehiculo_seleccionado)
 
-            label6_3.config(text=aleron_elegido.nombre)
-            label6_4.config(text=neumatico_elegido.nombre)
-            label6_5.config(text=motor_elegido.nombre)
+                label6_3.config(text=aleron_elegido.nombre)
+                label6_4.config(text=neumatico_elegido.nombre)
+                label6_5.config(text=motor_elegido.nombre)
 
-            # Pasar al siguiente frame
-            frame5.grid_remove()
-            frame5.grid_forget()
-            frame6.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame6.tkraise()
+                # Pasar al siguiente frame
+                frame5.grid_remove()
+                frame5.grid_forget()
+                frame6.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame6.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(motores_disponibles))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 6
         def muerte_y_destruccion():
@@ -1219,136 +1445,192 @@ class MenuApp:
         # Funciones para el funcionamiento de la funcionalidad
         def elegir_piloto():
             global piloto_seleccionado, pilotos_desbloqueados, campeonato_piloto, maestros_disponibles
-            pilotos_desbloqueados = Piloto.pilotos_desbloqueados()
-            piloto_seleccionado = pilotos_desbloqueados[int(entry1.get()) - 1]
-            # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el campeonato " + campeonato.getNombre() + "\nEl campeonato tiene " + str(campeonato.getCantidadMaxCarreras()) + " carreras, debes planificarlas todas")
-            campeonato_piloto = Campeonato.campeonatoPiloto(piloto_seleccionado)
-            maestros_disponibles = Campeonato.directoresCarrera(campeonato_piloto)
-            jj = 1
-            for maestro in maestros_disponibles:
-                listbox2.insert(jj, str(jj) + " | " + maestro.get_nombre())
-                jj += 1
+            try:
+                if entry1.get() == "":
+                    missing_fields = ["Seleccion de Piloto"]
+                    raise NoInputException("", missing_fields)
+                pilotos_desbloqueados = Piloto.pilotos_desbloqueados()
+                piloto_seleccionado = pilotos_desbloqueados[int(entry1.get()) - 1]
+                # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el campeonato " + campeonato.getNombre() + "\nEl campeonato tiene " + str(campeonato.getCantidadMaxCarreras()) + " carreras, debes planificarlas todas")
+                campeonato_piloto = Campeonato.campeonatoPiloto(piloto_seleccionado)
+                maestros_disponibles = Campeonato.directoresCarrera(campeonato_piloto)
+                jj = 1
+                for maestro in maestros_disponibles:
+                    listbox2.insert(jj, str(jj) + " | " + maestro.get_nombre())
+                    jj += 1
 
-            # Pasar al siguiente frame
-            frame1.grid_remove()
-            frame1.grid_forget()
-            frame2.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame2.tkraise()
+                # Pasar al siguiente frame
+                frame1.grid_remove()
+                frame1.grid_forget()
+                frame2.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame2.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(pilotos_desbloqueados))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 2
         def elegir_maestro_de_carreras():
             global piloto_seleccionado, campeonato_piloto, maestros_disponibles, maestro_elegido
-            maestro_elegido = maestros_disponibles[int(entry2.get()) - 1]
-            # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el director " + director_elegido.get_nombre())
-            # Pasar al siguiente frame
-            label3.configure(text="(Tu equipo cuenta con ${})".format(piloto_seleccionado.contrato.get_plata()))
+            try:
+                if entry2.get() == "":
+                    missing_fields = ["Seleccion de Director de Carrera"]
+                    raise NoInputException("", missing_fields)
+                maestro_elegido = maestros_disponibles[int(entry2.get()) - 1]
+                # tk.messagebox.showinfo("Eleccion realizada", "Has escogido el director " + director_elegido.get_nombre())
+                # Pasar al siguiente frame
+                label3.configure(text="(Tu equipo cuenta con ${})".format(piloto_seleccionado.contrato.get_plata()))
 
-            frame2.grid_remove()
-            frame2.grid_forget()
-            frame3.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame3.tkraise()
+                frame2.grid_remove()
+                frame2.grid_forget()
+                frame3.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame3.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(maestros_disponibles))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 3
         def sobornar():
             global piloto_seleccionado, campeonato_piloto, maestro_elegido, plata_ofrecida, carta_seleccionada, selecciones
-            # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
-            plata_ofrecida = int(entry3.get())
-            carta_seleccionada = random.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21])
-            selecciones = []
+            try:
+                if entry3.get() == "":
+                    missing_fields = ["Incentivo Monetario"]
+                    raise NoInputException("", missing_fields)
+                # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
+                plata_ofrecida = int(entry3.get())
+                carta_seleccionada = random.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21])
+                selecciones = []
 
-            # Pasar al siguiente frame
-            frame3.grid_remove()
-            frame3.grid_forget()
-            frame4.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame4.tkraise()
+                # Pasar al siguiente frame
+                frame3.grid_remove()
+                frame3.grid_forget()
+                frame4.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame4.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, 2)
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 4
         def elegir_destino(button_text):
             global piloto_seleccionado, campeonato_piloto, maestro_elegido, plata_ofrecida, selecciones, carta_seleccionada, plata_ganada, pilotos_maldecir
-            if len(selecciones) < 2:
-                entry4.configure(state="normal")
-                entry4.insert("end",button_text + ", ")
-                entry4.configure(state="disabled")
-                selecciones.append(int(button_text))
+            try:
+                if int(button_text) in selecciones:
+                    raise RepeatedSelectionException(button_text)
+                if len(selecciones) < 2:
+                    entry4.configure(state="normal")
+                    entry4.insert("end",button_text + ", ")
+                    entry4.configure(state="disabled")
+                    selecciones.append(int(button_text))
 
-            else:
-                entry4.configure(state="normal")
-                entry4.insert("end",button_text)
-                selecciones.append(int(button_text))
-                entry4.configure(state="disabled")
-                tk.messagebox.showinfo("Eleccion realizada", "Has escogido las cartas: " + entry4.get())
-                if carta_seleccionada in selecciones:
-                    plata_ganada = plata_ofrecida * 3
                 else:
-                    plata_ganada = plata_ofrecida * 0.75
+                    entry4.configure(state="normal")
+                    entry4.insert("end",button_text)
+                    selecciones.append(int(button_text))
+                    entry4.configure(state="disabled")
+                    tk.messagebox.showinfo("Eleccion realizada", "Has escogido las cartas: " + entry4.get())
+                    if carta_seleccionada in selecciones:
+                        plata_ganada = plata_ofrecida * 3
+                    else:
+                        plata_ganada = plata_ofrecida * 0.75
 
-                # Lista de pilotos desfavorecidos
-                pilotos_maldecir = maestro_elegido.pilotos_desfavorecidos(plata_ganada, piloto_seleccionado, campeonato_piloto)
+                    # Lista de pilotos desfavorecidos
+                    pilotos_maldecir = maestro_elegido.pilotos_desfavorecidos(plata_ganada, piloto_seleccionado, campeonato_piloto)
 
-                jj = 1
-                for pilotico in pilotos_maldecir:
-                    listbox5.insert(jj, str(jj) + " | " + pilotico.get_nombre())
-                    jj += 1
+                    jj = 1
+                    for pilotico in pilotos_maldecir:
+                        listbox5.insert(jj, str(jj) + " | " + pilotico.get_nombre())
+                        jj += 1
 
-                # Borrar para volver hacer de nuevo
-                entry4.delete(0,"end")
-                selecciones.clear()
+                    # Borrar para volver hacer de nuevo
+                    entry4.delete(0,"end")
+                    selecciones.clear()
 
-                # Pasar al siguiente frame
-                frame4.grid_remove()
-                frame4.grid_forget()
-                frame5.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-                frame5.tkraise()
+                    # Pasar al siguiente frame
+                    frame4.grid_remove()
+                    frame4.grid_forget()
+                    frame5.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                    frame5.tkraise()
+            except RepeatedSelectionException:
+                pass
 
         # Para frame 5
         def maldecir_piloto():
             global piloto_seleccionado, campeonato_piloto, maestro_elegido, plata_ganada, pilotos_maldecir, piloto_maldito, vehiculos_participar
-            # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
-            piloto_maldito = pilotos_maldecir[int(entry5.get()) - 1]
+            try:
+                if entry5.get() == "":
+                    missing_fields = ["'¿Acaso no quieres maldecir a nadie?'"]
+                    raise NoInputException("", missing_fields)
+                # tk.messagebox.showinfo("Eleccion realizada", "\nHas escogido el mes " + mes_elegido + "\nHas escogido la dificultad " + dificultad_elegida + "\nHas escogido la ciudad " + ciudad_elegida.get_nombre())
+                piloto_maldito = pilotos_maldecir[int(entry5.get()) - 1]
 
-            sanciones_before = piloto_seleccionado.getSanciones()
-            vehiculos_participar = piloto_maldito.maldecir_piloto(plata_ganada,piloto_seleccionado,maestro_elegido,campeonato_piloto)
-            for vehiculo in vehiculos_participar:
-                vehiculo.actualizar_velocidad_actual()
+                sanciones_before = piloto_seleccionado.getSanciones()
+                vehiculos_participar = piloto_maldito.maldecir_piloto(plata_ganada,piloto_seleccionado,maestro_elegido,campeonato_piloto)
+                for vehiculo in vehiculos_participar:
+                    vehiculo.actualizar_velocidad_actual()
 
-            if sanciones_before < piloto_seleccionado.getSanciones():
-                tk.messagebox.showinfo("Oh no!",
-                                       "No has podido maldecir al piloto, te han sancionado!")
-            else:
-                tk.messagebox.showinfo("MUAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJA",
-                                       "El Maestro de Carrera te sonrie, y predice que el piloto y su vehiculo sufriran de una 'mala fortuna'")
+                if sanciones_before < piloto_seleccionado.getSanciones():
+                    tk.messagebox.showinfo("Oh no!",
+                                           "No has podido maldecir al piloto, al parecer tu dinero no ha sido lo suficientemente ~motivante~")
+                else:
+                    tk.messagebox.showinfo("MUAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJAJA",
+                                           "El Maestro de Carrera te sonrie, y predice que el piloto y su vehiculo sufriran de una 'mala fortuna'")
 
-            # Pasar al siguiente frame
-            frame5.grid_remove()
-            frame5.grid_forget()
-            frame6.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame6.tkraise()
+                # Pasar al siguiente frame
+                frame5.grid_remove()
+                frame5.grid_forget()
+                frame6.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame6.tkraise()
+            except NoInputException:
+                pass
+            except RepeatedSelectionException:
+                pass
+            except IndexError:
+                raise OutOfBoundsException(1, len(pilotos_maldecir))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 6
         def manipular_carrera(eleccion):
             global piloto_seleccionado, campeonato_piloto, maestro_elegido, plata_ganada, pilotos_maldecir, piloto_maldito, vehiculos_participar, vehiculos_malditos
-            for vehiculo in vehiculos_participar:
-                vehiculo.actualizar_velocidad_actual()
+            try:
+                for vehiculo in vehiculos_participar:
+                    vehiculo.actualizar_velocidad_actual()
 
-            if eleccion == "Posiciones":
-                vehiculos_malditos = VehiculoCarrera.manipular_vehiculos(vehiculos_participar,pilotos_maldecir,piloto_maldito,piloto_seleccionado,plata_ganada,maestro_elegido,True)
-                label7.configure(text="El Maestro de Carrera te avisa que 'puede que comiences mas adelante, y los otros, mas atras'...")
-            elif eleccion == "Componentes":
-                vehiculos_malditos = VehiculoCarrera.manipular_vehiculos(vehiculos_participar,pilotos_maldecir,piloto_maldito,piloto_seleccionado,plata_ganada,maestro_elegido,False)
-                label7.configure(text="El Maestro de Carrera te muestra un misterioso liquido que dice que le va a hacer bien a tu Vehiculo de Carrera.\n"
-                                      + "Mientras, en su otra mano, sostiene un liquido diferente, y sugiere que quizas ese no le haga bien a los otros Vehiculos...")
-            # Pasar al siguiente frame
+                if eleccion == "Posiciones":
+                    vehiculos_malditos = VehiculoCarrera.manipular_vehiculos(vehiculos_participar,pilotos_maldecir,piloto_maldito,piloto_seleccionado,plata_ganada,maestro_elegido,True)
+                    label7.configure(text="El Maestro de Carrera te avisa que 'puede que comiences mas adelante, y los otros, mas atras'...")
+                elif eleccion == "Componentes":
+                    vehiculos_malditos = VehiculoCarrera.manipular_vehiculos(vehiculos_participar,pilotos_maldecir,piloto_maldito,piloto_seleccionado,plata_ganada,maestro_elegido,False)
+                    label7.configure(text="El Maestro de Carrera te muestra un misterioso liquido que dice que le va a hacer bien a tu Vehiculo de Carrera.\n"
+                                          + "Mientras, en su otra mano, sostiene un liquido diferente, y sugiere que quizas ese no le haga bien a los otros Vehiculos...")
+                # Pasar al siguiente frame
 
-            jj=1
-            for vehiculo in vehiculos_malditos:
-                listbox7.insert(jj, str(jj) + " | " + vehiculo.piloto.get_nombre() + " | " + str(vehiculo.velocidadTuneao) + " m/s | " +
-                                str(vehiculo.getDistanciaInicial()) + " m")
-                jj+=1
+                jj=1
+                for vehiculo in vehiculos_malditos:
+                    listbox7.insert(jj, str(jj) + " | " + vehiculo.piloto.get_nombre() + " | " + str(vehiculo.velocidadTuneao) + " m/s | " +
+                                    str(vehiculo.getDistanciaInicial()) + " m")
+                    jj+=1
 
-            frame6.grid_remove()
-            frame6.grid_forget()
-            frame7.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame7.tkraise()
+                frame6.grid_remove()
+                frame6.grid_forget()
+                frame7.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame7.tkraise()
+            except AttributeError:
+                raise NullPointerException("Vehiculo de Carrera")
 
         # Para frame 7
         def muerte_y_destruccion():
@@ -1539,29 +1821,41 @@ class MenuApp:
 
     # Funcionalidad 5: GOTTA GO FAST
     def simulacion_campeonato(self, frame_name):
-        global image3, equipo_est_actual
+        global img3_0, img3_1, equipo_est_actual
         # Metodos importantes para la funcionalidad
         # Para frame 1
         def elegir_campeonato():
             global campeonato, carreras, cant_carreras, piloto_elegido, vehiculo_elegido
-            campeonato = campeonatos_desbloqueados[int(entry1.get()) - 1]
+            try:
+                if entry1.get() == "":
+                    missing_fields = ["Seleccion de Campeonato"]
+                    raise NoInputException("", missing_fields)
+                campeonato = campeonatos_desbloqueados[int(entry1.get()) - 1]
 
-            carreras = campeonato.getListaCarreras()
-            cant_carreras = 0
-            piloto_elegido = campeonato.pilotoCampeonato()
-            vehiculo_elegido = VehiculoCarrera.vehiculos_piloto(piloto_elegido)[0]
-            label2.configure(text="El piloto elegido para el campeonato es: " + piloto_elegido.get_nombre())
-            jj = 1
+                carreras = campeonato.getListaCarreras()
+                cant_carreras = 0
+                piloto_elegido = campeonato.pilotoCampeonato()
+                vehiculo_elegido = VehiculoCarrera.vehiculos_piloto(piloto_elegido)[0]
+                label2.configure(text="El piloto elegido para el campeonato es: " + piloto_elegido.get_nombre())
+                jj = 1
 
-            for carrerita in carreras:
-                listbox2.insert(jj, str(jj) + " | " + carrerita.getNombreCircuito())
-                jj += 1
+                for carrerita in carreras:
+                    listbox2.insert(jj, str(jj) + " | " + carrerita.getNombreCircuito())
+                    jj += 1
 
-            # Pasar al siguiente frame
-            frame1.grid_remove()
-            frame1.grid_forget()
-            frame2.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
-            frame2.tkraise()
+                # Pasar al siguiente frame
+                frame1.grid_remove()
+                frame1.grid_forget()
+                frame2.grid(column=0, row=2, padx=20, pady=20, sticky="nsew")
+                frame2.tkraise()
+            except TypeError:
+                raise NullPointerException("Vehiculo de Carrera")
+            except AttributeError:
+                raise NullPointerException("Vehiculo de Carrera")
+            except IndexError:
+                raise OutOfBoundsException(1, len(campeonatos_desbloqueados))
+            except ValueError:
+                raise IncorrectTypeException("número")
 
         # Para frame 2
         def comenzar_carreras():
@@ -1615,14 +1909,16 @@ class MenuApp:
                     if not vehiculo_elegido.morido and not vehiculo_elegido.terminado:
                         carrera_actual.actualizarGasolina(piloto_elegido,carrera_actual)
                 if (vehiculo_elegido.isMorido()):
-                    messagebox.showerror("KABOOM!","Te has chocado! La carrera finalizara automaticamente.")
+                    messagebox.showerror("¡¡¡KABOOM!!!","Te has chocado! La carrera finalizara automaticamente.")
                     while True:
                         if carrera_actual.actualizarTerminado():
                             break
                         carrera_actual.actualizarPosiciones()
                     terminar = True
+                    img_label.place_forget()
+                    img_label_2.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
                     button3.place(relx=0.8, rely=0.8)
-                if (vehiculo_elegido.isTerminado()):
+                elif (vehiculo_elegido.isTerminado()):
                     messagebox.showinfo("KACHOW!","Has terminado! La carrera finalizara pronto.")
                     while True:
                         if carrera_actual.actualizarTerminado():
@@ -1740,7 +2036,9 @@ class MenuApp:
 
         def premiacion_carrera():
             global campeonato, carreras, cant_carreras, carrera_actual, piloto_elegido, vehiculo_elegido
+            img_label_2.place_forget()
             button3.place_forget()
+            img_label.place(relx=0.5,rely=0.5,anchor=tk.CENTER)
 
             jj=1
             carrera_actual.organizarVehiculosTiempos()
@@ -1913,16 +2211,32 @@ class MenuApp:
         mini_frame3.grid(column=0, row=3, rowspan=3, padx=20, pady=20, sticky="nsew")
         mini_frame3.configure(highlightbackground="GRAY", highlightcolor="WHITE", highlightthickness=2)
         action_font = ("Segoe UI",9,"italic")
-        # Cartas
-        image_path = "img/inside_car.png"
-        img = Image.open(image_path)
-        resized_image = img.resize((int(1280*0.75), int(720*0.75)))
-
-        image3 = ImageTk.PhotoImage(resized_image)
-
-        img_label = tk.Label(mini_frame3, image=image3)
+        # Background Image
+        image_path = "img/car_view.gif"
+        img3_0 = Image.open(image_path)
+        resized_frames = []
+        for frame in ImageSequence.Iterator(img3_0):
+            resized_frame = frame.resize((int(1280*0.75),int(720*0.75)))
+            resized_frames.append(ImageTk.PhotoImage(resized_frame))
+        img_label = tk.Label(mini_frame3)
         img_label.place(relx=0.5,rely=0.5,anchor=tk.CENTER)
-        # TODO: IMAGEN
+        def update_label_1(frame_idx=0):
+            img_label.configure(image=resized_frames[frame_idx])
+            frame3.after(50, update_label_1, (frame_idx+1) % len(resized_frames))
+        update_label_1()
+        # Crashed Image
+        image_path_2 = "img/explosion.gif"
+        img3_1 = Image.open(image_path_2)
+        resized_frames_2 = []
+        for frame in ImageSequence.Iterator(img3_1):
+            resized_frame = frame.resize((int(1280*0.75),int(720*0.75)))
+            resized_frames_2.append(ImageTk.PhotoImage(resized_frame))
+        img_label_2 = tk.Label(mini_frame3)
+        def update_label_2(frame_idx=0):
+            img_label_2.configure(image=resized_frames_2[frame_idx])
+            frame3.after(50, update_label_2, (frame_idx+1) % len(resized_frames_2))
+        update_label_2()
+
         # TODO: TABLA DE LAS POSICIONES
         listbox3 = tk.Listbox(mini_frame3,width=50, height=15)
         listbox3.configure(justify="center", font=action_font)
